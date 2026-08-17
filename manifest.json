@@ -1,0 +1,154 @@
+{
+  "version": 3,
+  "note": "Asset manifest untuk MLBB Flex Profile Studio. Ganti placeholder style/path dengan asset yang kamu punya izin gunakan.",
+  "api": {
+    "enabled": true,
+    "timeoutMs": 5000,
+    "providers": [
+      {
+        "id": "primary",
+        "name": "Primary MLBB API",
+        "baseUrl": "https://api-mobilelegends.vercel.app",
+        "heroesEndpoint": "/api/heroes",
+        "emblemsEndpoint": "/api/emblem"
+      },
+      {
+        "id": "fallback",
+        "name": "Fallback MLBB API",
+        "baseUrl": "https://mlbb-api.vercel.app",
+        "heroesEndpoint": "/api/heroes",
+        "emblemsEndpoint": "/api/emblem"
+      }
+    ]
+  },
+  "titles": [
+    "Assassin Main",
+    "Mythic Grinder",
+    "Collector Hunter",
+    "Rank Demon",
+    "Savage Farmer"
+  ],
+  "ranks": [
+    "MYTHIC GLORY",
+    "MYTHICAL IMMORTAL",
+    "MYTHIC",
+    "LEGEND",
+    "EPIC"
+  ],
+  "backgrounds": [
+    {
+      "id": "starlight",
+      "name": "Starlight Rift",
+      "accent": "#f3c969",
+      "style": "radial-gradient(circle at 72% 18%,rgba(255,255,255,.26),transparent 20%),linear-gradient(145deg,#173761 0%,#0b1321 52%,#613117 100%)",
+      "asset": "assets/backgrounds/starlight-rift.webp"
+    },
+    {
+      "id": "neon",
+      "name": "Neon District",
+      "accent": "#ff77c8",
+      "style": "radial-gradient(circle at 72% 20%,rgba(255,255,255,.28),transparent 18%),linear-gradient(150deg,#401955 0%,#0c1323 55%,#2d6a6d 100%)",
+      "asset": "assets/backgrounds/neon-district.webp"
+    },
+    {
+      "id": "jade",
+      "name": "Jade Temple",
+      "accent": "#74f0b3",
+      "style": "radial-gradient(circle at 68% 18%,rgba(255,255,255,.24),transparent 22%),linear-gradient(145deg,#173f48 0%,#0b1321 56%,#2c6135 100%)",
+      "asset": "assets/backgrounds/jade-temple.webp"
+    }
+  ],
+  "frames": [
+    { "id": "royal", "name": "Royal Gold", "color": "#f3c969", "asset": "assets/frames/royal-gold.webp" },
+    { "id": "frost", "name": "Frost", "color": "#9cd9ff", "asset": "assets/frames/frost.webp" },
+    { "id": "void", "name": "Void", "color": "#ca95ff", "asset": "assets/frames/void.webp" },
+    { "id": "crimson", "name": "Crimson", "color": "#ff8b8b", "asset": "assets/frames/crimson.webp" }
+  ],
+  "emblems": [
+    { "id": "burst", "name": "Burst", "token": "Burst", "asset": "assets/emblems/burst.webp" },
+    { "id": "assassin", "name": "Assassin", "token": "Assassin", "asset": "assets/emblems/assassin.webp" },
+    { "id": "mage", "name": "Mage", "token": "Mage", "asset": "assets/emblems/mage.webp" },
+    { "id": "marksman", "name": "Marksman", "token": "MM", "asset": "assets/emblems/marksman.webp" }
+  ],
+  "badges": [
+    { "id": "mvp", "name": "MVP", "asset": "assets/badges/mvp.webp" },
+    { "id": "savage", "name": "Savage", "asset": "assets/badges/savage.webp" },
+    { "id": "legend", "name": "Legend", "asset": "assets/badges/legend.webp" },
+    { "id": "og", "name": "OG", "asset": "assets/badges/og.webp" }
+  ],
+  "heroes": [
+    {
+      "id": "gusion",
+      "name": "Gusion",
+      "asset": "assets/heroes/gusion/base.webp",
+      "style": "radial-gradient(circle at 56% 45%,rgba(116,86,255,.95),transparent 34%),linear-gradient(135deg,transparent 20%,rgba(255,255,255,.32) 43%,transparent 56%),linear-gradient(160deg,rgba(255,255,255,.15),rgba(255,255,255,0) 34%)",
+      "skins": [
+        {
+          "id": "cosmic-gleam",
+          "name": "Cosmic Gleam",
+          "rarity": "Legend",
+          "asset": "assets/skins/gusion/cosmic-gleam.webp",
+          "style": "radial-gradient(circle at 58% 42%,rgba(158,137,255,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.36) 43%,transparent 56%)"
+        },
+        {
+          "id": "deaths-scythe",
+          "name": "Death's Scythe",
+          "rarity": "Epic",
+          "asset": "assets/skins/gusion/deaths-scythe.webp",
+          "style": "radial-gradient(circle at 58% 42%,rgba(124,211,255,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.34) 43%,transparent 56%)"
+        },
+        {
+          "id": "venom",
+          "name": "Venom",
+          "rarity": "Special",
+          "asset": "assets/skins/gusion/venom.webp",
+          "style": "radial-gradient(circle at 58% 42%,rgba(87,255,160,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.3) 43%,transparent 56%)"
+        }
+      ]
+    },
+    {
+      "id": "fanny",
+      "name": "Fanny",
+      "asset": "assets/heroes/fanny/base.webp",
+      "style": "radial-gradient(circle at 56% 45%,rgba(105,241,255,.95),transparent 34%),linear-gradient(135deg,transparent 20%,rgba(255,255,255,.28) 43%,transparent 56%),linear-gradient(160deg,rgba(255,255,255,.15),rgba(255,255,255,0) 34%)",
+      "skins": [
+        {
+          "id": "galactic-starhawk",
+          "name": "Galactic Starhawk",
+          "rarity": "Epic",
+          "asset": "assets/skins/fanny/galactic-starhawk.webp",
+          "style": "radial-gradient(circle at 58% 42%,rgba(120,235,255,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.38) 43%,transparent 56%)"
+        },
+        {
+          "id": "blade-of-kibou",
+          "name": "Blade of Kibou",
+          "rarity": "Collector",
+          "asset": "assets/skins/fanny/blade-of-kibou.webp",
+          "style": "radial-gradient(circle at 58% 42%,rgba(255,201,120,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.35) 43%,transparent 56%)"
+        }
+      ]
+    },
+    {
+      "id": "ling",
+      "name": "Ling",
+      "asset": "assets/heroes/ling/base.webp",
+      "style": "radial-gradient(circle at 56% 45%,rgba(197,223,255,.95),transparent 34%),linear-gradient(135deg,transparent 20%,rgba(255,255,255,.3) 43%,transparent 56%),linear-gradient(160deg,rgba(255,255,255,.15),rgba(255,255,255,0) 34%)",
+      "skins": [
+        {
+          "id": "night-shade",
+          "name": "Night Shade",
+          "rarity": "Epic",
+          "asset": "assets/skins/ling/night-shade.webp",
+          "style": "radial-gradient(circle at 58% 42%,rgba(223,230,255,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.33) 43%,transparent 56%)"
+        },
+        {
+          "id": "lord-shen",
+          "name": "Lord Shen",
+          "rarity": "Collector",
+          "asset": "assets/skins/ling/lord-shen.webp",
+          "style": "radial-gradient(circle at 58% 42%,rgba(255,196,111,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.36) 43%,transparent 56%)"
+        }
+      ]
+    }
+  ]
+}

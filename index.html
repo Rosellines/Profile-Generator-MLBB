@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MLBB Flex Profile Studio V3</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">CINEMATIC PROFILE BUILDER</p>
+        <h1>MLBB Flex Profile Studio V3</h1>
+      </div>
+      <div class="topbar-actions">
+        <span id="apiBadge" class="api-pill api-idle">API: Checking</span>
+        <button id="presetBtn" class="ghost">Preset</button>
+        <button id="refreshApiBtn" class="ghost">Refresh API</button>
+        <button id="randomBtn" class="ghost">Randomize</button>
+        <button id="copyBtn" class="ghost">Copy Config</button>
+        <button id="exportBtn" class="primary">Export PNG</button>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <aside class="sidebar">
+        <div class="tabs">
+          <button class="tab active" data-tab="identity">Identity</button>
+          <button class="tab" data-tab="visual">Visual</button>
+          <button class="tab" data-tab="layout">Layout</button>
+          <button class="tab" data-tab="stats">Stats</button>
+        </div>
+
+        <section id="identity" class="tabpage active">
+          <div class="section-title">
+            <span>Player Identity</span>
+            <small>Isi profil buat pamer, story, atau card feed.</small>
+          </div>
+
+          <label for="ign">IGN</label>
+          <input id="ign" value="MIKASA">
+
+          <div class="two-col">
+            <div>
+              <label for="pid">Player ID</label>
+              <input id="pid" value="88888888">
+            </div>
+            <div>
+              <label for="server">Server</label>
+              <input id="server" value="9999">
+            </div>
+          </div>
+
+          <label for="bio">Bio / Status</label>
+          <textarea id="bio" rows="3">Never stop climbing.</textarea>
+
+          <div class="two-col">
+            <div>
+              <label for="title">Title</label>
+              <select id="title"></select>
+            </div>
+            <div>
+              <label for="rank">Rank</label>
+              <select id="rank"></select>
+            </div>
+          </div>
+
+          <label for="photo">Profile Photo</label>
+          <input id="photo" type="file" accept="image/*">
+        </section>
+
+        <section id="visual" class="tabpage">
+          <div class="section-title">
+            <span>Asset Stack</span>
+            <small>Hero, skin, badge, frame, emblem, background.</small>
+          </div>
+
+          <label for="hero">Hero</label>
+          <select id="hero"></select>
+
+          <div class="two-col">
+            <div>
+              <label for="skin">Skin</label>
+              <select id="skin"></select>
+            </div>
+            <div>
+              <label for="rarity">Rarity</label>
+              <input id="rarity" disabled>
+            </div>
+          </div>
+
+          <label>Background</label>
+          <div id="backgrounds" class="swatch-grid"></div>
+
+          <label>Frame</label>
+          <div id="frames" class="swatch-grid"></div>
+
+          <div class="two-col">
+            <div>
+              <label>Emblem</label>
+              <div id="emblems" class="token-grid"></div>
+            </div>
+            <div>
+              <label>Badge</label>
+              <div id="badges" class="token-grid"></div>
+            </div>
+          </div>
+
+          <label>Effects</label>
+          <div class="effect-row">
+            <button data-effect="none" class="active">None</button>
+            <button data-effect="glow">Glow</button>
+            <button data-effect="scan">Scan</button>
+            <button data-effect="particles">Particles</button>
+          </div>
+        </section>
+
+        <section id="layout" class="tabpage">
+          <div class="section-title">
+            <span>Mini Figma Mode</span>
+            <small>Pilih layer lalu drag di canvas. Scale pakai slider.</small>
+          </div>
+
+          <label for="activeLayer">Active Layer</label>
+          <select id="activeLayer">
+            <option value="avatar">Avatar</option>
+            <option value="hero">Hero Artwork</option>
+          </select>
+
+          <div class="two-col">
+            <div>
+              <label for="layerScale">Scale</label>
+              <input id="layerScale" type="range" min="60" max="170" value="100">
+            </div>
+            <div>
+              <label for="layerRotate">Rotate</label>
+              <input id="layerRotate" type="range" min="-18" max="18" value="0">
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div>
+              <label for="accent">Accent</label>
+              <input id="accent" type="color" value="#f3c969">
+            </div>
+            <div>
+              <label for="mode">Canvas Ratio</label>
+              <select id="mode">
+                <option value="story">9:16 Story</option>
+                <option value="feed">4:5 Feed</option>
+                <option value="card">3:4 Card</option>
+              </select>
+            </div>
+          </div>
+
+          <button id="resetLayout" class="full ghost">Reset Positions</button>
+        </section>
+
+        <section id="stats" class="tabpage">
+          <div class="section-title">
+            <span>Fake It Tastefully</span>
+            <small>Stats bebas untuk kebutuhan visual flexing.</small>
+          </div>
+
+          <div class="two-col">
+            <div>
+              <label for="wr">Win Rate</label>
+              <input id="wr" type="number" value="87">
+            </div>
+            <div>
+              <label for="matches">Matches</label>
+              <input id="matches" type="number" value="2431">
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div>
+              <label for="mvp">MVP</label>
+              <input id="mvp" type="number" value="318">
+            </div>
+            <div>
+              <label for="savage">Savage</label>
+              <input id="savage" type="number" value="27">
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div>
+              <label for="legendary">Legendary</label>
+              <input id="legendary" type="number" value="501">
+            </div>
+            <div>
+              <label for="emblemLevel">Emblem Level</label>
+              <input id="emblemLevel" type="number" value="60">
+            </div>
+          </div>
+        </section>
+
+        <div class="hint-box">
+          Engine ini asset-agnostic. Hero/skin resmi tidak dibundel.
+          Tambahkan artwork yang kamu punya izin pakai lewat <code>manifest.json</code> atau folder <code>assets/</code>.
+        </div>
+
+        <div class="api-panel">
+          <div class="section-title">
+            <span>API Layer</span>
+            <small>Primary remote + local fallback biar editor tetap nyala.</small>
+          </div>
+          <p id="apiStatusText" class="api-status-copy">Sedang cek koneksi API...</p>
+          <p id="apiSourceText" class="api-source-copy">Source: -</p>
+        </div>
+      </aside>
+
+      <main class="stage">
+        <div class="stage-toolbar">
+          <div>
+            <p class="eyebrow">LIVE PREVIEW</p>
+            <strong>Drag avatar atau hero langsung di canvas</strong>
+          </div>
+          <div class="stage-meta">
+            <span id="modeOut">1080 x 1920</span>
+            <span id="dragHint">Layer: Avatar</span>
+          </div>
+        </div>
+
+        <div class="stage-scroll">
+          <div id="card" class="profile-card ratio-story">
+            <div class="card-noise"></div>
+            <div id="backgroundLayer" class="background-layer"></div>
+            <div id="effectGlow" class="effect-glow"></div>
+            <div id="particlesLayer" class="particles-layer"></div>
+            <div id="scanLayer" class="scan-layer"></div>
+
+            <div class="top-line">
+              <span id="rankOut">MYTHIC GLORY</span>
+              <span id="titleOut">Assassin Main</span>
+            </div>
+
+            <div id="heroLayer" class="hero-layer draggable" data-layer="hero">
+              <div class="hero-backdrop"></div>
+              <div id="heroArt" class="hero-art"></div>
+            </div>
+
+            <div class="identity-block">
+              <div id="avatarLayer" class="avatar-cluster draggable" data-layer="avatar">
+                <div id="avatarImg" class="avatar-image"></div>
+                <div id="frameOut" class="avatar-frame"></div>
+                <div id="badgeOut" class="badge-chip">MVP</div>
+              </div>
+              <div class="identity-copy">
+                <h2 id="ignOut">MIKASA</h2>
+                <p class="identity-meta">ID <span id="pidOut">88888888</span> · SERVER <span id="serverOut">9999</span></p>
+                <p id="bioOut" class="identity-bio">Never stop climbing.</p>
+              </div>
+            </div>
+
+            <div class="hero-copy">
+              <p>MAIN HERO</p>
+              <h3 id="heroOut">GUSION</h3>
+              <div class="hero-copy-line">
+                <span id="skinOut">Cosmic Gleam</span>
+                <span id="rarityOut">LEGEND</span>
+              </div>
+            </div>
+
+            <div class="side-stack">
+              <div id="emblemOut" class="side-token">Burst</div>
+              <div class="side-token muted">Lv. <span id="emblemLevelOut">60</span></div>
+            </div>
+
+            <div class="stats-grid">
+              <article>
+                <b id="wrOut">87%</b>
+                <span>Win Rate</span>
+              </article>
+              <article>
+                <b id="matchesOut">2,431</b>
+                <span>Matches</span>
+              </article>
+              <article>
+                <b id="mvpOut">318</b>
+                <span>MVP</span>
+              </article>
+              <article>
+                <b id="savageOut">27</b>
+                <span>Savage</span>
+              </article>
+              <article>
+                <b id="legendaryOut">501</b>
+                <span>Legendary</span>
+              </article>
+            </div>
+
+            <div class="card-footer">
+              <span>MLBB FLEX PROFILE</span>
+              <span>SEASON GRIND · CUSTOM STUDIO</span>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-panel">
+      <p class="eyebrow">QUICK START</p>
+      <h2>Choose a flex preset</h2>
+      <div class="preset-grid">
+        <button data-preset="mythic">Mythic</button>
+        <button data-preset="collector">Collector</button>
+        <button data-preset="og">OG</button>
+        <button data-preset="whale">Whale</button>
+      </div>
+      <button id="closeModal" class="full ghost">Close</button>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
