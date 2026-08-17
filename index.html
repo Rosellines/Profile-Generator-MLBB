@@ -18,6 +18,7 @@
         <button id="presetBtn" class="ghost">Preset</button>
         <button id="refreshApiBtn" class="ghost">Refresh API</button>
         <button id="randomBtn" class="ghost">Randomize</button>
+        <button id="resetProfileBtn" class="ghost">Reset Profile</button>
         <button id="copyBtn" class="ghost">Copy Config</button>
         <button id="exportBtn" class="primary">Export PNG</button>
       </div>
@@ -73,7 +74,23 @@
         <section id="visual" class="tabpage">
           <div class="section-title">
             <span>Asset Stack</span>
-            <small>Hero, skin, badge, frame, emblem, background.</small>
+            <small>Hero, skin, badge, frame, emblem, background. Semua lokal dulu, remote opsional.</small>
+          </div>
+
+          <div class="two-col">
+            <div>
+              <label for="heroSearch">Search Hero</label>
+              <input id="heroSearch" placeholder="Search Hero...">
+            </div>
+            <div>
+              <label for="heroSort">Sort Hero</label>
+              <select id="heroSort">
+                <option value="az">A-Z</option>
+                <option value="za">Z-A</option>
+                <option value="role">Role</option>
+                <option value="recent">Recently Added</option>
+              </select>
+            </div>
           </div>
 
           <div class="two-col">
@@ -254,17 +271,21 @@
         </section>
 
         <div class="hint-box">
-          Engine ini asset-agnostic. Hero/skin resmi tidak dibundel.
-          Tambahkan artwork yang kamu punya izin pakai lewat <code>manifest.json</code> atau folder <code>assets/</code>.
+          Engine ini local-first dan asset-agnostic. Metadata ada di folder <code>data/</code>, sedangkan artwork resmi tidak dibundel.
+          Tambahkan asset yang kamu punya izin pakai lewat folder <code>assets/</code>.
         </div>
 
         <div class="api-panel">
           <div class="section-title">
             <span>API Layer</span>
-            <small>Primary remote + local fallback biar editor tetap nyala.</small>
+            <small>Local database selalu utama. Remote hanya optional metadata update.</small>
           </div>
-          <p id="apiStatusText" class="api-status-copy">Sedang cek koneksi API...</p>
-          <p id="apiSourceText" class="api-source-copy">Source: -</p>
+          <p id="apiStatusText" class="api-status-copy">Memuat local database...</p>
+          <p id="apiSourceText" class="api-source-copy">Source: local</p>
+          <details id="apiDiagnostics" class="diagnostics-panel">
+            <summary>API Diagnostics</summary>
+            <div id="apiDiagnosticsList" class="diagnostics-list"></div>
+          </details>
         </div>
       </aside>
 

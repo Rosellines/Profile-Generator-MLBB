@@ -93,6 +93,21 @@ input:disabled{opacity:.7}
 }
 .api-status-copy,.api-source-copy{margin:0;color:var(--muted);line-height:1.6;font-size:13px}
 .api-source-copy{margin-top:8px}
+.diagnostics-panel{
+  margin-top:12px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.025)
+}
+.diagnostics-panel summary{
+  cursor:pointer;list-style:none;padding:12px 14px;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:#bdd1f7
+}
+.diagnostics-panel summary::-webkit-details-marker{display:none}
+.diagnostics-list{
+  display:grid;gap:10px;padding:0 14px 14px
+}
+.diagnostic-item{
+  display:grid;gap:4px;padding:12px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06)
+}
+.diagnostic-item b{font-size:13px}
+.diagnostic-item span{font-size:12px;line-height:1.5;color:var(--muted)}
 
 .stage{display:flex;flex-direction:column;min-width:0}
 .stage-toolbar{

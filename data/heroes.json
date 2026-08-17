@@ -1,0 +1,1846 @@
+{
+  "version": 1,
+  "updatedAt": "2026-08-17",
+  "heroes": [
+    {
+      "id": "aamon",
+      "name": "Aamon",
+      "roles": [
+        "Assassin"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/aamon/portrait.webp",
+      "artwork": "assets/heroes/aamon/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "aldous",
+      "name": "Aldous",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/aldous/portrait.webp",
+      "artwork": "assets/heroes/aldous/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "alice",
+      "name": "Alice",
+      "roles": [
+        "Mage",
+        "Tank"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/alice/portrait.webp",
+      "artwork": "assets/heroes/alice/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "alpha",
+      "name": "Alpha",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/alpha/portrait.webp",
+      "artwork": "assets/heroes/alpha/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "alucard",
+      "name": "Alucard",
+      "roles": [
+        "Assassin",
+        "Fighter"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/alucard/portrait.webp",
+      "artwork": "assets/heroes/alucard/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "angela",
+      "name": "Angela",
+      "roles": [
+        "Support"
+      ],
+      "specialty": [
+        "Heal",
+        "Utility"
+      ],
+      "portrait": "assets/heroes/angela/portrait.webp",
+      "artwork": "assets/heroes/angela/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "arlott",
+      "name": "Arlott",
+      "roles": [
+        "Assassin",
+        "Fighter"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/arlott/portrait.webp",
+      "artwork": "assets/heroes/arlott/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "atlas",
+      "name": "Atlas",
+      "roles": [
+        "Tank"
+      ],
+      "specialty": [
+        "Crowd Control",
+        "Initiate"
+      ],
+      "portrait": "assets/heroes/atlas/portrait.webp",
+      "artwork": "assets/heroes/atlas/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "aulus",
+      "name": "Aulus",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/aulus/portrait.webp",
+      "artwork": "assets/heroes/aulus/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "badang",
+      "name": "Badang",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/badang/portrait.webp",
+      "artwork": "assets/heroes/badang/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "balmond",
+      "name": "Balmond",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/balmond/portrait.webp",
+      "artwork": "assets/heroes/balmond/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "bane",
+      "name": "Bane",
+      "roles": [
+        "Fighter",
+        "Mage"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/bane/portrait.webp",
+      "artwork": "assets/heroes/bane/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "barats",
+      "name": "Barats",
+      "roles": [
+        "Fighter",
+        "Tank"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/barats/portrait.webp",
+      "artwork": "assets/heroes/barats/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "baxia",
+      "name": "Baxia",
+      "roles": [
+        "Tank"
+      ],
+      "specialty": [
+        "Crowd Control",
+        "Initiate"
+      ],
+      "portrait": "assets/heroes/baxia/portrait.webp",
+      "artwork": "assets/heroes/baxia/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "beatrix",
+      "name": "Beatrix",
+      "roles": [
+        "Marksman"
+      ],
+      "specialty": [
+        "DPS",
+        "Finisher"
+      ],
+      "portrait": "assets/heroes/beatrix/portrait.webp",
+      "artwork": "assets/heroes/beatrix/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "belerick",
+      "name": "Belerick",
+      "roles": [
+        "Tank"
+      ],
+      "specialty": [
+        "Crowd Control",
+        "Initiate"
+      ],
+      "portrait": "assets/heroes/belerick/portrait.webp",
+      "artwork": "assets/heroes/belerick/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "benedetta",
+      "name": "Benedetta",
+      "roles": [
+        "Assassin"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/benedetta/portrait.webp",
+      "artwork": "assets/heroes/benedetta/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "brody",
+      "name": "Brody",
+      "roles": [
+        "Marksman"
+      ],
+      "specialty": [
+        "DPS",
+        "Finisher"
+      ],
+      "portrait": "assets/heroes/brody/portrait.webp",
+      "artwork": "assets/heroes/brody/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "bruno",
+      "name": "Bruno",
+      "roles": [
+        "Marksman"
+      ],
+      "specialty": [
+        "DPS",
+        "Finisher"
+      ],
+      "portrait": "assets/heroes/bruno/portrait.webp",
+      "artwork": "assets/heroes/bruno/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "carmilla",
+      "name": "Carmilla",
+      "roles": [
+        "Tank",
+        "Support"
+      ],
+      "specialty": [
+        "Crowd Control",
+        "Initiate"
+      ],
+      "portrait": "assets/heroes/carmilla/portrait.webp",
+      "artwork": "assets/heroes/carmilla/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "cecilion",
+      "name": "Cecilion",
+      "roles": [
+        "Mage"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/cecilion/portrait.webp",
+      "artwork": "assets/heroes/cecilion/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "chang-e",
+      "name": "Chang'e",
+      "roles": [
+        "Mage"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/chang-e/portrait.webp",
+      "artwork": "assets/heroes/chang-e/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "chip",
+      "name": "Chip",
+      "roles": [
+        "Tank",
+        "Support"
+      ],
+      "specialty": [
+        "Crowd Control",
+        "Initiate"
+      ],
+      "portrait": "assets/heroes/chip/portrait.webp",
+      "artwork": "assets/heroes/chip/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "chou",
+      "name": "Chou",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/chou/portrait.webp",
+      "artwork": "assets/heroes/chou/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "cici",
+      "name": "Cici",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/cici/portrait.webp",
+      "artwork": "assets/heroes/cici/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "claude",
+      "name": "Claude",
+      "roles": [
+        "Marksman"
+      ],
+      "specialty": [
+        "DPS",
+        "Finisher"
+      ],
+      "portrait": "assets/heroes/claude/portrait.webp",
+      "artwork": "assets/heroes/claude/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "clint",
+      "name": "Clint",
+      "roles": [
+        "Marksman"
+      ],
+      "specialty": [
+        "DPS",
+        "Finisher"
+      ],
+      "portrait": "assets/heroes/clint/portrait.webp",
+      "artwork": "assets/heroes/clint/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "cyclops",
+      "name": "Cyclops",
+      "roles": [
+        "Mage"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/cyclops/portrait.webp",
+      "artwork": "assets/heroes/cyclops/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "diggie",
+      "name": "Diggie",
+      "roles": [
+        "Support"
+      ],
+      "specialty": [
+        "Heal",
+        "Utility"
+      ],
+      "portrait": "assets/heroes/diggie/portrait.webp",
+      "artwork": "assets/heroes/diggie/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "dyrroth",
+      "name": "Dyrroth",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/dyrroth/portrait.webp",
+      "artwork": "assets/heroes/dyrroth/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "edith",
+      "name": "Edith",
+      "roles": [
+        "Marksman",
+        "Tank"
+      ],
+      "specialty": [
+        "DPS",
+        "Finisher"
+      ],
+      "portrait": "assets/heroes/edith/portrait.webp",
+      "artwork": "assets/heroes/edith/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "esmeralda",
+      "name": "Esmeralda",
+      "roles": [
+        "Mage",
+        "Tank"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/esmeralda/portrait.webp",
+      "artwork": "assets/heroes/esmeralda/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "estes",
+      "name": "Estes",
+      "roles": [
+        "Support"
+      ],
+      "specialty": [
+        "Heal",
+        "Utility"
+      ],
+      "portrait": "assets/heroes/estes/portrait.webp",
+      "artwork": "assets/heroes/estes/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "eudora",
+      "name": "Eudora",
+      "roles": [
+        "Mage"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/eudora/portrait.webp",
+      "artwork": "assets/heroes/eudora/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "fanny",
+      "name": "Fanny",
+      "roles": [
+        "Assassin"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/fanny/portrait.webp",
+      "artwork": "assets/heroes/fanny/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "faramis",
+      "name": "Faramis",
+      "roles": [
+        "Mage",
+        "Support"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/faramis/portrait.webp",
+      "artwork": "assets/heroes/faramis/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "floryn",
+      "name": "Floryn",
+      "roles": [
+        "Support"
+      ],
+      "specialty": [
+        "Heal",
+        "Utility"
+      ],
+      "portrait": "assets/heroes/floryn/portrait.webp",
+      "artwork": "assets/heroes/floryn/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "franco",
+      "name": "Franco",
+      "roles": [
+        "Tank"
+      ],
+      "specialty": [
+        "Crowd Control",
+        "Initiate"
+      ],
+      "portrait": "assets/heroes/franco/portrait.webp",
+      "artwork": "assets/heroes/franco/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "fredrinn",
+      "name": "Fredrinn",
+      "roles": [
+        "Fighter",
+        "Tank"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/fredrinn/portrait.webp",
+      "artwork": "assets/heroes/fredrinn/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "freya",
+      "name": "Freya",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/freya/portrait.webp",
+      "artwork": "assets/heroes/freya/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "gatotkaca",
+      "name": "Gatotkaca",
+      "roles": [
+        "Fighter",
+        "Tank"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/gatotkaca/portrait.webp",
+      "artwork": "assets/heroes/gatotkaca/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "gloo",
+      "name": "Gloo",
+      "roles": [
+        "Tank"
+      ],
+      "specialty": [
+        "Crowd Control",
+        "Initiate"
+      ],
+      "portrait": "assets/heroes/gloo/portrait.webp",
+      "artwork": "assets/heroes/gloo/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "gord",
+      "name": "Gord",
+      "roles": [
+        "Mage"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/gord/portrait.webp",
+      "artwork": "assets/heroes/gord/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "granger",
+      "name": "Granger",
+      "roles": [
+        "Marksman"
+      ],
+      "specialty": [
+        "DPS",
+        "Finisher"
+      ],
+      "portrait": "assets/heroes/granger/portrait.webp",
+      "artwork": "assets/heroes/granger/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "grock",
+      "name": "Grock",
+      "roles": [
+        "Fighter",
+        "Tank"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/grock/portrait.webp",
+      "artwork": "assets/heroes/grock/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "guinevere",
+      "name": "Guinevere",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/guinevere/portrait.webp",
+      "artwork": "assets/heroes/guinevere/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "gusion",
+      "name": "Gusion",
+      "roles": [
+        "Assassin"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/gusion/portrait.webp",
+      "artwork": "assets/heroes/gusion/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "hanabi",
+      "name": "Hanabi",
+      "roles": [
+        "Marksman"
+      ],
+      "specialty": [
+        "DPS",
+        "Finisher"
+      ],
+      "portrait": "assets/heroes/hanabi/portrait.webp",
+      "artwork": "assets/heroes/hanabi/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "hanzo",
+      "name": "Hanzo",
+      "roles": [
+        "Assassin"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/hanzo/portrait.webp",
+      "artwork": "assets/heroes/hanzo/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "harith",
+      "name": "Harith",
+      "roles": [
+        "Mage"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/harith/portrait.webp",
+      "artwork": "assets/heroes/harith/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "harley",
+      "name": "Harley",
+      "roles": [
+        "Assassin",
+        "Mage"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/harley/portrait.webp",
+      "artwork": "assets/heroes/harley/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "hayabusa",
+      "name": "Hayabusa",
+      "roles": [
+        "Assassin"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/hayabusa/portrait.webp",
+      "artwork": "assets/heroes/hayabusa/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "helcurt",
+      "name": "Helcurt",
+      "roles": [
+        "Assassin"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/helcurt/portrait.webp",
+      "artwork": "assets/heroes/helcurt/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "hilda",
+      "name": "Hilda",
+      "roles": [
+        "Fighter",
+        "Tank"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/hilda/portrait.webp",
+      "artwork": "assets/heroes/hilda/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "hirara",
+      "name": "Hirara",
+      "roles": [
+        "Assassin"
+      ],
+      "specialty": [
+        "Burst",
+        "Ambush"
+      ],
+      "portrait": "assets/heroes/hirara/portrait.webp",
+      "artwork": "assets/heroes/hirara/artwork.webp",
+      "addedAt": "2026-07-01"
+    },
+    {
+      "id": "hylos",
+      "name": "Hylos",
+      "roles": [
+        "Tank"
+      ],
+      "specialty": [
+        "Crowd Control",
+        "Initiate"
+      ],
+      "portrait": "assets/heroes/hylos/portrait.webp",
+      "artwork": "assets/heroes/hylos/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "irithel",
+      "name": "Irithel",
+      "roles": [
+        "Marksman"
+      ],
+      "specialty": [
+        "DPS",
+        "Finisher"
+      ],
+      "portrait": "assets/heroes/irithel/portrait.webp",
+      "artwork": "assets/heroes/irithel/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "ixia",
+      "name": "Ixia",
+      "roles": [
+        "Marksman"
+      ],
+      "specialty": [
+        "DPS",
+        "Finisher"
+      ],
+      "portrait": "assets/heroes/ixia/portrait.webp",
+      "artwork": "assets/heroes/ixia/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "jawhead",
+      "name": "Jawhead",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/jawhead/portrait.webp",
+      "artwork": "assets/heroes/jawhead/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "johnson",
+      "name": "Johnson",
+      "roles": [
+        "Tank",
+        "Support"
+      ],
+      "specialty": [
+        "Crowd Control",
+        "Initiate"
+      ],
+      "portrait": "assets/heroes/johnson/portrait.webp",
+      "artwork": "assets/heroes/johnson/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "joy",
+      "name": "Joy",
+      "roles": [
+        "Assassin"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/joy/portrait.webp",
+      "artwork": "assets/heroes/joy/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "julian",
+      "name": "Julian",
+      "roles": [
+        "Assassin",
+        "Fighter"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/julian/portrait.webp",
+      "artwork": "assets/heroes/julian/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "kadita",
+      "name": "Kadita",
+      "roles": [
+        "Assassin",
+        "Mage"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/kadita/portrait.webp",
+      "artwork": "assets/heroes/kadita/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "kagura",
+      "name": "Kagura",
+      "roles": [
+        "Mage"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/kagura/portrait.webp",
+      "artwork": "assets/heroes/kagura/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "kaja",
+      "name": "Kaja",
+      "roles": [
+        "Support"
+      ],
+      "specialty": [
+        "Heal",
+        "Utility"
+      ],
+      "portrait": "assets/heroes/kaja/portrait.webp",
+      "artwork": "assets/heroes/kaja/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "kalea",
+      "name": "Kalea",
+      "roles": [
+        "Fighter",
+        "Support"
+      ],
+      "specialty": [
+        "Control",
+        "Roam"
+      ],
+      "portrait": "assets/heroes/kalea/portrait.webp",
+      "artwork": "assets/heroes/kalea/artwork.webp",
+      "addedAt": "2026-06-01"
+    },
+    {
+      "id": "karina",
+      "name": "Karina",
+      "roles": [
+        "Assassin"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/karina/portrait.webp",
+      "artwork": "assets/heroes/karina/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "karrie",
+      "name": "Karrie",
+      "roles": [
+        "Marksman"
+      ],
+      "specialty": [
+        "DPS",
+        "Finisher"
+      ],
+      "portrait": "assets/heroes/karrie/portrait.webp",
+      "artwork": "assets/heroes/karrie/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "khaleed",
+      "name": "Khaleed",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/khaleed/portrait.webp",
+      "artwork": "assets/heroes/khaleed/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "khufra",
+      "name": "Khufra",
+      "roles": [
+        "Tank"
+      ],
+      "specialty": [
+        "Crowd Control",
+        "Initiate"
+      ],
+      "portrait": "assets/heroes/khufra/portrait.webp",
+      "artwork": "assets/heroes/khufra/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "kimmy",
+      "name": "Kimmy",
+      "roles": [
+        "Mage",
+        "Marksman"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/kimmy/portrait.webp",
+      "artwork": "assets/heroes/kimmy/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "lancelot",
+      "name": "Lancelot",
+      "roles": [
+        "Assassin"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/lancelot/portrait.webp",
+      "artwork": "assets/heroes/lancelot/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "lapu-lapu",
+      "name": "Lapu-Lapu",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/lapu-lapu/portrait.webp",
+      "artwork": "assets/heroes/lapu-lapu/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "layla",
+      "name": "Layla",
+      "roles": [
+        "Marksman"
+      ],
+      "specialty": [
+        "DPS",
+        "Finisher"
+      ],
+      "portrait": "assets/heroes/layla/portrait.webp",
+      "artwork": "assets/heroes/layla/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "leomord",
+      "name": "Leomord",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/leomord/portrait.webp",
+      "artwork": "assets/heroes/leomord/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "lesley",
+      "name": "Lesley",
+      "roles": [
+        "Assassin",
+        "Marksman"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/lesley/portrait.webp",
+      "artwork": "assets/heroes/lesley/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "ling",
+      "name": "Ling",
+      "roles": [
+        "Assassin"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/ling/portrait.webp",
+      "artwork": "assets/heroes/ling/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "lolita",
+      "name": "Lolita",
+      "roles": [
+        "Tank",
+        "Support"
+      ],
+      "specialty": [
+        "Crowd Control",
+        "Initiate"
+      ],
+      "portrait": "assets/heroes/lolita/portrait.webp",
+      "artwork": "assets/heroes/lolita/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "lukas",
+      "name": "Lukas",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Split Push"
+      ],
+      "portrait": "assets/heroes/lukas/portrait.webp",
+      "artwork": "assets/heroes/lukas/artwork.webp",
+      "addedAt": "2026-05-01"
+    },
+    {
+      "id": "lunox",
+      "name": "Lunox",
+      "roles": [
+        "Mage"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/lunox/portrait.webp",
+      "artwork": "assets/heroes/lunox/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "luo-yi",
+      "name": "Luo Yi",
+      "roles": [
+        "Mage"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/luo-yi/portrait.webp",
+      "artwork": "assets/heroes/luo-yi/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "lylia",
+      "name": "Lylia",
+      "roles": [
+        "Mage"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/lylia/portrait.webp",
+      "artwork": "assets/heroes/lylia/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "marcel",
+      "name": "Marcel",
+      "roles": [
+        "Support"
+      ],
+      "specialty": [
+        "Heal",
+        "Utility"
+      ],
+      "portrait": "assets/heroes/marcel/portrait.webp",
+      "artwork": "assets/heroes/marcel/artwork.webp",
+      "addedAt": "2026-04-01"
+    },
+    {
+      "id": "martis",
+      "name": "Martis",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/martis/portrait.webp",
+      "artwork": "assets/heroes/martis/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "masha",
+      "name": "Masha",
+      "roles": [
+        "Fighter",
+        "Tank"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/masha/portrait.webp",
+      "artwork": "assets/heroes/masha/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "mathilda",
+      "name": "Mathilda",
+      "roles": [
+        "Assassin",
+        "Support"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/mathilda/portrait.webp",
+      "artwork": "assets/heroes/mathilda/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "melissa",
+      "name": "Melissa",
+      "roles": [
+        "Marksman"
+      ],
+      "specialty": [
+        "DPS",
+        "Finisher"
+      ],
+      "portrait": "assets/heroes/melissa/portrait.webp",
+      "artwork": "assets/heroes/melissa/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "minotaur",
+      "name": "Minotaur",
+      "roles": [
+        "Tank",
+        "Support"
+      ],
+      "specialty": [
+        "Crowd Control",
+        "Initiate"
+      ],
+      "portrait": "assets/heroes/minotaur/portrait.webp",
+      "artwork": "assets/heroes/minotaur/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "minsitthar",
+      "name": "Minsitthar",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/minsitthar/portrait.webp",
+      "artwork": "assets/heroes/minsitthar/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "miya",
+      "name": "Miya",
+      "roles": [
+        "Marksman"
+      ],
+      "specialty": [
+        "DPS",
+        "Finisher"
+      ],
+      "portrait": "assets/heroes/miya/portrait.webp",
+      "artwork": "assets/heroes/miya/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "moskov",
+      "name": "Moskov",
+      "roles": [
+        "Marksman"
+      ],
+      "specialty": [
+        "DPS",
+        "Finisher"
+      ],
+      "portrait": "assets/heroes/moskov/portrait.webp",
+      "artwork": "assets/heroes/moskov/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "nana",
+      "name": "Nana",
+      "roles": [
+        "Mage"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/nana/portrait.webp",
+      "artwork": "assets/heroes/nana/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "natalia",
+      "name": "Natalia",
+      "roles": [
+        "Assassin"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/natalia/portrait.webp",
+      "artwork": "assets/heroes/natalia/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "natan",
+      "name": "Natan",
+      "roles": [
+        "Marksman"
+      ],
+      "specialty": [
+        "DPS",
+        "Finisher"
+      ],
+      "portrait": "assets/heroes/natan/portrait.webp",
+      "artwork": "assets/heroes/natan/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "nolan",
+      "name": "Nolan",
+      "roles": [
+        "Assassin"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/nolan/portrait.webp",
+      "artwork": "assets/heroes/nolan/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "novaria",
+      "name": "Novaria",
+      "roles": [
+        "Mage"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/novaria/portrait.webp",
+      "artwork": "assets/heroes/novaria/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "obsidia",
+      "name": "Obsidia",
+      "roles": [
+        "Marksman"
+      ],
+      "specialty": [
+        "DPS",
+        "Pierce"
+      ],
+      "portrait": "assets/heroes/obsidia/portrait.webp",
+      "artwork": "assets/heroes/obsidia/artwork.webp",
+      "addedAt": "2026-03-01"
+    },
+    {
+      "id": "odette",
+      "name": "Odette",
+      "roles": [
+        "Mage"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/odette/portrait.webp",
+      "artwork": "assets/heroes/odette/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "paquito",
+      "name": "Paquito",
+      "roles": [
+        "Assassin",
+        "Fighter"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/paquito/portrait.webp",
+      "artwork": "assets/heroes/paquito/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "pharsa",
+      "name": "Pharsa",
+      "roles": [
+        "Mage"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/pharsa/portrait.webp",
+      "artwork": "assets/heroes/pharsa/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "phoveus",
+      "name": "Phoveus",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/phoveus/portrait.webp",
+      "artwork": "assets/heroes/phoveus/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "popol-and-kupa",
+      "name": "Popol and Kupa",
+      "roles": [
+        "Marksman"
+      ],
+      "specialty": [
+        "DPS",
+        "Finisher"
+      ],
+      "portrait": "assets/heroes/popol-and-kupa/portrait.webp",
+      "artwork": "assets/heroes/popol-and-kupa/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "rafaela",
+      "name": "Rafaela",
+      "roles": [
+        "Support"
+      ],
+      "specialty": [
+        "Heal",
+        "Utility"
+      ],
+      "portrait": "assets/heroes/rafaela/portrait.webp",
+      "artwork": "assets/heroes/rafaela/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "roger",
+      "name": "Roger",
+      "roles": [
+        "Fighter",
+        "Marksman"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/roger/portrait.webp",
+      "artwork": "assets/heroes/roger/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "ruby",
+      "name": "Ruby",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/ruby/portrait.webp",
+      "artwork": "assets/heroes/ruby/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "saber",
+      "name": "Saber",
+      "roles": [
+        "Assassin"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/saber/portrait.webp",
+      "artwork": "assets/heroes/saber/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "selena",
+      "name": "Selena",
+      "roles": [
+        "Assassin",
+        "Mage"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/selena/portrait.webp",
+      "artwork": "assets/heroes/selena/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "silvanna",
+      "name": "Silvanna",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/silvanna/portrait.webp",
+      "artwork": "assets/heroes/silvanna/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "sora",
+      "name": "Sora",
+      "roles": [
+        "Assassin",
+        "Fighter"
+      ],
+      "specialty": [
+        "Burst",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/sora/portrait.webp",
+      "artwork": "assets/heroes/sora/artwork.webp",
+      "addedAt": "2026-02-01"
+    },
+    {
+      "id": "sun",
+      "name": "Sun",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/sun/portrait.webp",
+      "artwork": "assets/heroes/sun/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "suyou",
+      "name": "Suyou",
+      "roles": [
+        "Assassin",
+        "Fighter"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/suyou/portrait.webp",
+      "artwork": "assets/heroes/suyou/artwork.webp",
+      "addedAt": "2026-01-15"
+    },
+    {
+      "id": "terizla",
+      "name": "Terizla",
+      "roles": [
+        "Fighter",
+        "Tank"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/terizla/portrait.webp",
+      "artwork": "assets/heroes/terizla/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "thamuz",
+      "name": "Thamuz",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/thamuz/portrait.webp",
+      "artwork": "assets/heroes/thamuz/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "tigreal",
+      "name": "Tigreal",
+      "roles": [
+        "Tank"
+      ],
+      "specialty": [
+        "Crowd Control",
+        "Initiate"
+      ],
+      "portrait": "assets/heroes/tigreal/portrait.webp",
+      "artwork": "assets/heroes/tigreal/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "uranus",
+      "name": "Uranus",
+      "roles": [
+        "Tank"
+      ],
+      "specialty": [
+        "Crowd Control",
+        "Initiate"
+      ],
+      "portrait": "assets/heroes/uranus/portrait.webp",
+      "artwork": "assets/heroes/uranus/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "valentina",
+      "name": "Valentina",
+      "roles": [
+        "Mage"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/valentina/portrait.webp",
+      "artwork": "assets/heroes/valentina/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "valir",
+      "name": "Valir",
+      "roles": [
+        "Mage"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/valir/portrait.webp",
+      "artwork": "assets/heroes/valir/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "vexana",
+      "name": "Vexana",
+      "roles": [
+        "Mage"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/vexana/portrait.webp",
+      "artwork": "assets/heroes/vexana/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "wanwan",
+      "name": "Wanwan",
+      "roles": [
+        "Marksman"
+      ],
+      "specialty": [
+        "DPS",
+        "Finisher"
+      ],
+      "portrait": "assets/heroes/wanwan/portrait.webp",
+      "artwork": "assets/heroes/wanwan/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "x-borg",
+      "name": "X.Borg",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/x-borg/portrait.webp",
+      "artwork": "assets/heroes/x-borg/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "xavier",
+      "name": "Xavier",
+      "roles": [
+        "Mage"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/xavier/portrait.webp",
+      "artwork": "assets/heroes/xavier/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "yi-sun-shin",
+      "name": "Yi Sun-shin",
+      "roles": [
+        "Assassin",
+        "Marksman"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/yi-sun-shin/portrait.webp",
+      "artwork": "assets/heroes/yi-sun-shin/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "yin",
+      "name": "Yin",
+      "roles": [
+        "Assassin",
+        "Fighter"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/yin/portrait.webp",
+      "artwork": "assets/heroes/yin/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "yu-zhong",
+      "name": "Yu Zhong",
+      "roles": [
+        "Fighter"
+      ],
+      "specialty": [
+        "Sustain",
+        "Duel"
+      ],
+      "portrait": "assets/heroes/yu-zhong/portrait.webp",
+      "artwork": "assets/heroes/yu-zhong/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "yve",
+      "name": "Yve",
+      "roles": [
+        "Mage"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/yve/portrait.webp",
+      "artwork": "assets/heroes/yve/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "zetian",
+      "name": "Zetian",
+      "roles": [
+        "Mage"
+      ],
+      "specialty": [
+        "Burst",
+        "Poke"
+      ],
+      "portrait": "assets/heroes/zetian/portrait.webp",
+      "artwork": "assets/heroes/zetian/artwork.webp",
+      "addedAt": "2025-12-01"
+    },
+    {
+      "id": "zhask",
+      "name": "Zhask",
+      "roles": [
+        "Mage"
+      ],
+      "specialty": [
+        "Magic Damage",
+        "Burst"
+      ],
+      "portrait": "assets/heroes/zhask/portrait.webp",
+      "artwork": "assets/heroes/zhask/artwork.webp",
+      "addedAt": "2024-01-01"
+    },
+    {
+      "id": "zhuxin",
+      "name": "Zhuxin",
+      "roles": [
+        "Mage"
+      ],
+      "specialty": [
+        "Crowd Control",
+        "Magic Damage"
+      ],
+      "portrait": "assets/heroes/zhuxin/portrait.webp",
+      "artwork": "assets/heroes/zhuxin/artwork.webp",
+      "addedAt": "2025-11-01"
+    },
+    {
+      "id": "zilong",
+      "name": "Zilong",
+      "roles": [
+        "Assassin",
+        "Fighter"
+      ],
+      "specialty": [
+        "Burst",
+        "Chase"
+      ],
+      "portrait": "assets/heroes/zilong/portrait.webp",
+      "artwork": "assets/heroes/zilong/artwork.webp",
+      "addedAt": "2024-01-01"
+    }
+  ]
+}
