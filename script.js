@@ -1,58 +1,71 @@
 const $ = (id) => document.getElementById(id);
 
+const rarityOptions = ["Mythic", "Legend", "Epic", "Rare", "Collector", "Special"];
+const effectOptions = [
+  { id: "none", name: "None" },
+  { id: "glow", name: "Glow" },
+  { id: "scan", name: "Scan" },
+  { id: "particles", name: "Particles" }
+];
+const roleOptions = ["Assassin", "Fighter", "Marksman", "Jungler", "Mage", "Support", "Tank"];
+const roleHeroMap = {
+  Assassin: ["Aamon", "Alucard", "Arlott", "Benedetta", "Fanny", "Gusion", "Hanzo", "Harley", "Hayabusa", "Helcurt", "Hirara", "Joy", "Julian", "Kadita", "Karina", "Lancelot", "Lesley", "Ling", "Mathilda", "Natalia", "Nolan", "Paquito", "Saber", "Selena", "Sora", "Suyou", "Yi Sun-shin", "Yin", "Zilong"],
+  Fighter: ["Aldous", "Alpha", "Alucard", "Arlott", "Aulus", "Badang", "Balmond", "Bane", "Barats", "Chou", "Cici", "Dyrroth", "Fredrinn", "Freya", "Gatotkaca", "Grock", "Guinevere", "Hilda", "Jawhead", "Julian", "Kalea", "Khaleed", "Lapu-Lapu", "Leomord", "Lukas", "Martis", "Masha", "Minsitthar", "Paquito", "Phoveus", "Roger", "Ruby", "Silvanna", "Sora", "Sun", "Suyou", "Terizla", "Thamuz", "X.Borg", "Yin", "Yu Zhong", "Zilong"],
+  Marksman: ["Beatrix", "Brody", "Bruno", "Claude", "Clint", "Edith", "Granger", "Hanabi", "Irithel", "Ixia", "Karrie", "Kimmy", "Layla", "Lesley", "Melissa", "Miya", "Moskov", "Natan", "Obsidia", "Popol and Kupa", "Roger", "Wanwan", "Yi Sun-shin"],
+  Jungler: ["Aamon", "Alucard", "Balmond", "Fanny", "Fredrinn", "Gusion", "Hanzo", "Harley", "Hayabusa", "Helcurt", "Julian", "Karina", "Lancelot", "Ling", "Nolan", "Paquito", "Roger", "Saber", "Suyou", "Yi Sun-shin", "Yin"],
+  Mage: ["Alice", "Bane", "Cecilion", "Chang'e", "Cyclops", "Eudora", "Esmeralda", "Faramis", "Gord", "Harley", "Harith", "Kadita", "Kagura", "Kimmy", "Lunox", "Luo Yi", "Lylia", "Nana", "Novaria", "Odette", "Pharsa", "Selena", "Valentina", "Valir", "Vexana", "Xavier", "Yve", "Zetian", "Zhask", "Zhuxin"],
+  Support: ["Angela", "Carmilla", "Chip", "Diggie", "Estes", "Faramis", "Floryn", "Johnson", "Kaja", "Kalea", "Lolita", "Marcel", "Mathilda", "Minotaur", "Rafaela"],
+  Tank: ["Alice", "Atlas", "Barats", "Baxia", "Belerick", "Carmilla", "Chip", "Edith", "Esmeralda", "Fredrinn", "Franco", "Gatotkaca", "Gloo", "Grock", "Hilda", "Hylos", "Johnson", "Khufra", "Lolita", "Masha", "Minotaur", "Terizla", "Tigreal", "Uranus"]
+};
+const defaultSkinTemplate = {
+  id: "default-skin",
+  name: "Default Skin",
+  rarity: "Special",
+  colors: ["#9e89ff", "#ffffff", "#7456ff"]
+};
+
 const fallbackManifest = {
   version: 3,
-  titles: ["Assassin Main", "Mythic Grinder", "Collector Hunter", "Rank Demon", "Savage Farmer"],
-  ranks: ["MYTHIC GLORY", "MYTHICAL IMMORTAL", "MYTHIC", "LEGEND", "EPIC"],
+  titles: ["Assassin Hunter", "Marksman Sharpshooter", "Fighter Warbringer", "Mage Arcanist", "Tank Juggernaut", "Support Celestial", "Assassin Main", "Fighter Main", "Marksman Main", "Jungler Main", "Mage Main", "Support Main", "Tanker Main"],
+  ranks: ["MYTHIC GLORY", "MYTHICAL IMMORTAL", "MYTHIC", "LEGEND", "EPIC", "GRAND MASTER", "MASTER"],
   backgrounds: [
-    {
-      id: "starlight",
-      name: "Starlight Rift",
-      accent: "#f3c969",
-      style: "radial-gradient(circle at 72% 18%,rgba(255,255,255,.26),transparent 20%),linear-gradient(145deg,#173761 0%,#0b1321 52%,#613117 100%)"
-    },
-    {
-      id: "neon",
-      name: "Neon District",
-      accent: "#ff77c8",
-      style: "radial-gradient(circle at 72% 20%,rgba(255,255,255,.28),transparent 18%),linear-gradient(150deg,#401955 0%,#0c1323 55%,#2d6a6d 100%)"
-    },
-    {
-      id: "jade",
-      name: "Jade Temple",
-      accent: "#74f0b3",
-      style: "radial-gradient(circle at 68% 18%,rgba(255,255,255,.24),transparent 22%),linear-gradient(145deg,#173f48 0%,#0b1321 56%,#2c6135 100%)"
-    },
-    {
-      id: "ember",
-      name: "Ember Throne",
-      accent: "#ff9c67",
-      style: "radial-gradient(circle at 74% 20%,rgba(255,255,255,.22),transparent 18%),linear-gradient(145deg,#482719 0%,#0b1321 54%,#6c2222 100%)"
-    }
+    { id: "starlight", name: "Starlight Rift", accent: "#f3c969", colors: ["#173761", "#0b1321", "#613117"], style: "radial-gradient(circle at 72% 18%,rgba(255,255,255,.26),transparent 20%),linear-gradient(145deg,#173761 0%,#0b1321 52%,#613117 100%)" },
+    { id: "neon", name: "Neon District", accent: "#ff77c8", colors: ["#401955", "#0c1323", "#2d6a6d"], style: "radial-gradient(circle at 72% 20%,rgba(255,255,255,.28),transparent 18%),linear-gradient(150deg,#401955 0%,#0c1323 55%,#2d6a6d 100%)" },
+    { id: "jade", name: "Jade Temple", accent: "#74f0b3", colors: ["#173f48", "#0b1321", "#2c6135"], style: "radial-gradient(circle at 68% 18%,rgba(255,255,255,.24),transparent 22%),linear-gradient(145deg,#173f48 0%,#0b1321 56%,#2c6135 100%)" },
+    { id: "ember", name: "Ember Throne", accent: "#ff9c67", colors: ["#482719", "#0b1321", "#6c2222"], style: "radial-gradient(circle at 74% 20%,rgba(255,255,255,.22),transparent 18%),linear-gradient(145deg,#482719 0%,#0b1321 54%,#6c2222 100%)" },
+    { id: "aurora", name: "Aurora Pulse", accent: "#7de3ff", colors: ["#1b3661", "#09131f", "#1b5b74"], style: "radial-gradient(circle at 70% 18%,rgba(255,255,255,.28),transparent 18%),linear-gradient(145deg,#1b3661 0%,#09131f 54%,#1b5b74 100%)" },
+    { id: "sunset", name: "Sunset Forge", accent: "#ffb36b", colors: ["#6a2f1d", "#1b1320", "#b6572f"], style: "radial-gradient(circle at 72% 20%,rgba(255,255,255,.24),transparent 18%),linear-gradient(145deg,#6a2f1d 0%,#1b1320 52%,#b6572f 100%)" }
   ],
   frames: [
-    { id: "royal", name: "Royal Gold", color: "#f3c969" },
-    { id: "frost", name: "Frost", color: "#9cd9ff" },
-    { id: "void", name: "Void", color: "#ca95ff" },
-    { id: "crimson", name: "Crimson", color: "#ff8b8b" },
-    { id: "emerald", name: "Emerald", color: "#82f1b8" },
-    { id: "pearl", name: "Pearl", color: "#f4f5ff" }
+    { id: "royal", name: "Royal Gold", styleType: "solid", primary: "#f3c969", secondary: "#f3c969" },
+    { id: "frost", name: "Frost", styleType: "gradient", primary: "#9cd9ff", secondary: "#e8f8ff" },
+    { id: "void", name: "Void", styleType: "gradient", primary: "#ca95ff", secondary: "#7f5cff" },
+    { id: "crimson", name: "Crimson", styleType: "gradient", primary: "#ff8b8b", secondary: "#ffb774" },
+    { id: "emerald", name: "Emerald", styleType: "gradient", primary: "#82f1b8", secondary: "#3de2ff" },
+    { id: "pearl", name: "Pearl", styleType: "solid", primary: "#f4f5ff", secondary: "#f4f5ff" }
   ],
   emblems: [
-    { id: "burst", name: "Burst", token: "Burst" },
-    { id: "assassin", name: "Assassin", token: "Assassin" },
-    { id: "mage", name: "Mage", token: "Mage" },
-    { id: "marksman", name: "Marksman", token: "MM" },
-    { id: "tank", name: "Tank", token: "Tank" },
-    { id: "support", name: "Support", token: "Support" }
+    { id: "best-carry", name: "Best Carry", token: "Best Carry" },
+    { id: "best-initiator", name: "Best Initiator", token: "Best Initiator" },
+    { id: "best-finisher", name: "Best Finisher", token: "Best Finisher" },
+    { id: "best-roamer", name: "Best Roamer", token: "Best Roamer" },
+    { id: "best-jungler", name: "Best Jungler", token: "Best Jungler" },
+    { id: "best-laner", name: "Best Laner", token: "Best Laner" },
+    { id: "best-tanker", name: "Best Tanker", token: "Best Tanker" },
+    { id: "best-damage-dealer", name: "Best Damage Dealer", token: "Best Damage Dealer" },
+    { id: "best-burst", name: "Best Burst", token: "Best Burst" },
+    { id: "best-dps", name: "Best DPS", token: "Best DPS" },
+    { id: "best-assassin", name: "Best Assassin", token: "Best Assassin" },
+    { id: "best-duelist", name: "Best Duelist", token: "Best Duelist" },
+    { id: "best-pusher", name: "Best Pusher", token: "Best Pusher" }
   ],
   badges: [
     { id: "mvp", name: "MVP" },
+    { id: "legendary", name: "Legendary" },
     { id: "savage", name: "Savage" },
-    { id: "legend", name: "Legend" },
-    { id: "goat", name: "GOAT" },
-    { id: "clutch", name: "Clutch" },
-    { id: "og", name: "OG" }
+    { id: "comeback-king", name: "Comeback King" },
+    { id: "victory-maker", name: "Victory Maker" },
+    { id: "godlike", name: "Godlike" }
   ],
   heroes: [
     {
@@ -60,9 +73,9 @@ const fallbackManifest = {
       name: "Gusion",
       style: "radial-gradient(circle at 56% 45%,rgba(116,86,255,.95),transparent 34%),linear-gradient(135deg,transparent 20%,rgba(255,255,255,.32) 43%,transparent 56%),linear-gradient(160deg,rgba(255,255,255,.15),rgba(255,255,255,0) 34%)",
       skins: [
-        { id: "cosmic-gleam", name: "Cosmic Gleam", rarity: "Legend", style: "radial-gradient(circle at 58% 42%,rgba(158,137,255,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.36) 43%,transparent 56%)" },
-        { id: "deaths-scythe", name: "Death's Scythe", rarity: "Epic", style: "radial-gradient(circle at 58% 42%,rgba(124,211,255,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.34) 43%,transparent 56%)" },
-        { id: "venom", name: "Venom", rarity: "Special", style: "radial-gradient(circle at 58% 42%,rgba(87,255,160,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.3) 43%,transparent 56%)" }
+        { id: "cosmic-gleam", name: "Cosmic Gleam", rarity: "Mythic", colors: ["#9e89ff", "#ffffff", "#7456ff"], style: "radial-gradient(circle at 58% 42%,rgba(158,137,255,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.36) 43%,transparent 56%)" },
+        { id: "deaths-scythe", name: "Death's Scythe", rarity: "Epic", colors: ["#7cd3ff", "#ffffff", "#5ca9ff"], style: "radial-gradient(circle at 58% 42%,rgba(124,211,255,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.34) 43%,transparent 56%)" },
+        { id: "venom", name: "Venom", rarity: "Rare", colors: ["#57ffa0", "#effff7", "#2dd47d"], style: "radial-gradient(circle at 58% 42%,rgba(87,255,160,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.3) 43%,transparent 56%)" }
       ]
     },
     {
@@ -70,8 +83,8 @@ const fallbackManifest = {
       name: "Fanny",
       style: "radial-gradient(circle at 56% 45%,rgba(105,241,255,.95),transparent 34%),linear-gradient(135deg,transparent 20%,rgba(255,255,255,.28) 43%,transparent 56%),linear-gradient(160deg,rgba(255,255,255,.15),rgba(255,255,255,0) 34%)",
       skins: [
-        { id: "galactic-starhawk", name: "Galactic Starhawk", rarity: "Epic", style: "radial-gradient(circle at 58% 42%,rgba(120,235,255,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.38) 43%,transparent 56%)" },
-        { id: "blade-of-kibou", name: "Blade of Kibou", rarity: "Collector", style: "radial-gradient(circle at 58% 42%,rgba(255,201,120,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.35) 43%,transparent 56%)" }
+        { id: "galactic-starhawk", name: "Galactic Starhawk", rarity: "Epic", colors: ["#78ebff", "#eefeff", "#38c2ff"], style: "radial-gradient(circle at 58% 42%,rgba(120,235,255,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.38) 43%,transparent 56%)" },
+        { id: "blade-of-kibou", name: "Blade of Kibou", rarity: "Mythic", colors: ["#ffc978", "#fff5de", "#ff8a64"], style: "radial-gradient(circle at 58% 42%,rgba(255,201,120,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.35) 43%,transparent 56%)" }
       ]
     },
     {
@@ -79,34 +92,47 @@ const fallbackManifest = {
       name: "Ling",
       style: "radial-gradient(circle at 56% 45%,rgba(197,223,255,.95),transparent 34%),linear-gradient(135deg,transparent 20%,rgba(255,255,255,.3) 43%,transparent 56%),linear-gradient(160deg,rgba(255,255,255,.15),rgba(255,255,255,0) 34%)",
       skins: [
-        { id: "night-shade", name: "Night Shade", rarity: "Epic", style: "radial-gradient(circle at 58% 42%,rgba(223,230,255,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.33) 43%,transparent 56%)" },
-        { id: "lord-shen", name: "Lord Shen", rarity: "Collector", style: "radial-gradient(circle at 58% 42%,rgba(255,196,111,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.36) 43%,transparent 56%)" }
+        { id: "night-shade", name: "Night Shade", rarity: "Epic", colors: ["#dfe6ff", "#ffffff", "#8db3ff"], style: "radial-gradient(circle at 58% 42%,rgba(223,230,255,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.33) 43%,transparent 56%)" },
+        { id: "lord-shen", name: "Lord Shen", rarity: "Rare", colors: ["#ffc46f", "#fff7ea", "#ff9c42"], style: "radial-gradient(circle at 58% 42%,rgba(255,196,111,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.36) 43%,transparent 56%)" }
       ]
     }
   ]
 };
 
 const presets = {
-  mythic: { rank: "MYTHIC GLORY", title: "Mythic Grinder", wr: 87, matches: 2431, mvp: 318, savage: 27, legendary: 501, effect: "glow", background: "starlight", frame: "royal", badge: "mvp", emblem: "burst" },
-  collector: { rank: "MYTHICAL IMMORTAL", title: "Collector Hunter", wr: 92, matches: 1732, mvp: 402, savage: 33, legendary: 622, effect: "particles", background: "neon", frame: "void", badge: "legend", emblem: "assassin" },
-  og: { rank: "LEGEND", title: "OG", wr: 74, matches: 5210, mvp: 260, savage: 14, legendary: 844, effect: "scan", background: "jade", frame: "frost", badge: "og", emblem: "marksman" },
-  whale: { rank: "MYTHICAL IMMORTAL", title: "Whale Energy", wr: 96, matches: 3611, mvp: 701, savage: 49, legendary: 1182, effect: "glow", background: "ember", frame: "royal", badge: "goat", emblem: "mage" }
+  mythic: { rank: "MYTHIC GLORY", title: "Mythic Grinder", wr: 87, matches: 2431, mvp: 318, savage: 27, legendary: 501, effect: "glow", background: "starlight", frame: "royal", badge: "mvp", emblem: "best-carry" },
+  collector: { rank: "MYTHICAL IMMORTAL", title: "Collector Hunter", wr: 92, matches: 1732, mvp: 402, savage: 33, legendary: 622, effect: "particles", background: "neon", frame: "void", badge: "legendary", emblem: "best-assassin" },
+  og: { rank: "LEGEND", title: "OG", wr: 74, matches: 5210, mvp: 260, savage: 14, legendary: 844, effect: "scan", background: "jade", frame: "frost", badge: "victory-maker", emblem: "best-roamer" },
+  whale: { rank: "MYTHICAL IMMORTAL", title: "Whale Energy", wr: 96, matches: 3611, mvp: 701, savage: 49, legendary: 1182, effect: "glow", background: "ember", frame: "royal", badge: "godlike", emblem: "best-damage-dealer" }
 };
 
 const state = {
   manifest: fallbackManifest,
   apiStatus: null,
   selections: {
+    role: "Assassin",
     heroId: fallbackManifest.heroes[0].id,
     skinId: fallbackManifest.heroes[0].skins[0].id,
+    rarity: fallbackManifest.heroes[0].skins[0].rarity,
     backgroundId: fallbackManifest.backgrounds[0].id,
     frameId: fallbackManifest.frames[0].id,
+    frameStyle: fallbackManifest.frames[0].styleType,
     emblemId: fallbackManifest.emblems[0].id,
     badgeId: fallbackManifest.badges[0].id,
     effect: "none",
     title: fallbackManifest.titles[0],
     rank: fallbackManifest.ranks[0],
     mode: "story"
+  },
+  custom: {
+    skinPrimary: fallbackManifest.heroes[0].skins[0].colors[0],
+    skinSecondary: fallbackManifest.heroes[0].skins[0].colors[1],
+    skinGlow: fallbackManifest.heroes[0].skins[0].colors[2],
+    bgPrimary: fallbackManifest.backgrounds[0].colors[0],
+    bgSecondary: fallbackManifest.backgrounds[0].colors[1],
+    bgAccent: fallbackManifest.backgrounds[0].colors[2],
+    framePrimary: fallbackManifest.frames[0].primary,
+    frameSecondary: fallbackManifest.frames[0].secondary
   },
   layers: {
     avatar: { x: 0, y: 0, scale: 100, rotate: 0 },
@@ -117,12 +143,19 @@ const state = {
 
 const refs = {};
 let uiWired = false;
+const cardTiltState = { rotateX: 0, rotateY: 0 };
+
+function getBackgroundOptions() {
+  return [...state.manifest.backgrounds, { id: "custom", name: "Custom Blend", accent: refs.accent?.value || "#f3c969" }];
+}
+
+function getFrameOptions() {
+  return [...state.manifest.frames, { id: "custom", name: "Custom Frame", styleType: state.selections.frameStyle, primary: state.custom.framePrimary, secondary: state.custom.frameSecondary }];
+}
 
 async function fetchLocalManifest() {
   try {
-    const response = await fetch("manifest.json", {
-      headers: { Accept: "application/json" }
-    });
+    const response = await fetch("manifest.json", { headers: { Accept: "application/json" } });
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }
@@ -134,14 +167,15 @@ async function fetchLocalManifest() {
 
 function cacheRefs() {
   [
-    "ign", "pid", "server", "bio", "title", "rank", "photo", "hero", "skin", "rarity", "backgrounds",
-    "frames", "emblems", "badges", "activeLayer", "layerScale", "layerRotate", "accent", "mode",
-    "wr", "matches", "mvp", "savage", "legendary", "emblemLevel", "resetLayout", "presetBtn", "randomBtn",
-    "copyBtn", "exportBtn", "closeModal", "modal", "card", "backgroundLayer", "heroArt", "avatarImg",
-    "frameOut", "badgeOut", "ignOut", "pidOut", "serverOut", "bioOut", "titleOut", "rankOut", "heroOut",
-    "skinOut", "rarityOut", "emblemOut", "wrOut", "matchesOut", "mvpOut", "savageOut", "legendaryOut",
-    "emblemLevelOut", "modeOut", "dragHint", "heroLayer", "avatarLayer", "apiBadge", "apiStatusText",
-    "apiSourceText", "refreshApiBtn"
+    "ign", "pid", "server", "bio", "title", "rank", "photo", "role", "hero", "skin", "rarity", "backgrounds",
+    "frames", "activeLayer", "layerScale", "layerRotate", "accent", "mode", "wr", "matches", "mvp",
+    "savage", "legendary", "emblemLevel", "resetLayout", "presetBtn", "randomBtn", "copyBtn", "exportBtn",
+    "closeModal", "modal", "card", "backgroundLayer", "heroArt", "avatarImg", "frameOut", "badgeOut", "ignOut",
+    "pidOut", "serverOut", "bioOut", "titleOut", "rankOut", "heroOut", "skinOut", "rarityOut", "emblemOut",
+    "wrOut", "matchesOut", "mvpOut", "savageOut", "legendaryOut", "emblemLevelOut", "modeOut", "dragHint",
+    "heroLayer", "avatarLayer", "apiBadge", "apiStatusText", "apiSourceText", "refreshApiBtn", "skinColorPrimary",
+    "skinColorSecondary", "skinColorGlow", "bgColorPrimary", "bgColorSecondary", "bgColorAccent", "frameStyle",
+    "frameColorPrimary", "frameColorSecondary", "emblem", "badge", "effect"
   ].forEach((id) => {
     refs[id] = $(id);
   });
@@ -157,6 +191,55 @@ function fillSelect(select, values, valueGetter = (item) => item, labelGetter = 
   });
 }
 
+function slugifyName(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function getRoleLabel(role) {
+  return role === "Tank" ? "Tanker" : role;
+}
+
+function buildHeroRoleIndex() {
+  const index = {};
+  Object.entries(roleHeroMap).forEach(([role, heroes]) => {
+    heroes.forEach((heroName) => {
+      const key = slugifyName(heroName);
+      index[key] = index[key] || [];
+      if (!index[key].includes(role)) {
+        index[key].push(role);
+      }
+    });
+  });
+  return index;
+}
+
+const heroRoleIndex = buildHeroRoleIndex();
+
+function createPlaceholderHero(name, roles = []) {
+  return {
+    id: slugifyName(name),
+    name,
+    roles,
+    style: "radial-gradient(circle at 56% 45%,rgba(116,86,255,.95),transparent 34%),linear-gradient(135deg,transparent 20%,rgba(255,255,255,.32) 43%,transparent 56%),linear-gradient(160deg,rgba(255,255,255,.15),rgba(255,255,255,0) 34%)",
+    skins: [
+      {
+        ...defaultSkinTemplate,
+        id: `${slugifyName(name)}-default-skin`
+      }
+    ]
+  };
+}
+
+function getHeroesForRole(role = state.selections.role) {
+  const roleKey = roleOptions.includes(role) ? role : roleOptions[0];
+  const heroIds = new Set((roleHeroMap[roleKey] || []).map(slugifyName));
+  const heroes = state.manifest.heroes.filter((hero) => heroIds.has(hero.id));
+  return heroes.length ? heroes : state.manifest.heroes;
+}
+
 function getHero() {
   return state.manifest.heroes.find((hero) => hero.id === state.selections.heroId) || state.manifest.heroes[0];
 }
@@ -170,8 +253,37 @@ function getItem(listName, id) {
   return state.manifest[listName].find((item) => item.id === id) || state.manifest[listName][0];
 }
 
+function getSelectedFrame() {
+  return state.selections.frameId === "custom"
+    ? { id: "custom", name: "Custom Frame", styleType: state.selections.frameStyle, primary: state.custom.framePrimary, secondary: state.custom.frameSecondary }
+    : getItem("frames", state.selections.frameId);
+}
+
+function getSelectedBackground() {
+  return state.selections.backgroundId === "custom"
+    ? { id: "custom", name: "Custom Blend", accent: refs.accent.value, colors: [state.custom.bgPrimary, state.custom.bgSecondary, state.custom.bgAccent] }
+    : getItem("backgrounds", state.selections.backgroundId);
+}
+
+function normalizeFrame(frame) {
+  return {
+    ...frame,
+    styleType: frame.styleType || "solid",
+    primary: frame.primary || frame.color || "#f3c969",
+    secondary: frame.secondary || frame.color || frame.primary || "#f3c969"
+  };
+}
+
+function normalizeSkin(skin) {
+  return {
+    ...skin,
+    rarity: skin.rarity || "Epic",
+    colors: skin.colors?.length ? skin.colors : ["#9e89ff", "#ffffff", "#7456ff"]
+  };
+}
+
 function ensureSelectionsValid() {
-  if (!state.manifest.heroes.length) {
+  if (!state.manifest.heroes?.length) {
     state.manifest.heroes = fallbackManifest.heroes;
   }
   if (!state.manifest.backgrounds?.length) {
@@ -193,72 +305,202 @@ function ensureSelectionsValid() {
     state.manifest.ranks = fallbackManifest.ranks;
   }
 
-  if (!state.manifest.heroes.some((hero) => hero.id === state.selections.heroId)) {
-    state.selections.heroId = state.manifest.heroes[0].id;
+  state.manifest.frames = state.manifest.frames.map(normalizeFrame);
+  state.manifest.titles = Array.from(new Set([
+    ...state.manifest.titles,
+    ...roleOptions.map((role) => `${getRoleLabel(role)} Main`)
+  ]));
+  state.manifest.heroes = state.manifest.heroes.map((hero) => ({
+    ...hero,
+    roles: hero.roles?.length ? hero.roles : heroRoleIndex[hero.id] || [],
+    skins: (hero.skins?.length ? hero.skins : fallbackManifest.heroes[0].skins).map(normalizeSkin)
+  }));
+
+  Object.entries(roleHeroMap).forEach(([role, heroNames]) => {
+    heroNames.forEach((heroName) => {
+      const heroId = slugifyName(heroName);
+      if (!state.manifest.heroes.some((hero) => hero.id === heroId)) {
+        state.manifest.heroes.push(createPlaceholderHero(heroName, heroRoleIndex[heroId] || [role]));
+      }
+    });
+  });
+
+  state.manifest.heroes.sort((a, b) => a.name.localeCompare(b.name));
+
+  if (!roleOptions.includes(state.selections.role)) {
+    state.selections.role = roleOptions[0];
+  }
+
+  const heroesForRole = getHeroesForRole(state.selections.role);
+
+  if (!heroesForRole.some((hero) => hero.id === state.selections.heroId)) {
+    state.selections.heroId = heroesForRole[0]?.id || state.manifest.heroes[0].id;
   }
 
   const hero = getHero();
-  if (!hero.skins.length) {
-    hero.skins = [{ id: "core", name: "Core", rarity: "Base", style: fallbackManifest.heroes[0].skins[0].style }];
-  }
   if (!hero.skins.some((skin) => skin.id === state.selections.skinId)) {
     state.selections.skinId = hero.skins[0].id;
   }
 
-  ["backgrounds", "frames", "emblems", "badges"].forEach((listName) => {
-    const key = `${listName.slice(0, -1)}Id`;
-    if (!state.manifest[listName].some((item) => item.id === state.selections[key])) {
-      state.selections[key] = state.manifest[listName][0].id;
-    }
-  });
-
+  if (!getBackgroundOptions().some((item) => item.id === state.selections.backgroundId)) {
+    state.selections.backgroundId = state.manifest.backgrounds[0].id;
+  }
+  if (!getFrameOptions().some((item) => item.id === state.selections.frameId)) {
+    state.selections.frameId = state.manifest.frames[0].id;
+  }
+  if (!state.manifest.emblems.some((item) => item.id === state.selections.emblemId)) {
+    state.selections.emblemId = state.manifest.emblems[0].id;
+  }
+  if (!state.manifest.badges.some((item) => item.id === state.selections.badgeId)) {
+    state.selections.badgeId = state.manifest.badges[0].id;
+  }
+  if (!effectOptions.some((item) => item.id === state.selections.effect)) {
+    state.selections.effect = "none";
+  }
   if (!state.manifest.titles.includes(state.selections.title)) {
     state.selections.title = state.manifest.titles[0];
   }
   if (!state.manifest.ranks.includes(state.selections.rank)) {
     state.selections.rank = state.manifest.ranks[0];
   }
+  if (!rarityOptions.includes(state.selections.rarity)) {
+    state.selections.rarity = normalizeSkin(getSkin()).rarity;
+  }
+}
+
+function syncSkinCustomizationFromSkin() {
+  const skin = normalizeSkin(getSkin());
+  state.selections.rarity = skin.rarity;
+  state.custom.skinPrimary = skin.colors[0];
+  state.custom.skinSecondary = skin.colors[1];
+  state.custom.skinGlow = skin.colors[2];
+  refs.skinColorPrimary.value = state.custom.skinPrimary;
+  refs.skinColorSecondary.value = state.custom.skinSecondary;
+  refs.skinColorGlow.value = state.custom.skinGlow;
+  refs.rarity.value = state.selections.rarity;
+}
+
+function syncBackgroundCustomization(backgroundId = state.selections.backgroundId) {
+  if (backgroundId === "custom") {
+    return;
+  }
+  const background = getItem("backgrounds", backgroundId);
+  if (background.colors?.length) {
+    [state.custom.bgPrimary, state.custom.bgSecondary, state.custom.bgAccent] = background.colors;
+    refs.bgColorPrimary.value = state.custom.bgPrimary;
+    refs.bgColorSecondary.value = state.custom.bgSecondary;
+    refs.bgColorAccent.value = state.custom.bgAccent;
+  }
+}
+
+function syncFrameCustomization(frameId = state.selections.frameId) {
+  if (frameId === "custom") {
+    return;
+  }
+  const frame = normalizeFrame(getItem("frames", frameId));
+  state.selections.frameStyle = frame.styleType;
+  state.custom.framePrimary = frame.primary;
+  state.custom.frameSecondary = frame.secondary;
+  refs.frameStyle.value = state.selections.frameStyle;
+  refs.frameColorPrimary.value = state.custom.framePrimary;
+  refs.frameColorSecondary.value = state.custom.frameSecondary;
+}
+
+function buildBackgroundStyle(background) {
+  if (background.id !== "custom" && background.style) {
+    return background.style;
+  }
+  return [
+    `radial-gradient(circle at 72% 18%, ${hexToRgba(state.custom.bgAccent, 0.42)}, transparent 22%)`,
+    `linear-gradient(145deg, ${state.custom.bgPrimary} 0%, ${state.custom.bgSecondary} 52%, ${state.custom.bgAccent} 100%)`
+  ].join(",");
+}
+
+function buildSkinStyle() {
+  return [
+    `radial-gradient(circle at 58% 42%, ${hexToRgba(state.custom.skinGlow, 1)}, transparent 34%)`,
+    `linear-gradient(125deg, transparent 18%, ${hexToRgba(state.custom.skinSecondary, 0.38)} 43%, transparent 56%)`,
+    `linear-gradient(160deg, ${hexToRgba(state.custom.skinSecondary, 0.18)}, rgba(255,255,255,0) 34%)`,
+    `radial-gradient(circle at 54% 48%, ${hexToRgba(state.custom.skinPrimary, 0.98)}, transparent 36%)`
+  ].join(",");
+}
+
+function buildFrameCss(frame) {
+  const normalized = normalizeFrame(frame);
+  const frameFill = normalized.styleType === "gradient"
+    ? `linear-gradient(135deg, ${normalized.primary}, ${normalized.secondary})`
+    : normalized.primary;
+  const frameShadowColor = normalized.styleType === "gradient" ? normalized.secondary : normalized.primary;
+
+  return {
+    fill: frameFill,
+    shadow: frameShadowColor
+  };
+}
+
+function hexToRgba(hex, alpha) {
+  const value = hex.replace("#", "");
+  const normalized = value.length === 3 ? value.split("").map((char) => char + char).join("") : value;
+  const int = parseInt(normalized, 16);
+  const r = (int >> 16) & 255;
+  const g = (int >> 8) & 255;
+  const b = int & 255;
+  return `rgba(${r},${g},${b},${alpha})`;
 }
 
 function paintControls() {
   fillSelect(refs.title, state.manifest.titles);
   fillSelect(refs.rank, state.manifest.ranks);
-  fillSelect(refs.hero, state.manifest.heroes, (hero) => hero.id, (hero) => hero.name);
+  fillSelect(refs.role, roleOptions, (role) => role, (role) => getRoleLabel(role));
+  fillSelect(refs.hero, getHeroesForRole(), (hero) => hero.id, (hero) => hero.name);
+  fillSelect(refs.rarity, rarityOptions);
+  fillSelect(refs.emblem, state.manifest.emblems, (item) => item.id, (item) => item.name);
+  fillSelect(refs.badge, state.manifest.badges, (item) => item.id, (item) => item.name);
+  fillSelect(refs.effect, effectOptions, (item) => item.id, (item) => item.name);
 
   refs.title.value = state.selections.title;
   refs.rank.value = state.selections.rank;
+  refs.role.value = state.selections.role;
   refs.hero.value = state.selections.heroId;
+  refs.rarity.value = state.selections.rarity;
+  refs.emblem.value = state.selections.emblemId;
+  refs.badge.value = state.selections.badgeId;
+  refs.effect.value = state.selections.effect;
+  refs.frameStyle.value = state.selections.frameStyle;
+
   paintSkinSelect();
-  paintSwatches("backgrounds", state.manifest.backgrounds, state.selections.backgroundId, (item) => {
+  paintSwatches("backgrounds", getBackgroundOptions(), state.selections.backgroundId, (item) => {
     state.selections.backgroundId = item.id;
+    syncBackgroundCustomization(item.id);
     refs.accent.value = item.accent || refs.accent.value;
     render();
+    paintControls();
   }, (button, item) => {
-    button.style.background = item.style;
+    const style = item.id === "custom"
+      ? buildBackgroundStyle(item)
+      : item.style;
+    button.style.background = style;
     button.innerHTML = `<span>${item.name}</span>`;
   });
-  paintSwatches("frames", state.manifest.frames, state.selections.frameId, (item) => {
+  paintSwatches("frames", getFrameOptions(), state.selections.frameId, (item) => {
     state.selections.frameId = item.id;
+    syncFrameCustomization(item.id);
     render();
+    paintControls();
   }, (button, item) => {
-    button.style.background = `radial-gradient(circle,#0f1726 40%,${item.color} 44%,transparent 58%), linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.02))`;
+    const frame = item.id === "custom" ? item : normalizeFrame(item);
+    const fill = frame.styleType === "gradient"
+      ? `linear-gradient(135deg, ${frame.primary}, ${frame.secondary})`
+      : frame.primary;
+    button.style.background = `radial-gradient(circle,#0f1726 38%, transparent 39%), ${fill}`;
     button.innerHTML = `<span>${item.name}</span>`;
   });
-  paintTokens("emblems", state.manifest.emblems, state.selections.emblemId, (item) => {
-    state.selections.emblemId = item.id;
-    render();
-  }, (item) => item.token);
-  paintTokens("badges", state.manifest.badges, state.selections.badgeId, (item) => {
-    state.selections.badgeId = item.id;
-    render();
-  }, (item) => item.name);
 }
 
 function paintSkinSelect() {
   const hero = getHero();
   fillSelect(refs.skin, hero.skins, (skin) => skin.id, (skin) => skin.name);
   refs.skin.value = state.selections.skinId;
-  refs.rarity.value = getSkin().rarity || "Unknown";
 }
 
 function paintSwatches(containerId, items, selectedId, onPick, painter) {
@@ -269,26 +511,7 @@ function paintSwatches(containerId, items, selectedId, onPick, painter) {
     button.className = `swatch${item.id === selectedId ? " active" : ""}`;
     button.type = "button";
     painter(button, item);
-    button.addEventListener("click", () => {
-      onPick(item);
-      paintControls();
-    });
-    container.appendChild(button);
-  });
-}
-
-function paintTokens(containerId, items, selectedId, onPick, labelFn) {
-  const container = refs[containerId];
-  container.innerHTML = "";
-  items.forEach((item) => {
-    const button = document.createElement("button");
-    button.className = `token${item.id === selectedId ? " active" : ""}`;
-    button.type = "button";
-    button.textContent = labelFn(item);
-    button.addEventListener("click", () => {
-      onPick(item);
-      paintControls();
-    });
+    button.addEventListener("click", () => onPick(item));
     container.appendChild(button);
   });
 }
@@ -326,22 +549,23 @@ function updateApiStatus(status) {
 }
 
 function render() {
-  const background = getItem("backgrounds", state.selections.backgroundId);
-  const frame = getItem("frames", state.selections.frameId);
+  const background = getSelectedBackground();
+  const frame = getSelectedFrame();
+  const frameCss = buildFrameCss(frame);
   const emblem = getItem("emblems", state.selections.emblemId);
   const badge = getItem("badges", state.selections.badgeId);
   const hero = getHero();
-  const skin = getSkin();
 
-  refs.backgroundLayer.style.background = background.style;
+  refs.backgroundLayer.style.background = buildBackgroundStyle(background);
   refs.card.style.setProperty("--accent", refs.accent.value);
-  refs.card.style.setProperty("--frame", frame.color);
+  refs.card.style.setProperty("--frame", frameCss.shadow);
   refs.card.className = `profile-card ratio-${state.selections.mode} effect-${state.selections.effect}`;
-  refs.heroArt.style.background = `${skin.style || ""}, ${hero.style || ""}`;
-  refs.frameOut.style.borderColor = frame.color;
-  refs.frameOut.style.boxShadow = `0 0 0 2px rgba(255,255,255,.18) inset, 0 0 30px ${frame.color}55`;
+  refs.heroArt.style.background = `${buildSkinStyle()}, ${hero.style || ""}`;
+  refs.frameOut.style.border = "4px solid transparent";
+  refs.frameOut.style.background = `linear-gradient(#09111d,#09111d) padding-box, ${frameCss.fill} border-box`;
+  refs.frameOut.style.boxShadow = `0 0 0 2px rgba(255,255,255,.18) inset, 0 0 30px ${hexToRgba(frameCss.shadow, 0.45)}`;
   refs.badgeOut.textContent = badge.name;
-  refs.badgeOut.style.background = `linear-gradient(135deg, ${frame.color}, ${refs.accent.value})`;
+  refs.badgeOut.style.background = `linear-gradient(135deg, ${frameCss.shadow}, ${refs.accent.value})`;
   refs.emblemOut.textContent = emblem.token || emblem.name;
 
   refs.ignOut.textContent = refs.ign.value || "PLAYER";
@@ -351,9 +575,9 @@ function render() {
   refs.titleOut.textContent = refs.title.value;
   refs.rankOut.textContent = refs.rank.value;
   refs.heroOut.textContent = hero.name.toUpperCase();
-  refs.skinOut.textContent = skin.name;
-  refs.rarityOut.textContent = String(skin.rarity || "Unknown").toUpperCase();
-  refs.rarity.value = skin.rarity || "Unknown";
+  refs.skinOut.textContent = refs.skin.options[refs.skin.selectedIndex]?.textContent || "Custom Skin";
+  refs.rarityOut.textContent = String(state.selections.rarity || "Unknown").toUpperCase();
+  refs.rarity.value = state.selections.rarity;
 
   refs.wrOut.textContent = `${Number(refs.wr.value || 0)}%`;
   refs.matchesOut.textContent = Number(refs.matches.value || 0).toLocaleString("en-US");
@@ -370,6 +594,28 @@ function render() {
 
   applyLayerTransform("avatar");
   applyLayerTransform("hero");
+}
+
+function updateCardTilt(clientX, clientY) {
+  const rect = refs.card.getBoundingClientRect();
+  const relativeX = (clientX - rect.left) / rect.width;
+  const relativeY = (clientY - rect.top) / rect.height;
+  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+  const centeredX = clamp((relativeX - 0.5) * 2, -1, 1);
+  const centeredY = clamp((relativeY - 0.5) * 2, -1, 1);
+
+  cardTiltState.rotateY = centeredX * 8;
+  cardTiltState.rotateX = centeredY * -8;
+
+  refs.card.style.setProperty("--card-rotate-x", `${cardTiltState.rotateX.toFixed(2)}deg`);
+  refs.card.style.setProperty("--card-rotate-y", `${cardTiltState.rotateY.toFixed(2)}deg`);
+}
+
+function resetCardTilt() {
+  cardTiltState.rotateX = 0;
+  cardTiltState.rotateY = 0;
+  refs.card.style.setProperty("--card-rotate-x", "0deg");
+  refs.card.style.setProperty("--card-rotate-y", "0deg");
 }
 
 function wireEvents() {
@@ -398,23 +644,88 @@ function wireEvents() {
     });
   });
 
+  refs.role.addEventListener("change", () => {
+    state.selections.role = refs.role.value;
+    const heroesForRole = getHeroesForRole();
+    state.selections.heroId = heroesForRole[0]?.id || state.manifest.heroes[0].id;
+    state.selections.skinId = getHero().skins[0].id;
+    syncSkinCustomizationFromSkin();
+    paintControls();
+    render();
+  });
+
   refs.hero.addEventListener("change", () => {
     state.selections.heroId = refs.hero.value;
-    ensureSelectionsValid();
-    paintSkinSelect();
+    state.selections.role = getHero().roles?.[0] || state.selections.role;
+    state.selections.skinId = getHero().skins[0].id;
+    syncSkinCustomizationFromSkin();
+    paintControls();
     render();
   });
 
   refs.skin.addEventListener("change", () => {
     state.selections.skinId = refs.skin.value;
+    syncSkinCustomizationFromSkin();
     render();
   });
 
-  document.querySelectorAll(".effect-row button").forEach((button) => {
-    button.addEventListener("click", () => {
-      document.querySelectorAll(".effect-row button").forEach((item) => item.classList.remove("active"));
-      button.classList.add("active");
-      state.selections.effect = button.dataset.effect;
+  refs.rarity.addEventListener("change", () => {
+    state.selections.rarity = refs.rarity.value;
+    render();
+  });
+
+  refs.emblem.addEventListener("change", () => {
+    state.selections.emblemId = refs.emblem.value;
+    render();
+  });
+
+  refs.badge.addEventListener("change", () => {
+    state.selections.badgeId = refs.badge.value;
+    render();
+  });
+
+  refs.effect.addEventListener("change", () => {
+    state.selections.effect = refs.effect.value;
+    render();
+  });
+
+  refs.skinColorPrimary.addEventListener("input", () => {
+    state.custom.skinPrimary = refs.skinColorPrimary.value;
+    render();
+  });
+  refs.skinColorSecondary.addEventListener("input", () => {
+    state.custom.skinSecondary = refs.skinColorSecondary.value;
+    render();
+  });
+  refs.skinColorGlow.addEventListener("input", () => {
+    state.custom.skinGlow = refs.skinColorGlow.value;
+    render();
+  });
+
+  ["bgColorPrimary", "bgColorSecondary", "bgColorAccent"].forEach((id) => {
+    refs[id].addEventListener("input", () => {
+      state.custom.bgPrimary = refs.bgColorPrimary.value;
+      state.custom.bgSecondary = refs.bgColorSecondary.value;
+      state.custom.bgAccent = refs.bgColorAccent.value;
+      state.selections.backgroundId = "custom";
+      paintControls();
+      render();
+    });
+  });
+
+  refs.frameStyle.addEventListener("change", () => {
+    state.selections.frameStyle = refs.frameStyle.value;
+    state.selections.frameId = "custom";
+    paintControls();
+    render();
+  });
+
+  ["frameColorPrimary", "frameColorSecondary"].forEach((id) => {
+    refs[id].addEventListener("input", () => {
+      state.custom.framePrimary = refs.frameColorPrimary.value;
+      state.custom.frameSecondary = refs.frameColorSecondary.value;
+      state.selections.frameId = "custom";
+      paintControls();
       render();
     });
   });
@@ -474,6 +785,16 @@ function wireEvents() {
   refs.copyBtn.addEventListener("click", copyConfig);
   refs.exportBtn.addEventListener("click", exportPNG);
   refs.refreshApiBtn.addEventListener("click", refreshApiData);
+  refs.card.addEventListener("mousemove", (event) => updateCardTilt(event.clientX, event.clientY));
+  refs.card.addEventListener("mouseleave", resetCardTilt);
+  refs.card.addEventListener("touchmove", (event) => {
+    const touch = event.touches?.[0];
+    if (touch) {
+      updateCardTilt(touch.clientX, touch.clientY);
+    }
+  }, { passive: true });
+  refs.card.addEventListener("touchend", resetCardTilt);
+  refs.card.addEventListener("touchcancel", resetCardTilt);
 
   enableDragging(refs.avatarLayer, "avatar");
   enableDragging(refs.heroLayer, "hero");
@@ -500,10 +821,10 @@ function applyPreset(name) {
   state.selections.badgeId = preset.badge;
   state.selections.emblemId = preset.emblem;
 
+  syncBackgroundCustomization(preset.background);
+  syncFrameCustomization(preset.frame);
+  state.selections.role = getHero().roles?.[0] || state.selections.role;
   refs.accent.value = getItem("backgrounds", preset.background).accent || refs.accent.value;
-  document.querySelectorAll(".effect-row button").forEach((button) => {
-    button.classList.toggle("active", button.dataset.effect === preset.effect);
-  });
   paintControls();
   render();
 }
@@ -513,15 +834,22 @@ function randomItem(items) {
 }
 
 function randomizeProfile() {
-  const hero = randomItem(state.manifest.heroes);
+  state.selections.role = randomItem(roleOptions);
+  const hero = randomItem(getHeroesForRole(state.selections.role));
+  const skin = randomItem(hero.skins);
+  const background = randomItem(state.manifest.backgrounds);
+  const frame = randomItem(state.manifest.frames);
+
   state.selections.heroId = hero.id;
-  state.selections.skinId = randomItem(hero.skins).id;
-  state.selections.backgroundId = randomItem(state.manifest.backgrounds).id;
-  state.selections.frameId = randomItem(state.manifest.frames).id;
+  state.selections.skinId = skin.id;
+  state.selections.rarity = skin.rarity;
+  state.selections.backgroundId = background.id;
+  state.selections.frameId = frame.id;
+  state.selections.frameStyle = normalizeFrame(frame).styleType;
   state.selections.emblemId = randomItem(state.manifest.emblems).id;
   state.selections.badgeId = randomItem(state.manifest.badges).id;
-  state.selections.effect = randomItem(["none", "glow", "scan", "particles"]);
-  state.selections.title = randomItem(state.manifest.titles);
+  state.selections.effect = randomItem(effectOptions).id;
+  state.selections.title = `${getRoleLabel(state.selections.role)} Main`;
   state.selections.rank = randomItem(state.manifest.ranks);
 
   refs.title.value = state.selections.title;
@@ -532,12 +860,11 @@ function randomizeProfile() {
   refs.savage.value = Math.floor(Math.random() * 60) + 4;
   refs.legendary.value = Math.floor(Math.random() * 1200) + 80;
   refs.emblemLevel.value = Math.floor(Math.random() * 40) + 20;
-  refs.accent.value = getItem("backgrounds", state.selections.backgroundId).accent || refs.accent.value;
+  refs.accent.value = background.accent || refs.accent.value;
 
-  document.querySelectorAll(".effect-row button").forEach((button) => {
-    button.classList.toggle("active", button.dataset.effect === state.selections.effect);
-  });
-
+  syncSkinCustomizationFromSkin();
+  syncBackgroundCustomization(background.id);
+  syncFrameCustomization(frame.id);
   paintControls();
   render();
 }
@@ -608,6 +935,7 @@ async function copyConfig() {
       rank: refs.rank.value
     },
     selections: state.selections,
+    custom: state.custom,
     stats: {
       wr: Number(refs.wr.value || 0),
       matches: Number(refs.matches.value || 0),
@@ -742,8 +1070,11 @@ async function refreshApiData() {
 
   state.manifest = apiResult.manifest;
   ensureSelectionsValid();
+  syncSkinCustomizationFromSkin();
+  syncBackgroundCustomization(state.selections.backgroundId);
+  syncFrameCustomization(state.selections.frameId);
   updateApiStatus(apiResult.status);
-  refs.accent.value = getItem("backgrounds", state.selections.backgroundId).accent || refs.accent.value;
+  refs.accent.value = getSelectedBackground().accent || refs.accent.value;
   paintControls();
   syncLayerControls();
   render();

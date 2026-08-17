@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "note": "Asset manifest untuk MLBB Flex Profile Studio. Ganti placeholder style/path dengan asset yang kamu punya izin gunakan.",
+  "note": "Asset manifest untuk MLBB Flex Profile Studio. Data ini sudah diperluas untuk preset warna, rarity, emblem, badge, dan frame style custom.",
   "api": {
     "enabled": true,
     "timeoutMs": 5000,
@@ -22,86 +22,129 @@
     ]
   },
   "titles": [
+    "Assassin Hunter",
+    "Marksman Sharpshooter",
+    "Mage Sovereign",
+    "Fighter Warbringer",
+    "Tank Juggernaut",
+    "Support Celestial",
     "Assassin Main",
-    "Mythic Grinder",
-    "Collector Hunter",
-    "Rank Demon",
-    "Savage Farmer"
+    "Fighter Main",
+    "Marksman Main",
+    "Jungler Main",
+    "Mage Main",
+    "Support Main",
+    "Tanker Main"
   ],
   "ranks": [
     "MYTHIC GLORY",
     "MYTHICAL IMMORTAL",
     "MYTHIC",
     "LEGEND",
-    "EPIC"
+    "EPIC",
+    "GRAND MASTER",
+    "MASTER"
   ],
   "backgrounds": [
     {
       "id": "starlight",
       "name": "Starlight Rift",
       "accent": "#f3c969",
-      "style": "radial-gradient(circle at 72% 18%,rgba(255,255,255,.26),transparent 20%),linear-gradient(145deg,#173761 0%,#0b1321 52%,#613117 100%)",
-      "asset": "assets/backgrounds/starlight-rift.webp"
+      "colors": ["#173761", "#0b1321", "#613117"],
+      "style": "radial-gradient(circle at 72% 18%,rgba(255,255,255,.26),transparent 20%),linear-gradient(145deg,#173761 0%,#0b1321 52%,#613117 100%)"
     },
     {
       "id": "neon",
       "name": "Neon District",
       "accent": "#ff77c8",
-      "style": "radial-gradient(circle at 72% 20%,rgba(255,255,255,.28),transparent 18%),linear-gradient(150deg,#401955 0%,#0c1323 55%,#2d6a6d 100%)",
-      "asset": "assets/backgrounds/neon-district.webp"
+      "colors": ["#401955", "#0c1323", "#2d6a6d"],
+      "style": "radial-gradient(circle at 72% 20%,rgba(255,255,255,.28),transparent 18%),linear-gradient(150deg,#401955 0%,#0c1323 55%,#2d6a6d 100%)"
     },
     {
       "id": "jade",
       "name": "Jade Temple",
       "accent": "#74f0b3",
-      "style": "radial-gradient(circle at 68% 18%,rgba(255,255,255,.24),transparent 22%),linear-gradient(145deg,#173f48 0%,#0b1321 56%,#2c6135 100%)",
-      "asset": "assets/backgrounds/jade-temple.webp"
+      "colors": ["#173f48", "#0b1321", "#2c6135"],
+      "style": "radial-gradient(circle at 68% 18%,rgba(255,255,255,.24),transparent 22%),linear-gradient(145deg,#173f48 0%,#0b1321 56%,#2c6135 100%)"
+    },
+    {
+      "id": "ember",
+      "name": "Ember Throne",
+      "accent": "#ff9c67",
+      "colors": ["#482719", "#0b1321", "#6c2222"],
+      "style": "radial-gradient(circle at 74% 20%,rgba(255,255,255,.22),transparent 18%),linear-gradient(145deg,#482719 0%,#0b1321 54%,#6c2222 100%)"
+    },
+    {
+      "id": "aurora",
+      "name": "Aurora Pulse",
+      "accent": "#7de3ff",
+      "colors": ["#1b3661", "#09131f", "#1b5b74"],
+      "style": "radial-gradient(circle at 70% 18%,rgba(255,255,255,.28),transparent 18%),linear-gradient(145deg,#1b3661 0%,#09131f 54%,#1b5b74 100%)"
+    },
+    {
+      "id": "sunset",
+      "name": "Sunset Forge",
+      "accent": "#ffb36b",
+      "colors": ["#6a2f1d", "#1b1320", "#b6572f"],
+      "style": "radial-gradient(circle at 72% 20%,rgba(255,255,255,.24),transparent 18%),linear-gradient(145deg,#6a2f1d 0%,#1b1320 52%,#b6572f 100%)"
     }
   ],
   "frames": [
-    { "id": "royal", "name": "Royal Gold", "color": "#f3c969", "asset": "assets/frames/royal-gold.webp" },
-    { "id": "frost", "name": "Frost", "color": "#9cd9ff", "asset": "assets/frames/frost.webp" },
-    { "id": "void", "name": "Void", "color": "#ca95ff", "asset": "assets/frames/void.webp" },
-    { "id": "crimson", "name": "Crimson", "color": "#ff8b8b", "asset": "assets/frames/crimson.webp" }
+    { "id": "royal", "name": "Royal Gold", "styleType": "solid", "primary": "#f3c969", "secondary": "#f3c969" },
+    { "id": "frost", "name": "Frost", "styleType": "gradient", "primary": "#9cd9ff", "secondary": "#e8f8ff" },
+    { "id": "void", "name": "Void", "styleType": "gradient", "primary": "#ca95ff", "secondary": "#7f5cff" },
+    { "id": "crimson", "name": "Crimson", "styleType": "gradient", "primary": "#ff8b8b", "secondary": "#ffb774" },
+    { "id": "emerald", "name": "Emerald", "styleType": "gradient", "primary": "#82f1b8", "secondary": "#3de2ff" },
+    { "id": "pearl", "name": "Pearl", "styleType": "solid", "primary": "#f4f5ff", "secondary": "#f4f5ff" }
   ],
   "emblems": [
-    { "id": "burst", "name": "Burst", "token": "Burst", "asset": "assets/emblems/burst.webp" },
-    { "id": "assassin", "name": "Assassin", "token": "Assassin", "asset": "assets/emblems/assassin.webp" },
-    { "id": "mage", "name": "Mage", "token": "Mage", "asset": "assets/emblems/mage.webp" },
-    { "id": "marksman", "name": "Marksman", "token": "MM", "asset": "assets/emblems/marksman.webp" }
+    { "id": "best-carry", "name": "Best Carry", "token": "Best Carry" },
+    { "id": "best-initiator", "name": "Best Initiator", "token": "Best Initiator" },
+    { "id": "best-finisher", "name": "Best Finisher", "token": "Best Finisher" },
+    { "id": "best-roamer", "name": "Best Roamer", "token": "Best Roamer" },
+    { "id": "best-jungler", "name": "Best Jungler", "token": "Best Jungler" },
+    { "id": "best-laner", "name": "Best Laner", "token": "Best Laner" },
+    { "id": "best-tanker", "name": "Best Tanker", "token": "Best Tanker" },
+    { "id": "best-damage-dealer", "name": "Best Damage Dealer", "token": "Best Damage Dealer" },
+    { "id": "best-burst", "name": "Best Burst", "token": "Best Burst" },
+    { "id": "best-dps", "name": "Best DPS", "token": "Best DPS" },
+    { "id": "best-assassin", "name": "Best Assassin", "token": "Best Assassin" },
+    { "id": "best-duelist", "name": "Best Duelist", "token": "Best Duelist" },
+    { "id": "best-pusher", "name": "Best Pusher", "token": "Best Pusher" }
   ],
   "badges": [
-    { "id": "mvp", "name": "MVP", "asset": "assets/badges/mvp.webp" },
-    { "id": "savage", "name": "Savage", "asset": "assets/badges/savage.webp" },
-    { "id": "legend", "name": "Legend", "asset": "assets/badges/legend.webp" },
-    { "id": "og", "name": "OG", "asset": "assets/badges/og.webp" }
+    { "id": "mvp", "name": "MVP" },
+    { "id": "legendary", "name": "Legendary" },
+    { "id": "savage", "name": "Savage" },
+    { "id": "comeback-king", "name": "Comeback King" },
+    { "id": "victory-maker", "name": "Victory Maker" },
+    { "id": "godlike", "name": "Godlike" }
   ],
   "heroes": [
     {
       "id": "gusion",
       "name": "Gusion",
-      "asset": "assets/heroes/gusion/base.webp",
       "style": "radial-gradient(circle at 56% 45%,rgba(116,86,255,.95),transparent 34%),linear-gradient(135deg,transparent 20%,rgba(255,255,255,.32) 43%,transparent 56%),linear-gradient(160deg,rgba(255,255,255,.15),rgba(255,255,255,0) 34%)",
       "skins": [
         {
           "id": "cosmic-gleam",
           "name": "Cosmic Gleam",
-          "rarity": "Legend",
-          "asset": "assets/skins/gusion/cosmic-gleam.webp",
+          "rarity": "Mythic",
+          "colors": ["#9e89ff", "#ffffff", "#7456ff"],
           "style": "radial-gradient(circle at 58% 42%,rgba(158,137,255,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.36) 43%,transparent 56%)"
         },
         {
           "id": "deaths-scythe",
           "name": "Death's Scythe",
           "rarity": "Epic",
-          "asset": "assets/skins/gusion/deaths-scythe.webp",
+          "colors": ["#7cd3ff", "#ffffff", "#5ca9ff"],
           "style": "radial-gradient(circle at 58% 42%,rgba(124,211,255,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.34) 43%,transparent 56%)"
         },
         {
           "id": "venom",
           "name": "Venom",
-          "rarity": "Special",
-          "asset": "assets/skins/gusion/venom.webp",
+          "rarity": "Rare",
+          "colors": ["#57ffa0", "#effff7", "#2dd47d"],
           "style": "radial-gradient(circle at 58% 42%,rgba(87,255,160,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.3) 43%,transparent 56%)"
         }
       ]
@@ -109,21 +152,20 @@
     {
       "id": "fanny",
       "name": "Fanny",
-      "asset": "assets/heroes/fanny/base.webp",
       "style": "radial-gradient(circle at 56% 45%,rgba(105,241,255,.95),transparent 34%),linear-gradient(135deg,transparent 20%,rgba(255,255,255,.28) 43%,transparent 56%),linear-gradient(160deg,rgba(255,255,255,.15),rgba(255,255,255,0) 34%)",
       "skins": [
         {
           "id": "galactic-starhawk",
           "name": "Galactic Starhawk",
           "rarity": "Epic",
-          "asset": "assets/skins/fanny/galactic-starhawk.webp",
+          "colors": ["#78ebff", "#eefeff", "#38c2ff"],
           "style": "radial-gradient(circle at 58% 42%,rgba(120,235,255,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.38) 43%,transparent 56%)"
         },
         {
           "id": "blade-of-kibou",
           "name": "Blade of Kibou",
-          "rarity": "Collector",
-          "asset": "assets/skins/fanny/blade-of-kibou.webp",
+          "rarity": "Mythic",
+          "colors": ["#ffc978", "#fff5de", "#ff8a64"],
           "style": "radial-gradient(circle at 58% 42%,rgba(255,201,120,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.35) 43%,transparent 56%)"
         }
       ]
@@ -131,21 +173,20 @@
     {
       "id": "ling",
       "name": "Ling",
-      "asset": "assets/heroes/ling/base.webp",
       "style": "radial-gradient(circle at 56% 45%,rgba(197,223,255,.95),transparent 34%),linear-gradient(135deg,transparent 20%,rgba(255,255,255,.3) 43%,transparent 56%),linear-gradient(160deg,rgba(255,255,255,.15),rgba(255,255,255,0) 34%)",
       "skins": [
         {
           "id": "night-shade",
           "name": "Night Shade",
           "rarity": "Epic",
-          "asset": "assets/skins/ling/night-shade.webp",
+          "colors": ["#dfe6ff", "#ffffff", "#8db3ff"],
           "style": "radial-gradient(circle at 58% 42%,rgba(223,230,255,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.33) 43%,transparent 56%)"
         },
         {
           "id": "lord-shen",
           "name": "Lord Shen",
-          "rarity": "Collector",
-          "asset": "assets/skins/ling/lord-shen.webp",
+          "rarity": "Rare",
+          "colors": ["#ffc46f", "#fff7ea", "#ff9c42"],
           "style": "radial-gradient(circle at 58% 42%,rgba(255,196,111,1),transparent 34%),linear-gradient(125deg,transparent 18%,rgba(255,255,255,.36) 43%,transparent 56%)"
         }
       ]

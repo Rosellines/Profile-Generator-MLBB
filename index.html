@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>MLBB Flex Profile Studio V3</title>
+  <title>MLBB Profile Studio V3</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,7 +11,7 @@
     <header class="topbar">
       <div>
         <p class="eyebrow">CINEMATIC PROFILE BUILDER</p>
-        <h1>MLBB Flex Profile Studio V3</h1>
+        <h1>MLBB Profile Studio V3</h1>
       </div>
       <div class="topbar-actions">
         <span id="apiBadge" class="api-pill api-idle">API: Checking</span>
@@ -76,8 +76,16 @@
             <small>Hero, skin, badge, frame, emblem, background.</small>
           </div>
 
-          <label for="hero">Hero</label>
-          <select id="hero"></select>
+          <div class="two-col">
+            <div>
+              <label for="role">Role</label>
+              <select id="role"></select>
+            </div>
+            <div>
+              <label for="hero">Hero</label>
+              <select id="hero"></select>
+            </div>
+          </div>
 
           <div class="two-col">
             <div>
@@ -86,33 +94,81 @@
             </div>
             <div>
               <label for="rarity">Rarity</label>
-              <input id="rarity" disabled>
+              <select id="rarity"></select>
+            </div>
+          </div>
+
+          <label>Skin Custom Color</label>
+          <div class="three-col">
+            <div>
+              <label for="skinColorPrimary">Primary</label>
+              <input id="skinColorPrimary" type="color" value="#9e89ff">
+            </div>
+            <div>
+              <label for="skinColorSecondary">Secondary</label>
+              <input id="skinColorSecondary" type="color" value="#ffffff">
+            </div>
+            <div>
+              <label for="skinColorGlow">Glow</label>
+              <input id="skinColorGlow" type="color" value="#7456ff">
             </div>
           </div>
 
           <label>Background</label>
           <div id="backgrounds" class="swatch-grid"></div>
 
+          <div class="three-col">
+            <div>
+              <label for="bgColorPrimary">BG Primary</label>
+              <input id="bgColorPrimary" type="color" value="#173761">
+            </div>
+            <div>
+              <label for="bgColorSecondary">BG Secondary</label>
+              <input id="bgColorSecondary" type="color" value="#0b1321">
+            </div>
+            <div>
+              <label for="bgColorAccent">BG Accent</label>
+              <input id="bgColorAccent" type="color" value="#613117">
+            </div>
+          </div>
+
           <label>Frame</label>
           <div id="frames" class="swatch-grid"></div>
 
           <div class="two-col">
             <div>
-              <label>Emblem</label>
-              <div id="emblems" class="token-grid"></div>
+              <label for="frameStyle">Frame Style</label>
+              <select id="frameStyle">
+                <option value="solid">Solid</option>
+                <option value="gradient">Gradient</option>
+              </select>
             </div>
             <div>
-              <label>Badge</label>
-              <div id="badges" class="token-grid"></div>
+              <label for="frameColorPrimary">Frame Primary</label>
+              <input id="frameColorPrimary" type="color" value="#f3c969">
             </div>
           </div>
 
-          <label>Effects</label>
-          <div class="effect-row">
-            <button data-effect="none" class="active">None</button>
-            <button data-effect="glow">Glow</button>
-            <button data-effect="scan">Scan</button>
-            <button data-effect="particles">Particles</button>
+          <div class="two-col">
+            <div>
+              <label for="frameColorSecondary">Frame Secondary</label>
+              <input id="frameColorSecondary" type="color" value="#ff9f5b">
+            </div>
+            <div>
+              <label for="emblem">Emblem</label>
+              <select id="emblem"></select>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div>
+              <label for="badge">Badge</label>
+              <select id="badge"></select>
+            </div>
+            <div>
+              <label for="effect">Effects</label>
+              <select id="effect"></select>
+            </div>
           </div>
         </section>
 
@@ -293,8 +349,8 @@
             </div>
 
             <div class="card-footer">
-              <span>MLBB FLEX PROFILE</span>
-              <span>SEASON GRIND · CUSTOM STUDIO</span>
+              <span>MLBB PROFILE</span>
+              <span>SEASON 41 · MLBB STUDIO</span>
             </div>
           </div>
         </div>
