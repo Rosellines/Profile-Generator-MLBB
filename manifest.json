@@ -3,21 +3,29 @@
   "note": "Asset manifest untuk MLBB Flex Profile Studio. Data ini sudah diperluas untuk preset warna, rarity, emblem, badge, dan frame style custom.",
   "api": {
     "enabled": true,
-    "timeoutMs": 5000,
+    "timeoutMs": 8000,
     "providers": [
       {
         "id": "primary",
-        "name": "Primary MLBB API",
-        "baseUrl": "https://api-mobilelegends.vercel.app",
-        "heroesEndpoint": "/api/heroes",
-        "emblemsEndpoint": "/api/emblem"
+        "name": "MLBB Rone API",
+        "baseUrl": "https://mlbb.rone.dev/api",
+        "heroesEndpoint": "/heroes",
+        "emblemsEndpoint": "/academy/emblems",
+        "size": 200,
+        "index": 1,
+        "order": "asc",
+        "lang": "en"
       },
       {
         "id": "fallback",
-        "name": "Fallback MLBB API",
-        "baseUrl": "https://mlbb-api.vercel.app",
-        "heroesEndpoint": "/api/heroes",
-        "emblemsEndpoint": "/api/emblem"
+        "name": "OpenMLBB FastAPICloud",
+        "baseUrl": "https://openmlbb.fastapicloud.dev/api",
+        "heroesEndpoint": "/heroes",
+        "emblemsEndpoint": "/academy/emblems",
+        "size": 200,
+        "index": 1,
+        "order": "asc",
+        "lang": "en"
       }
     ]
   },

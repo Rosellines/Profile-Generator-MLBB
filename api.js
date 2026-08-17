@@ -14,6 +14,7 @@
       return [];
     }
     const candidates = [
+      payload.records,
       payload.data,
       payload.heroes,
       payload.hero,
@@ -34,14 +35,21 @@
     return [];
   }
 
-  function joinUrl(baseUrl, endpoint) {
+  function joinUrl(baseUrl, endpoint, query) {
     if (!endpoint) {
       return "";
     }
-    if (/^https?:\/\//i.test(endpoint)) {
-      return endpoint;
-    }
-    return `${String(baseUrl || "").replace(/\/$/, "")}/${String(endpoint).replace(/^\//, "")}`;
+    const rawUrl = /^https?:\/\//i.test(endpoint)
+      ? endpoint
+      : `${String(baseUrl || "").replace(/\/$/, "")}/${String(endpoint).replace(/^\//, "")}`;
+
+    const url = new URL(rawUrl);
+    Object.entries(query || {}).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        url.searchParams.set(key, String(value));
+      }
+    });
+    return url.toString();
   }
 
   async function fetchJson(url, timeoutMs) {
@@ -84,7 +92,19 @@
     return `${palettes[index % palettes.length]},linear-gradient(125deg,transparent 18%,rgba(255,255,255,.34) 43%,transparent 56%)`;
   }
 
+  function unwrapRecord(record) {
+    if (!record || typeof record !== "object") {
+      return record;
+    }
+    if (record.data && typeof record.data === "object" && !Array.isArray(record.data)) {
+      return record.data;
+    }
+    return record;
+  }
+
   function normalizeSkin(skin, index, heroName) {
+    skin = unwrapRecord(skin) || {};
+
     if (typeof skin === "string") {
       return {
         id: slugify(skin),
@@ -106,6 +126,8 @@
   }
 
   function normalizeHero(hero, index, localHero) {
+    hero = unwrapRecord(hero) || {};
+
     const name = hero.name || hero.hero_name || hero.title || hero.label || localHero?.name || `Hero ${index + 1}`;
     const remoteSkins = coerceArray(hero.skins || hero.skin || hero.cosmetics || hero.appearances);
     const localSkins = Array.isArray(localHero?.skins) ? localHero.skins : [];
@@ -122,6 +144,8 @@
   }
 
   function normalizeEmblem(emblem, index, localEmblem) {
+    emblem = unwrapRecord(emblem) || {};
+
     const name = emblem.name || emblem.emblem_name || emblem.title || localEmblem?.name || `Emblem ${index + 1}`;
     return {
       id: slugify(emblem.id || emblem.emblem_id || emblem.key || name),
@@ -142,8 +166,18 @@
   }
 
   async function tryProvider(provider, baseManifest, timeoutMs) {
-    const heroUrl = joinUrl(provider.baseUrl, provider.heroesEndpoint || provider.heroesUrl);
-    const emblemUrl = joinUrl(provider.baseUrl, provider.emblemsEndpoint || provider.emblemsUrl);
+    const query = {
+      size: provider.size || 200,
+      index: provider.index || 1,
+      order: provider.order || "asc",
+      lang: provider.lang || "en"
+    };
+    const heroUrl = joinUrl(provider.baseUrl, provider.heroesEndpoint || provider.heroesUrl, query);
+    const emblemUrl = joinUrl(provider.baseUrl, provider.emblemsEndpoint || provider.emblemsUrl, {
+      size: provider.size || 200,
+      index: provider.index || 1,
+      lang: provider.lang || "en"
+    });
 
     if (!heroUrl) {
       throw new Error("Provider tidak punya heroes endpoint.");
