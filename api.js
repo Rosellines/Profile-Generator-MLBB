@@ -206,62 +206,35 @@
       throw new Error(`Heroes HTTP ${heroResult.status}`);
     }
 
-    const listRecords = coerceArray(heroResult.payload);
-    const detailEndpointTemplate = provider.heroDetailEndpoint || "/heroes/{hero_identifier}";
-    const detailPayloads = await Promise.all(listRecords.map(async (record) => {
-      const listHero = record?.data?.hero?.data || record?.hero?.data || record?.data || {};
-      const heroIdentifier = extractHeroId(listHero.hero_id || listHero.heroid || record?.hero_id || record?.heroid);
-
-      if (!heroIdentifier || !detailEndpointTemplate) {
-        return {
-          heroIdentifier,
-          ok: false,
-          status: 0,
-          payload: null,
-          url: "",
-          error: "Missing hero identifier for detail request."
-        };
-      }
-
-      const detailEndpoint = String(detailEndpointTemplate).replace("{hero_identifier}", encodeURIComponent(heroIdentifier));
-      const detailUrl = joinUrl(provider.baseUrl, detailEndpoint, {
-        size: provider.detailSize || 1,
-        index: provider.detailIndex || 1,
-        lang: provider.lang || "en"
-      });
-
-      try {
-        const detailResult = await fetchJsonWithMeta(detailUrl, timeoutMs);
-        return {
-          heroIdentifier,
-          ok: detailResult.ok,
-          status: detailResult.status,
-          payload: detailResult.payload,
-          url: detailUrl,
-          error: detailResult.ok ? "" : `Hero detail HTTP ${detailResult.status}`
-        };
-      } catch (error) {
-        return {
-          heroIdentifier,
-          ok: false,
-          status: 0,
-          payload: null,
-          url: detailUrl,
-          error: error.message || "Failed to fetch hero detail."
-        };
-      }
-    }));
-
     return {
       heroUrl,
-      listPayload: heroResult.payload,
-      detailPayloads
+      listPayload: heroResult.payload
     };
+  }
+
+  async function fetchHeroDetail(provider, heroIdentifier, timeoutMs) {
+    const detailEndpointTemplate = provider.heroDetailEndpoint || "/heroes/{hero_identifier}";
+    if (!heroIdentifier || !detailEndpointTemplate) {
+      throw new Error("Missing hero identifier for detail request.");
+    }
+
+    const detailEndpoint = String(detailEndpointTemplate).replace("{hero_identifier}", encodeURIComponent(heroIdentifier));
+    const detailUrl = joinUrl(provider.baseUrl, detailEndpoint, {
+      size: provider.detailSize || 1,
+      index: provider.detailIndex || 1,
+      lang: provider.lang || "en"
+    });
+    const detailResult = await fetchJsonWithMeta(detailUrl, timeoutMs);
+    if (!detailResult.ok) {
+      throw new Error(`Hero detail HTTP ${detailResult.status}`);
+    }
+    return detailResult.payload;
   }
 
   function normalizeHero(raw) {
     const listRecord = raw?.listRecord || raw?.list || raw;
-    const detailRecord = raw?.detailRecord || raw?.detail || null;
+    const detailInput = raw?.detailRecord || raw?.detail || null;
+    const detailRecord = Array.isArray(detailInput) ? detailInput[0] : detailInput;
     const listHero = listRecord?.data?.hero?.data || listRecord?.hero?.data || listRecord?.data || listRecord || {};
     const detailRoot = detailRecord?.data || detailRecord || {};
     const detailHero = detailRoot?.hero?.data || detailRoot?.hero || detailRoot || {};
@@ -292,7 +265,7 @@
       id: slugify(name || heroId),
       apiHeroId: heroId,
       name,
-      roles: roles.length ? roles : ["Unknown"],
+      roles,
       specialty,
       portrait: detailRoot.head_big || detailRoot.head || listHero.head || "",
       artwork: detailHero.painting || detailRoot.painting || "",
@@ -302,27 +275,14 @@
 
   function normalizeHeroList(payload) {
     const listRecords = coerceArray(payload?.listPayload || payload);
-    const detailResults = Array.isArray(payload?.detailPayloads) ? payload.detailPayloads : [];
-    const detailMap = new Map();
-
-    detailResults.forEach((result) => {
-      if (!result?.heroIdentifier || !result?.payload) {
-        return;
-      }
-      const detailRecord = coerceArray(result.payload)[0];
-      if (detailRecord) {
-        detailMap.set(String(result.heroIdentifier), detailRecord);
-      }
-    });
 
     const seen = new Set();
     return listRecords
       .map((listRecord) => {
         const listHero = listRecord?.data?.hero?.data || listRecord?.hero?.data || listRecord?.data || {};
-        const heroIdentifier = extractHeroId(listHero.hero_id || listHero.heroid || listRecord?.hero_id || listRecord?.heroid);
         return normalizeHero({
           listRecord,
-          detailRecord: detailMap.get(heroIdentifier) || null
+          detailRecord: null
         });
       })
       .filter((hero) => {
@@ -384,6 +344,7 @@
   window.MLBBApi = {
     probeProviders,
     fetchHeroes,
+    fetchHeroDetail,
     normalizeHero,
     normalizeHeroList,
     slugify

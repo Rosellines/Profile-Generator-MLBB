@@ -77,7 +77,8 @@ const state = {
   },
   activeLayer: "avatar",
   avatarDataUrl: "",
-  assetRenderToken: 0
+  assetRenderToken: 0,
+  heroDetailToken: 0
 };
 
 let uiWired = false;
@@ -695,8 +696,8 @@ async function renderAssets() {
   const background = getSelectedBackground();
 
   const [heroAsset, portraitAsset, backgroundAsset] = await Promise.all([
-    loadAsset(skin.artwork || hero.artwork, `${hero.name} Art`),
-    loadAsset(state.avatarDataUrl || hero.portrait, `${hero.name} Portrait`),
+    loadAsset((skin.id.endsWith("-default-skin") ? hero.artwork : skin.artwork || hero.artwork), `${hero.name} Art`),
+    state.avatarDataUrl ? Promise.resolve(state.avatarDataUrl) : loadAsset(hero.portrait, `${hero.name} Portrait`),
     background.id === "custom" ? Promise.resolve("") : loadAsset(background.asset, background.name)
   ]);
 
@@ -944,6 +945,40 @@ function applyHeroSelection(heroId, preferredSkinId) {
   state.selections.role = hero.primaryRole;
   state.selections.rarity = skin.rarity || "Special";
   syncSkinCustomizationFromSelection();
+}
+
+async function loadSelectedHeroDetail(heroId) {
+  const token = ++state.heroDetailToken;
+  const hero = getHeroById(heroId);
+  const apiConfig = state.appConfig?.api;
+  const provider = (Array.isArray(apiConfig?.providers) ? apiConfig.providers : [])
+    .find((item) => item && item.enabled !== false);
+  if (!provider || state.heroDataStatus.source !== "remote" || !hero?.apiHeroId) {
+    return;
+  }
+
+  try {
+    const payload = await window.MLBBApi.fetchHeroDetail(provider, hero.apiHeroId, apiConfig.timeoutMs);
+    if (token !== state.heroDetailToken || state.selections.heroId !== heroId) {
+      return;
+    }
+
+    const detailed = window.MLBBApi.normalizeHero({ listRecord: hero, detailRecord: payload });
+    hero.roles = detailed.roles.length ? detailed.roles : hero.roles;
+    hero.specialty = detailed.specialty.length ? detailed.specialty : hero.specialty;
+    hero.portrait = detailed.portrait || hero.portrait;
+    hero.artwork = detailed.artwork || hero.artwork;
+    hero.roleMeta = hero.roles.map((name) => state.data.roleMap.get(name) || { id: slugify(name), name, title: "Flex" });
+    hero.primaryRole = hero.roleMeta[0]?.name || "Assassin";
+    hero.roleTitle = hero.roleMeta[0]?.title || "Flex";
+    hero.searchIndex = [hero.name, ...hero.roles, ...hero.specialty].join(" ").toLowerCase();
+    ensureSelectionsValid();
+    paintControls();
+    render();
+    persistState();
+  } catch (error) {
+    console.warn("[MLBB API] hero detail unavailable:", error.message || error);
+  }
 }
 
 function applyPreset(name) {
@@ -1248,6 +1283,7 @@ function wireEvents() {
     paintControls();
     render();
     persistState();
+    void loadSelectedHeroDetail(refs.hero.value);
   });
 
   refs.skin.addEventListener("change", () => {
@@ -1461,6 +1497,7 @@ async function init() {
     diagnostics: []
   });
   await refreshApiStatus();
+  void loadSelectedHeroDetail(state.selections.heroId);
 }
 
 init().catch((error) => {
