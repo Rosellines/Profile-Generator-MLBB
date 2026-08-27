@@ -17,11 +17,3 @@
 
 ## Asset source
 `skins-live.json` already points to the public Sparkies01/Splash collection, which contains 133 heroes and 1,060 original-resolution PNG splash images. The images are intentionally kept as URLs instead of bundling them into this repository: individual files are multi-megabyte and the full collection would make the project unnecessarily huge. The selected asset is fetched only when it is needed by the preview.
-
-
-## v4 changes
-- Embedded 133 heroes / 1060 skins in hero-skin-catalog.js so Hero/Skin lists render from local data immediately.
-- Added All role filter.
-- Replaced Glow with a compositor-safe diagonal beam moving top-left to bottom-right.
-- Added Hero Artwork upload with local persistence and hero-layer drag/scale/rotate.
-- Added rank icon below rank text using MLBB wiki asset paths.

@@ -14,11 +14,6 @@
       return [];
     }
     const candidates = [
-      payload.data?.records,
-      payload.data?.items,
-      payload.data?.heroes,
-      payload.data?.data?.records,
-      payload.data?.data?.items,
       payload.data,
       payload.heroes,
       payload.hero,
@@ -27,6 +22,8 @@
       payload.items,
       payload.records,
       payload.list,
+      payload.data?.records,
+      payload.data?.items,
       payload.emblems,
       payload.emblem
     ];
@@ -91,23 +88,6 @@
     return `${palettes[index % palettes.length]},linear-gradient(125deg,transparent 18%,rgba(255,255,255,.34) 43%,transparent 56%)`;
   }
 
-  function unwrapHeroRecord(record) {
-    let current = record;
-    for (let depth = 0; depth < 6; depth += 1) {
-      if (!current || typeof current !== "object" || Array.isArray(current)) break;
-      if (current.name || current.hero_name || current.title || current.label || current.skins || current.skin) return current;
-      const next = current.data?.hero?.data || current.data?.hero || current.data || current.hero;
-      if (!next || next === current) break;
-      current = next;
-    }
-    return current || {};
-  }
-
-  function unwrapHeroImage(record) {
-    const current = unwrapHeroRecord(record);
-    return current.head || current.image || current.portrait || current.smallmap || "";
-  }
-
   function normalizeSkin(skin, index, heroName) {
     if (typeof skin === "string") {
       return {
@@ -129,8 +109,7 @@
     };
   }
 
-  function normalizeHero(rawHero, index, localHero) {
-    const hero = unwrapHeroRecord(rawHero);
+  function normalizeHero(hero, index, localHero) {
     const name = hero.name || hero.hero_name || hero.title || hero.label || localHero?.name || `Hero ${index + 1}`;
     const remoteSkins = coerceArray(hero.skins || hero.skin || hero.cosmetics || hero.appearances);
     const localSkins = Array.isArray(localHero?.skins) ? localHero.skins : [];
@@ -141,7 +120,7 @@
       id: slugify(hero.id || hero.hero_id || hero.key || name),
       name,
       style: hero.style || localHero?.style || fallbackHeroStyle(index),
-      asset: hero.asset || hero.image || hero.portrait || hero.head || unwrapHeroImage(rawHero) || localHero?.asset || `assets/heroes/${slugify(name)}/base.webp`,
+      asset: hero.asset || hero.image || hero.portrait || localHero?.asset || `assets/heroes/${slugify(name)}/base.webp`,
       skins
     };
   }
@@ -202,13 +181,12 @@
       }
     }
 
-    const normalizedHeroes = remoteHeroRecords.map((rawHero, index) => {
-      const hero = unwrapHeroRecord(rawHero);
+    const normalizedHeroes = remoteHeroRecords.map((hero, index) => {
       const heroName = hero.name || hero.hero_name || hero.title || hero.label || `Hero ${index + 1}`;
-      const heroId = slugify(hero.id || hero.hero_id || rawHero?.hero_id || hero.key || heroName);
+      const heroId = slugify(hero.id || hero.hero_id || hero.key || heroName);
       const localHero = localHeroMap.get(heroId) || localHeroMap.get(slugify(heroName));
-      return normalizeHero(rawHero, index, localHero);
-    }).filter((hero) => hero.name && !/^Hero \d+$/i.test(hero.name));
+      return normalizeHero(hero, index, localHero);
+    });
 
     const normalizedEmblems = remoteEmblems.length
       ? remoteEmblems.map((emblem, index) => {
@@ -244,7 +222,7 @@
     const manifest = JSON.parse(JSON.stringify(baseManifest || {}));
     const apiConfig = manifest.api || {};
     const providers = Array.isArray(apiConfig.providers) ? apiConfig.providers : [];
-    const timeoutMs = Math.min(Math.max(Number(apiConfig.timeoutMs) || 2500, 1200), 5000);
+    const timeoutMs = apiConfig.timeoutMs || 5000;
 
     if (!apiConfig.enabled || !providers.length) {
       return {

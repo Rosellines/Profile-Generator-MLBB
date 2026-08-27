@@ -71,7 +71,6 @@
 
           <label for="artwork">Hero Artwork</label>
           <input id="artwork" type="file" accept="image/*">
-          <small class="field-help">Upload artwork sendiri; akan menjadi layer Hero Artwork dan bisa di-drag/scale/rotate.</small>
         </section>
 
         <section id="visual" class="tabpage">
@@ -291,7 +290,10 @@
             <div id="scanLayer" class="scan-layer"></div>
 
             <div class="top-line">
-              <span class="rank-stack"><span id="rankOut">MYTHIC GLORY</span><img id="rankIcon" class="rank-icon" alt="MYTHIC GLORY"></span>
+              <div class="rank-stack">
+                <span id="rankOut" class="rank-label rank-mythic-glory">MYTHIC GLORY</span>
+                <img id="rankIconOut" class="rank-icon" alt="Rank icon">
+              </div>
               <span id="titleOut">Assassin Main</span>
             </div>
 
@@ -374,8 +376,30 @@
     </div>
   </div>
 
+
+  <div id="cropModal" class="modal hidden">
+    <div class="modal-panel crop-panel">
+      <p class="eyebrow">IMAGE CROP</p>
+      <h2 id="cropTitle">Crop image</h2>
+      <div id="cropViewport" class="crop-viewport">
+        <img id="cropImage" class="crop-image" alt="Crop preview" draggable="false">
+        <div class="crop-frame" aria-hidden="true"></div>
+      </div>
+      <div class="crop-controls">
+        <label>Zoom <input id="cropZoom" type="range" min="100" max="300" value="100"></label>
+        <label>Horizontal <input id="cropX" type="range" min="-100" max="100" value="0"></label>
+        <label>Vertical <input id="cropY" type="range" min="-100" max="100" value="0"></label>
+      </div>
+      <small class="crop-help">Drag gambar untuk mengatur posisi, lalu Apply Crop.</small>
+      <div class="two-col crop-actions">
+        <button id="cropCancel" class="ghost">Cancel</button>
+        <button id="cropApply" class="primary">Apply Crop</button>
+      </div>
+    </div>
+  </div>
+
   <script src="api.js"></script>
-  <script src="hero-skin-catalog.js"></script>
+  <script src="catalog-local.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

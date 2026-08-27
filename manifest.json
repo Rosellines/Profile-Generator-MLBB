@@ -1,16 +1,16 @@
 {
-  "version": 4,
+  "version": 3,
   "note": "Asset manifest untuk MLBB Flex Profile Studio. Ganti placeholder style/path dengan asset yang kamu punya izin gunakan.",
   "api": {
     "enabled": true,
-    "timeoutMs": 2500,
+    "timeoutMs": 3500,
     "providers": [
       {
-        "id": "primary-rone",
+        "id": "primary",
         "name": "Primary MLBB API",
-        "baseUrl": "https://mlbb.rone.dev",
-        "heroesEndpoint": "/api/heroes?size=200&index=1&order=asc&lang=en",
-        "emblemsEndpoint": "/api/academy/emblems?lang=en"
+        "baseUrl": "https://api-mobilelegends.vercel.app",
+        "heroesEndpoint": "/api/heroes",
+        "emblemsEndpoint": "/api/emblem"
       },
       {
         "id": "fallback",
@@ -318,10 +318,5 @@
         }
       ]
     }
-  ],
-  "catalog": {
-    "heroes": 133,
-    "skins": 1060,
-    "source": "Sparkies01/Splash"
-  }
+  ]
 }

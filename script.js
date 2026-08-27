@@ -10,7 +10,22 @@ const roleHeroes = {
   Tanker: ["Alice", "Atlas", "Barats", "Baxia", "Belerick", "Carmilla", "Chip", "Edith", "Esmeralda", "Fredrinn", "Franco", "Gatotkaca", "Gloo", "Grock", "Hilda", "Hylos", "Johnson", "Khufra", "Lolita", "Masha", "Minotaur", "Terizla", "Tigreal", "Uranus"]
 };
 
-const roleOptions = ["All", ...Object.keys(roleHeroes)];
+const RANK_ASSETS = {
+  "MYTHICAL IMMORTAL": "assets/rank/mythical-immortal.svg",
+  "MYTHIC GLORY": "assets/rank/mythic-glory.svg",
+  "MYTHIC": "assets/rank/mythic.svg",
+  "LEGEND": "assets/rank/legend.svg",
+  "EPIC": "assets/rank/epic.svg"
+};
+
+const rankVisuals = {
+  "MYTHICAL IMMORTAL": { className: "rank-mythical-immortal", icon: RANK_ASSETS["MYTHICAL IMMORTAL"] },
+  "MYTHIC GLORY": { className: "rank-mythic-glory", icon: RANK_ASSETS["MYTHIC GLORY"] },
+  "MYTHIC": { className: "rank-mythic", icon: RANK_ASSETS["MYTHIC"] },
+  "LEGEND": { className: "rank-legend", icon: RANK_ASSETS["LEGEND"] },
+  "EPIC": { className: "rank-epic", icon: RANK_ASSETS["EPIC"] }
+};
+
 const rarityOptions = ["Mythic", "Legend", "Collector", "Epic", "Special", "Rare", "Elite", "Basic"];
 const emblemOptions = ["Best Carry", "Best Initiator", "Best Finisher", "Best Roamer", "Best Jungler", "Best Laner", "Best Tanker", "Best Damage Dealer", "Best Burst", "Best DPS", "Best Assassin", "Best Duelist", "Best Pusher"];
 const badgeOptions = ["MVP", "Legendary", "Savage", "Comeback King", "Victory Maker", "Godlike"];
@@ -189,80 +204,14 @@ const refs = {};
 let uiWired = false;
 
 const STORAGE_KEYS = {
-  manifest: "mlbb-flex:manifest:v6",
-  skinCatalog: "mlbb-flex:skin-catalog:v6",
-  state: "mlbb-flex:state:v6"
+  catalog: "mlbb-flex:catalog:v9",
+  heroes: "mlbb-flex:heroes:v9",
+  skinsByHero: "mlbb-flex:skins-by-hero:v9",
+  manifest: "mlbb-flex:manifest:v9",
+  state: "mlbb-flex:state:v9"
 };
 
-const EMBEDDED_SKIN_CATALOG = window.MLBB_EMBEDDED_CATALOG || null;
-
-function buildEmbeddedManifest() {
-  const catalogHeroes = Array.isArray(EMBEDDED_SKIN_CATALOG?.heroes)
-    ? EMBEDDED_SKIN_CATALOG.heroes
-    : [];
-
-  const base = {
-    ...fallbackManifest,
-    backgrounds: [...fallbackManifest.backgrounds],
-    frames: [...fallbackManifest.frames],
-    emblems: [...fallbackManifest.emblems],
-    badges: [...fallbackManifest.badges],
-    titles: [...fallbackManifest.titles],
-    ranks: [...fallbackManifest.ranks],
-    heroes: []
-  };
-
-  // Embedded catalog is the authoritative FIRST source for Hero/Skin names.
-  // Never wait for API/manifest.json to populate these selects.
-  if (catalogHeroes.length) {
-    base.heroes = catalogHeroes.map((hero, index) => {
-      const key = normalizeHeroKey(hero.id || hero.name);
-      const mappedRoles = roleForHero(hero.name);
-      const skins = Array.isArray(hero.skins) ? hero.skins : [];
-      return {
-        id: key,
-        name: hero.name,
-        roles: mappedRoles,
-        style: `radial-gradient(circle at 56% 45%,hsla(${(index * 37) % 360},82%,68%,.94),transparent 34%),linear-gradient(135deg,transparent 20%,rgba(255,255,255,.28) 43%,transparent 56%)`,
-        skins: skins.map((skin, skinIndex) => ({
-          id: slugify(skin.id || skin.name),
-          name: skin.name,
-          rarity: skin.rarity || "Rare",
-          asset: skin.asset || "",
-          style: fallbackSkinStyle(skinIndex)
-        }))
-      };
-    });
-  } else {
-    base.heroes = fallbackManifest.heroes.map((hero) => ({ ...hero, skins: [...(hero.skins || [])] }));
-  }
-
-  return base;
-}
-
-function normalizeEmbeddedCatalog(manifest) {
-  if (!manifest || !Array.isArray(manifest.heroes)) return buildEmbeddedManifest();
-  const embedded = buildEmbeddedManifest();
-  const byId = new Map(embedded.heroes.map((hero) => [hero.id, hero]));
-
-  // Keep local catalog authoritative. Remote data may enrich metadata later,
-  // but it must never remove Hero/Skin entries from the embedded catalog.
-  return {
-    ...manifest,
-    heroes: embedded.heroes.map((localHero) => {
-      const remoteHero = manifest.heroes.find((hero) => normalizeHeroKey(hero.id || hero.name) === localHero.id);
-      return {
-        ...localHero,
-        roles: [...new Set([...(localHero.roles || []), ...(remoteHero?.roles || [])])],
-        style: remoteHero?.style || localHero.style,
-        skins: localHero.skins.map((localSkin) => {
-          const remoteSkin = remoteHero?.skins?.find((skin) => slugify(skin.id || skin.name) === localSkin.id);
-          return { ...localSkin, rarity: remoteSkin?.rarity || localSkin.rarity, asset: localSkin.asset || remoteSkin?.asset || "" };
-        })
-      };
-    })
-  };
-}
+const CATALOG_VERSION = 9;
 
 function readStorage(key, fallback = null) {
   try {
@@ -279,6 +228,28 @@ function writeStorage(key, value) {
   } catch (_error) {
     // Ignore quota/private-mode failures; the app still works without cache.
   }
+}
+
+function cloneData(value) {
+  return value == null ? value : JSON.parse(JSON.stringify(value));
+}
+
+function seedEmbeddedCatalogToStorage() {
+  const embedded = window.MLBB_LOCAL_CATALOG;
+  if (!embedded?.heroes?.length) return null;
+
+  const cached = readStorage(STORAGE_KEYS.catalog);
+  const validCache = cached?.version === CATALOG_VERSION && Array.isArray(cached.heroes) && cached.heroes.length >= embedded.heroes.length;
+  if (!validCache) {
+    const catalog = cloneData(embedded);
+    writeStorage(STORAGE_KEYS.catalog, catalog);
+    writeStorage(STORAGE_KEYS.heroes, catalog.heroes.map(({ id, name, roles }) => ({ id, name, roles })));
+    const skinsByHero = Object.fromEntries(catalog.heroes.map((hero) => [hero.id, hero.skins || []]));
+    writeStorage(STORAGE_KEYS.skinsByHero, skinsByHero);
+    writeStorage(STORAGE_KEYS.manifest, catalog);
+    return catalog;
+  }
+  return cached;
 }
 
 function saveUserState() {
@@ -340,9 +311,9 @@ function cacheRefs() {
     "frames", "emblems", "badges", "skinColor1", "skinColor2", "rarityColor", "backgroundColor1", "backgroundColor2", "backgroundColor3",
     "frameMode", "frameColor1", "frameColor2", "activeLayer", "layerScale", "layerRotate", "accent", "mode",
     "wr", "matches", "mvp", "savage", "legendary", "emblemLevel", "resetLayout", "presetBtn", "randomBtn",
-    "copyBtn", "exportBtn", "closeModal", "modal", "card", "backgroundLayer", "heroArt", "avatarImg",
-    "frameOut", "badgeOut", "ignOut", "pidOut", "serverOut", "bioOut", "titleOut", "rankOut", "heroOut", "rankIcon",
-    "skinOut", "rarityOut", "emblemOut", "wrOut", "matchesOut", "mvpOut", "savageOut", "legendaryOut",
+    "copyBtn", "exportBtn", "closeModal", "modal", "cropModal", "cropTitle", "cropViewport", "cropImage", "cropZoom", "cropX", "cropY", "cropCancel", "cropApply", "card", "backgroundLayer", "heroArt", "avatarImg",
+    "frameOut", "badgeOut", "ignOut", "pidOut", "serverOut", "bioOut", "titleOut", "rankOut", "heroOut",
+    "skinOut", "rarityOut", "emblemOut", "rankIconOut", "wrOut", "matchesOut", "mvpOut", "savageOut", "legendaryOut",
     "emblemLevelOut", "modeOut", "dragHint", "heroLayer", "avatarLayer", "apiBadge", "apiStatusText",
     "apiSourceText", "refreshApiBtn"
   ].forEach((id) => {
@@ -447,9 +418,8 @@ function countSkins(manifest) {
 
 function getRoleHeroes() {
   const heroes = Array.isArray(state.manifest.heroes) ? state.manifest.heroes : [];
-  if (state.selections.role === "All") return heroes;
+  if (!state.selections.role || state.selections.role === "All") return heroes;
   const filtered = heroes.filter((hero) => hero.roles?.includes(state.selections.role));
-  // Never leave Hero select empty because of incomplete role metadata.
   return filtered.length ? filtered : heroes;
 }
 
@@ -498,14 +468,11 @@ function ensureSelectionsValid() {
   if (!state.manifest.ranks?.length) {
     state.manifest.ranks = fallbackManifest.ranks;
   }
-  if (!roleOptions.includes(state.selections.role)) {
+  if (!(state.selections.role === "All" || Object.hasOwn(roleHeroes, state.selections.role))) {
     state.selections.role = "All";
   }
 
   const availableHeroes = getRoleHeroes();
-  if (!availableHeroes.length && state.manifest.heroes.length) {
-    state.selections.role = "All";
-  }
   if (!availableHeroes.some((hero) => hero.id === state.selections.heroId)) {
     state.selections.heroId = availableHeroes[0]?.id || state.manifest.heroes[0].id;
   }
@@ -559,15 +526,8 @@ function paintControls() {
   const selectedBadge = refs.badges.value || badgeOptions[0];
   fillSelect(refs.title, state.manifest.titles);
   fillSelect(refs.rank, state.manifest.ranks);
-  fillSelect(refs.role, roleOptions);
-  const heroOptions = getRoleHeroes();
-  fillSelect(refs.hero, heroOptions, (hero) => hero.id, (hero) => hero.name);
-  if (!heroOptions.length && state.manifest.heroes.length) {
-    state.selections.role = "All";
-    fillSelect(refs.role, roleOptions);
-    refs.role.value = "All";
-    fillSelect(refs.hero, state.manifest.heroes, (hero) => hero.id, (hero) => hero.name);
-  }
+  fillSelect(refs.role, ["All", ...Object.keys(roleHeroes)]);
+  fillSelect(refs.hero, getRoleHeroes(), (hero) => hero.id, (hero) => hero.name);
   fillSelect(refs.rarity, rarityOptions);
   fillSelect(refs.emblems, emblemOptions);
   fillSelect(refs.badges, badgeOptions);
@@ -706,9 +666,9 @@ function render() {
     hero.style || ""
   ].filter(Boolean);
   refs.heroArt.style.background = artLayers.join(", ");
-  refs.avatarImg.style.background = state.avatarDataUrl ? `url("${state.avatarDataUrl}") center/cover no-repeat` : "radial-gradient(circle at 30% 28%,#ffe9b8 0,#e69f7a 26%,#4d425c 58%,#1a2130 100%)";
+  if (state.avatarDataUrl) refs.avatarImg.style.background = `url(${state.avatarDataUrl}) center/cover`;
   refs.frameOut.style.borderColor = "transparent";
-  refs.frameOut.style.background = `linear-gradient(transparent,transparent) padding-box, ${frameFill} border-box`;
+  refs.frameOut.style.background = frameFill;
   refs.frameOut.style.boxShadow = `0 0 0 2px rgba(255,255,255,.18) inset, 0 0 26px ${frameColor}88`;
 
   refs.badgeOut.textContent = refs.badges.value;
@@ -720,18 +680,11 @@ function render() {
   refs.serverOut.textContent = refs.server.value || "0000";
   refs.bioOut.textContent = refs.bio.value || "No status.";
   refs.titleOut.textContent = refs.title.value;
+  const rankVisual = rankVisuals[refs.rank.value] || rankVisuals["MYTHIC GLORY"];
   refs.rankOut.textContent = refs.rank.value;
-  const rankKey = slugify(refs.rank.value);
-  refs.rankOut.className = `rank-tier rank-tier-${rankKey}`;
-  const rankIcons = {
-    "mythical-immortal": "https://mobile-legends.fandom.com/wiki/Special:FilePath/Mythical%20Immortal.png",
-    "mythic-glory": "https://mobile-legends.fandom.com/wiki/Special:FilePath/Mythic%20Glory.png",
-    "mythic": "https://mobile-legends.fandom.com/wiki/Special:FilePath/Mythic.png",
-    "legend": "https://mobile-legends.fandom.com/wiki/Special:FilePath/Legend.png",
-    "epic": "https://mobile-legends.fandom.com/wiki/Special:FilePath/Epic.png"
-  };
-  refs.rankIcon.src = rankIcons[rankKey] || rankIcons.mythic;
-  refs.rankIcon.alt = refs.rank.value;
+  refs.rankOut.className = `rank-label ${rankVisual.className}`;
+  refs.rankIconOut.src = rankVisual.icon;
+  refs.rankIconOut.alt = `${refs.rank.value} rank icon`;
   refs.heroOut.textContent = hero.name.toUpperCase();
   refs.skinOut.textContent = skin.name;
   refs.rarityOut.textContent = refs.rarity.value.toUpperCase();
@@ -754,11 +707,120 @@ function render() {
   saveUserState();
 }
 
+
+const cropState = { fileKind: "avatar", source: null, image: null, baseScale: 1, zoom: 1, x: 0, y: 0, dragging: false, startX: 0, startY: 0, startCropX: 0, startCropY: 0 };
+
+function openCrop(file, kind) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    cropState.fileKind = kind;
+    cropState.source = reader.result;
+    cropState.image = new Image();
+    cropState.image.onload = () => {
+      refs.cropTitle.textContent = kind === "avatar" ? "Crop Profile Photo" : "Crop Hero Artwork";
+      refs.cropViewport.classList.toggle("artwork", kind === "artwork");
+      refs.cropZoom.value = 100;
+      refs.cropX.value = 0;
+      refs.cropY.value = 0;
+      cropState.zoom = 1; cropState.x = 0; cropState.y = 0;
+      refs.cropImage.src = cropState.source;
+      refs.cropModal.classList.remove("hidden");
+      requestAnimationFrame(updateCropPreview);
+    };
+    cropState.image.src = cropState.source;
+  };
+  reader.readAsDataURL(file);
+}
+
+function cropBoxSize() {
+  const rect = refs.cropViewport.getBoundingClientRect();
+  return { width: rect.width, height: rect.height };
+}
+
+function updateCropPreview() {
+  if (!cropState.image?.naturalWidth) return;
+  const box = cropBoxSize();
+  const coverScale = Math.max(box.width / cropState.image.naturalWidth, box.height / cropState.image.naturalHeight);
+  cropState.baseScale = coverScale;
+  const scale = coverScale * cropState.zoom;
+  const width = cropState.image.naturalWidth * scale;
+  const height = cropState.image.naturalHeight * scale;
+  refs.cropImage.style.width = `${width}px`;
+  refs.cropImage.style.height = `${height}px`;
+  refs.cropImage.style.left = `calc(50% + ${cropState.x}px)`;
+  refs.cropImage.style.top = `calc(50% + ${cropState.y}px)`;
+  refs.cropImage.style.transform = "translate(-50%,-50%)";
+}
+
+function applyCrop() {
+  if (!cropState.image?.naturalWidth) return;
+  const box = cropBoxSize();
+  const scale = cropState.baseScale * cropState.zoom;
+  const imageW = cropState.image.naturalWidth * scale;
+  const imageH = cropState.image.naturalHeight * scale;
+  const left = (box.width - imageW) / 2 + cropState.x;
+  const top = (box.height - imageH) / 2 + cropState.y;
+  const sx = Math.max(0, Math.min(cropState.image.naturalWidth - box.width / scale, -left / scale));
+  const sy = Math.max(0, Math.min(cropState.image.naturalHeight - box.height / scale, -top / scale));
+  const sw = Math.min(cropState.image.naturalWidth, box.width / scale);
+  const sh = Math.min(cropState.image.naturalHeight, box.height / scale);
+  // Export the crop at SOURCE resolution, not at the small on-screen
+  // crop viewport resolution. The old implementation rendered a ~420px
+  // crop and then enlarged it to the 1080x1920 card, which made avatars
+  // and artwork visibly soft/blurry.
+  const outputW = Math.max(1, Math.round(sw));
+  const outputH = Math.max(1, Math.round(sh));
+  const canvas = document.createElement("canvas");
+  canvas.width = outputW;
+  canvas.height = outputH;
+  const ctx = canvas.getContext("2d", { alpha: true });
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(cropState.image, sx, sy, sw, sh, 0, 0, outputW, outputH);
+  // Keep the original crop resolution. Do NOT resize this data URL to the
+  // 420px preview size; the card renderer will scale the high-resolution
+  // asset when necessary.
+  const dataUrl = canvas.toDataURL("image/png");
+  if (cropState.fileKind === "avatar") {
+    state.avatarDataUrl = dataUrl;
+    state.layers.avatar = { x: 0, y: 0, scale: 100, rotate: 0 };
+  } else {
+    state.artworkDataUrl = dataUrl;
+    state.layers.hero = { x: 0, y: 0, scale: 100, rotate: 0 };
+  }
+  refs.cropModal.classList.add("hidden");
+  syncLayerControls();
+  render();
+}
+
+function wireCropEvents() {
+  refs.cropZoom.addEventListener("input", () => { cropState.zoom = Number(refs.cropZoom.value) / 100; updateCropPreview(); });
+  refs.cropX.addEventListener("input", () => { cropState.x = Number(refs.cropX.value) * 2; updateCropPreview(); });
+  refs.cropY.addEventListener("input", () => { cropState.y = Number(refs.cropY.value) * 2; updateCropPreview(); });
+  refs.cropApply.addEventListener("click", applyCrop);
+  refs.cropCancel.addEventListener("click", () => refs.cropModal.classList.add("hidden"));
+  refs.cropModal.addEventListener("click", (event) => { if (event.target === refs.cropModal) refs.cropModal.classList.add("hidden"); });
+  refs.cropViewport.addEventListener("pointerdown", (event) => {
+    cropState.dragging = true; cropState.startX = event.clientX; cropState.startY = event.clientY; cropState.startCropX = cropState.x; cropState.startCropY = cropState.y; refs.cropViewport.classList.add("dragging"); refs.cropViewport.setPointerCapture(event.pointerId);
+  });
+  refs.cropViewport.addEventListener("pointermove", (event) => {
+    if (!cropState.dragging) return;
+    cropState.x = cropState.startCropX + (event.clientX - cropState.startX);
+    cropState.y = cropState.startCropY + (event.clientY - cropState.startY);
+    refs.cropX.value = Math.max(-100, Math.min(100, cropState.x / 2));
+    refs.cropY.value = Math.max(-100, Math.min(100, cropState.y / 2));
+    updateCropPreview();
+  });
+  const stop = () => { cropState.dragging = false; refs.cropViewport.classList.remove("dragging"); };
+  refs.cropViewport.addEventListener("pointerup", stop); refs.cropViewport.addEventListener("pointercancel", stop);
+}
+
 function wireEvents() {
   if (uiWired) {
     return;
   }
   uiWired = true;
+  wireCropEvents();
 
   document.querySelectorAll(".tab").forEach((button) => {
     button.addEventListener("click", () => {
@@ -857,22 +919,18 @@ function wireEvents() {
     render();
   });
 
-  refs.photo.addEventListener("change", async (event) => {
+  refs.photo.addEventListener("change", (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    const dataUrl = await readFileAsDataUrl(file);
-    state.avatarDataUrl = dataUrl;
-    render();
+    openCrop(file, "avatar");
+    event.target.value = "";
   });
 
-  refs.artwork.addEventListener("change", async (event) => {
+  refs.artwork.addEventListener("change", (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    const dataUrl = await readFileAsDataUrl(file);
-    state.artworkDataUrl = dataUrl;
-    state.activeLayer = "hero";
-    syncLayerControls();
-    render();
+    openCrop(file, "artwork");
+    event.target.value = "";
   });
 
   refs.presetBtn.addEventListener("click", () => refs.modal.classList.remove("hidden"));
@@ -943,9 +1001,6 @@ function applyPreset(name) {
   state.selections.emblemId = preset.emblem;
 
   refs.accent.value = getItem("backgrounds", preset.background).accent || refs.accent.value;
-  state.customBackground = false;
-  state.customFrame = false;
-  syncStyleInputsFromSelections();
   document.querySelectorAll(".effect-row button").forEach((button) => {
     button.classList.toggle("active", button.dataset.effect === preset.effect);
   });
@@ -979,9 +1034,6 @@ function randomizeProfile() {
   refs.legendary.value = Math.floor(Math.random() * 1200) + 80;
   refs.emblemLevel.value = Math.floor(Math.random() * 40) + 20;
   refs.accent.value = getItem("backgrounds", state.selections.backgroundId).accent || refs.accent.value;
-  state.customBackground = false;
-  state.customFrame = false;
-  syncStyleInputsFromSelections();
 
   document.querySelectorAll(".effect-row button").forEach((button) => {
     button.classList.toggle("active", button.dataset.effect === state.selections.effect);
@@ -1088,7 +1140,9 @@ async function exportPNG() {
     const link = document.createElement("a");
     link.href = dataUrl;
     link.download = `mlbb-flex-${state.selections.mode}.png`;
+    document.body.appendChild(link);
     link.click();
+    link.remove();
   } catch (error) {
     window.alert(`Export gagal: ${error.message}`);
   } finally {
@@ -1098,37 +1152,97 @@ async function exportPNG() {
 }
 
 async function elementToPng(element, mode) {
-  const size = {
+  const outputSize = {
     story: { width: 1080, height: 1920 },
     feed: { width: 1080, height: 1350 },
     card: { width: 900, height: 1200 }
-  }[mode];
+  }[mode] || { width: 1080, height: 1920 };
+
+  // IMPORTANT: render the clone at the SAME CSS dimensions as the live card.
+  // The previous exporter changed the clone itself to 1080x1920 before
+  // serializing it. That broke percentage/absolute positioning and produced
+  // a small card with a large black/empty remainder.
+  const rect = element.getBoundingClientRect();
+  const sourceW = Math.max(1, Math.round(element.clientWidth || rect.width));
+  const sourceH = Math.max(1, Math.round(element.clientHeight || rect.height));
 
   const clone = element.cloneNode(true);
-  clone.style.width = `${size.width}px`;
-  clone.style.height = `${size.height}px`;
+  clone.style.width = `${sourceW}px`;
+  clone.style.height = `${sourceH}px`;
+  clone.style.aspectRatio = "auto";
   clone.style.margin = "0";
+  clone.style.position = "relative";
+  clone.style.left = "0";
+  clone.style.top = "0";
   clone.style.transform = "none";
+  clone.style.transition = "none";
+  clone.style.animation = "none";
+  clone.style.overflow = "hidden";
+  clone.style.boxSizing = "border-box";
+  clone.classList.remove("is-hovering");
 
+  // Copy computed styles so the foreignObject looks exactly like the live card.
   inlineStyles(element, clone);
 
+  // inlineStyles copies the original computed width/height/transform.
+  // Re-apply the export-safe root geometry after that operation.
+  clone.style.width = `${sourceW}px`;
+  clone.style.height = `${sourceH}px`;
+  clone.style.position = "relative";
+  clone.style.margin = "0";
+  clone.style.transform = "none";
+  clone.style.transition = "none";
+  clone.style.animation = "none";
+  clone.style.overflow = "hidden";
+  clone.style.boxSizing = "border-box";
+
+  await inlineImagesAsDataUrls(clone);
+
+  // SVG/foreignObject is used only as a self-contained snapshot of the
+  // already-laid-out card. We then scale that snapshot to the requested
+  // export resolution. This preserves the exact live-preview proportions.
   const serializer = new XMLSerializer();
   const html = serializer.serializeToString(clone);
-  const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="${size.width}" height="${size.height}">
-      <foreignObject width="100%" height="100%">
-        <div xmlns="http://www.w3.org/1999/xhtml">${html}</div>
-      </foreignObject>
-    </svg>
-  `;
+
+  // IMPORTANT: rasterize the SVG directly at the final export resolution.
+  // The old exporter first rasterized at the small live-preview size and only
+  // then enlarged it to 1080/1920, which made text and artwork look blurry.
+  // Using the final SVG viewport here preserves much more detail.
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${outputSize.width}" height="${outputSize.height}" viewBox="0 0 ${sourceW} ${sourceH}"><foreignObject x="0" y="0" width="${sourceW}" height="${sourceH}"><div xmlns="http://www.w3.org/1999/xhtml" style="width:${sourceW}px;height:${sourceH}px;overflow:hidden;margin:0;padding:0">${html}</div></foreignObject></svg>`;
   const url = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
   const image = await loadImage(url);
   const canvas = document.createElement("canvas");
-  canvas.width = size.width;
-  canvas.height = size.height;
-  const context = canvas.getContext("2d");
-  context.drawImage(image, 0, 0);
+  canvas.width = outputSize.width;
+  canvas.height = outputSize.height;
+  const context = canvas.getContext("2d", { alpha: true });
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = "high";
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+  // The SVG viewBox already scales the complete live card to the final PNG.
+  // Do not paint a rectangular background: that was responsible for the
+  // black, sharp-looking corners around the rounded card.
+  context.drawImage(image, 0, 0, outputSize.width, outputSize.height);
+
   return canvas.toDataURL("image/png");
+}
+
+async function inlineImagesAsDataUrls(root) {
+  const images = [...root.querySelectorAll("img")];
+  await Promise.all(images.map(async (img) => {
+    const src = img.getAttribute("src");
+    if (!src || src.startsWith("data:")) return;
+    try {
+      const response = await fetch(src, { mode: "cors" });
+      if (!response.ok) return;
+      const blob = await response.blob();
+      const reader = new FileReader();
+      const dataUrl = await new Promise((resolve, reject) => { reader.onload = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(blob); });
+      img.setAttribute("src", dataUrl);
+    } catch (_error) {
+      // Keep the original source; preview remains unaffected even if export cannot inline it.
+    }
+  }));
 }
 
 function inlineStyles(source, target) {
@@ -1153,36 +1267,49 @@ function loadImage(url) {
 }
 
 async function loadLocalData() {
-  // LocalStorage is a preference/cache only. Embedded catalog remains authoritative.
-  const embedded = buildEmbeddedManifest();
-  const cachedManifest = readStorage(STORAGE_KEYS.manifest);
-  const localManifest = normalizeEmbeddedCatalog(cachedManifest || embedded);
+  // LocalStorage is authoritative for Hero/Skin catalog. The embedded catalog
+  // seeds it synchronously on first run, so the editor never depends on API.
+  const seeded = seedEmbeddedCatalogToStorage();
+  const cachedCatalog = readStorage(STORAGE_KEYS.catalog) || seeded;
 
-  state.manifest = {
-    ...embedded,
-    ...localManifest,
-    backgrounds: localManifest.backgrounds?.length ? localManifest.backgrounds : embedded.backgrounds,
-    frames: localManifest.frames?.length ? localManifest.frames : embedded.frames,
-    emblems: localManifest.emblems?.length ? localManifest.emblems : embedded.emblems,
-    badges: localManifest.badges?.length ? localManifest.badges : embedded.badges,
-    titles: localManifest.titles?.length ? localManifest.titles : embedded.titles,
-    ranks: localManifest.ranks?.length ? localManifest.ranks : embedded.ranks,
-    heroes: embedded.heroes
-  };
+  if (cachedCatalog?.heroes?.length) {
+    state.manifest = cloneData(cachedCatalog);
+  } else {
+    // First-run fallback: fetch the same files used by the original working build.
+    const [manifestFromFile, skinCatalogFromFile] = await Promise.all([
+      fetchLocalManifest(),
+      fetchLocalSkinCatalog()
+    ]);
+    const merged = applyHeroCatalog(mergeSkinCatalog({
+      ...fallbackManifest,
+      ...manifestFromFile,
+      backgrounds: manifestFromFile?.backgrounds?.length ? manifestFromFile.backgrounds : fallbackManifest.backgrounds,
+      frames: manifestFromFile?.frames?.length ? manifestFromFile.frames : fallbackManifest.frames,
+      emblems: manifestFromFile?.emblems?.length ? manifestFromFile.emblems : fallbackManifest.emblems,
+      badges: manifestFromFile?.badges?.length ? manifestFromFile.badges : fallbackManifest.badges,
+      titles: manifestFromFile?.titles?.length ? manifestFromFile.titles : fallbackManifest.titles,
+      ranks: manifestFromFile?.ranks?.length ? manifestFromFile.ranks : fallbackManifest.ranks,
+      heroes: manifestFromFile?.heroes?.length ? manifestFromFile.heroes : []
+    }, skinCatalogFromFile));
+    state.manifest = merged;
+    writeStorage(STORAGE_KEYS.catalog, merged);
+    writeStorage(STORAGE_KEYS.heroes, merged.heroes.map(({ id, name, roles }) => ({ id, name, roles })));
+    writeStorage(STORAGE_KEYS.skinsByHero, Object.fromEntries(merged.heroes.map((hero) => [hero.id, hero.skins || []])));
+    writeStorage(STORAGE_KEYS.manifest, merged);
+  }
+
   ensureSelectionsValid();
   syncStyleInputsFromSelections();
   paintControls();
   syncLayerControls();
-  writeStorage(STORAGE_KEYS.manifest, state.manifest);
-  writeStorage(STORAGE_KEYS.skinCatalog, EMBEDDED_SKIN_CATALOG || { heroes: [] });
   updateApiStatus({
     mode: "disabled",
-    provider: "Embedded catalog / LocalStorage",
-    sourceId: "local",
+    provider: "LocalStorage catalog",
+    sourceId: "local-storage",
     heroCount: state.manifest.heroes.length,
     skinCount: countSkins(state.manifest),
     emblemCount: state.manifest.emblems.length,
-    message: `Local catalog siap: ${state.manifest.heroes.length} hero / ${countSkins(state.manifest)} skin. Remote API berjalan di background.`,
+    message: "Hero & Skin siap dari LocalStorage. Remote API berjalan di background.",
     checkedAt: new Date().toISOString()
   });
   render();
@@ -1217,47 +1344,19 @@ async function refreshApiData({ background = true } = {}) {
       };
     }
 
-    try {
-      if (apiResult?.manifest) {
-        const cachedSkinCatalog = readStorage(STORAGE_KEYS.skinCatalog);
-        state.manifest = normalizeEmbeddedCatalog(apiResult.manifest);
-        ensureSelectionsValid();
-        syncStyleInputsFromSelections();
-        writeStorage(STORAGE_KEYS.manifest, state.manifest);
-        updateApiStatus({
-          ...apiResult.status,
-          skinCount: countSkins(state.manifest)
-        });
-        paintControls();
-        syncLayerControls();
-        render();
-      } else {
-        updateApiStatus({
-          mode: "fallback",
-          provider: "LocalStorage cache",
-          sourceId: "local",
-          heroCount: state.manifest.heroes.length,
-          skinCount: countSkins(state.manifest),
-          emblemCount: state.manifest.emblems.length,
-          message: "Remote tidak mengembalikan data. Preview tetap memakai data lokal.",
-          checkedAt: new Date().toISOString()
-        });
-      }
-    } catch (error) {
+    if (apiResult?.status) {
+      // Remote API is enrichment/status only. Never replace the working local
+      // Hero/Skin catalog with an incomplete remote response.
       updateApiStatus({
-        mode: "fallback",
-        provider: "LocalStorage cache",
-        sourceId: "local",
+        ...apiResult.status,
+        provider: `${apiResult.status.provider || "Remote API"} + LocalStorage`,
         heroCount: state.manifest.heroes.length,
-        skinCount: countSkins(state.manifest),
-        emblemCount: state.manifest.emblems.length,
-        message: `Remote gagal: ${error.message}. Preview tetap lokal.`,
-        checkedAt: new Date().toISOString()
+        skinCount: countSkins(state.manifest)
       });
-    } finally {
-      refs.refreshApiBtn.disabled = false;
-      refs.refreshApiBtn.textContent = "Refresh API";
     }
+
+    refs.refreshApiBtn.disabled = false;
+    refs.refreshApiBtn.textContent = "Refresh API";
   };
 
   if (background) {
@@ -1270,31 +1369,35 @@ async function refreshApiData({ background = true } = {}) {
 async function init() {
   cacheRefs();
   wireEvents();
-  restoreUserState();
 
-  // First paint uses the full embedded 133-hero / 1060-skin catalog immediately.
-  // No network request is required to populate Hero/Skin selects.
-  state.manifest = buildEmbeddedManifest();
+  // Seed the full catalog into LocalStorage before restoring user state.
+  seedEmbeddedCatalogToStorage();
+  const cachedCatalog = readStorage(STORAGE_KEYS.catalog);
+  if (cachedCatalog?.heroes?.length) {
+    state.manifest = cloneData(cachedCatalog);
+  }
+
+  restoreUserState();
   ensureSelectionsValid();
   syncStyleInputsFromSelections();
   paintControls();
   syncLayerControls();
   updateApiStatus({
     mode: "disabled",
-    provider: "Local fallback",
-    sourceId: "local",
+    provider: "LocalStorage",
+    sourceId: "local-storage",
     heroCount: state.manifest.heroes.length,
     skinCount: countSkins(state.manifest),
     emblemCount: state.manifest.emblems.length,
-    message: "Preview siap. Katalog lokal dan Remote API dimuat di background.",
+    message: "Katalog Hero/Skin lokal siap. API remote berjalan di background.",
     checkedAt: new Date().toISOString()
   });
   render();
-  writeStorage(STORAGE_KEYS.manifest, state.manifest);
-  writeStorage(STORAGE_KEYS.skinCatalog, EMBEDDED_SKIN_CATALOG || { heroes: [] });
 
-  // Hydrate cache without replacing the embedded catalog, then run remote API in background.
-  void loadLocalData().then(() => refreshApiData({ background: true }));
+  // Only the first-ever bootstrap may fetch local JSON files if embedding is missing.
+  if (!cachedCatalog?.heroes?.length) {
+    void loadLocalData();
+  }
+  void refreshApiData({ background: true });
 }
-
 init();
