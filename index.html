@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>MLBB Profile Studio V3</title>
+  <title>MLBB Flex Profile Studio V3</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,14 +11,13 @@
     <header class="topbar">
       <div>
         <p class="eyebrow">CINEMATIC PROFILE BUILDER</p>
-        <h1>MLBB Profile Studio V3</h1>
+        <h1>MLBB Flex Profile Studio V3</h1>
       </div>
       <div class="topbar-actions">
         <span id="apiBadge" class="api-pill api-idle">API: Checking</span>
         <button id="presetBtn" class="ghost">Preset</button>
         <button id="refreshApiBtn" class="ghost">Refresh API</button>
         <button id="randomBtn" class="ghost">Randomize</button>
-        <button id="resetProfileBtn" class="ghost">Reset Profile</button>
         <button id="copyBtn" class="ghost">Copy Config</button>
         <button id="exportBtn" class="primary">Export PNG</button>
       </div>
@@ -74,23 +73,7 @@
         <section id="visual" class="tabpage">
           <div class="section-title">
             <span>Asset Stack</span>
-            <small>Hero, skin, badge, frame, emblem, background. Semua lokal dulu, remote opsional.</small>
-          </div>
-
-          <div class="two-col">
-            <div>
-              <label for="heroSearch">Search Hero</label>
-              <input id="heroSearch" placeholder="Search Hero...">
-            </div>
-            <div>
-              <label for="heroSort">Sort Hero</label>
-              <select id="heroSort">
-                <option value="az">A-Z</option>
-                <option value="za">Z-A</option>
-                <option value="role">Role</option>
-                <option value="recent">Recently Added</option>
-              </select>
-            </div>
+            <small>Hero, skin, badge, frame, emblem, background.</small>
           </div>
 
           <div class="two-col">
@@ -115,77 +98,75 @@
             </div>
           </div>
 
-          <label>Skin Custom Color</label>
           <div class="three-col">
             <div>
-              <label for="skinColorPrimary">Primary</label>
-              <input id="skinColorPrimary" type="color" value="#9e89ff">
+              <label for="skinColor1">Skin Color 1</label>
+              <input id="skinColor1" type="color" value="#9e89ff">
             </div>
             <div>
-              <label for="skinColorSecondary">Secondary</label>
-              <input id="skinColorSecondary" type="color" value="#ffffff">
+              <label for="skinColor2">Skin Color 2</label>
+              <input id="skinColor2" type="color" value="#ffffff">
             </div>
             <div>
-              <label for="skinColorGlow">Glow</label>
-              <input id="skinColorGlow" type="color" value="#7456ff">
+              <label for="rarityColor">Rarity Color</label>
+              <input id="rarityColor" type="color" value="#f3c969">
             </div>
           </div>
 
           <label>Background</label>
           <div id="backgrounds" class="swatch-grid"></div>
-
           <div class="three-col">
             <div>
-              <label for="bgColorPrimary">BG Primary</label>
-              <input id="bgColorPrimary" type="color" value="#173761">
+              <label for="backgroundColor1">Background Color 1</label>
+              <input id="backgroundColor1" type="color" value="#173761">
             </div>
             <div>
-              <label for="bgColorSecondary">BG Secondary</label>
-              <input id="bgColorSecondary" type="color" value="#0b1321">
+              <label for="backgroundColor2">Background Color 2</label>
+              <input id="backgroundColor2" type="color" value="#0b1321">
             </div>
             <div>
-              <label for="bgColorAccent">BG Accent</label>
-              <input id="bgColorAccent" type="color" value="#613117">
+              <label for="backgroundColor3">Background Color 3</label>
+              <input id="backgroundColor3" type="color" value="#613117">
             </div>
           </div>
 
           <label>Frame</label>
           <div id="frames" class="swatch-grid"></div>
-
-          <div class="two-col">
+          <div class="three-col">
             <div>
-              <label for="frameStyle">Frame Style</label>
-              <select id="frameStyle">
+              <label for="frameMode">Frame Style</label>
+              <select id="frameMode">
                 <option value="solid">Solid</option>
                 <option value="gradient">Gradient</option>
               </select>
             </div>
             <div>
-              <label for="frameColorPrimary">Frame Primary</label>
-              <input id="frameColorPrimary" type="color" value="#f3c969">
+              <label for="frameColor1">Frame Color 1</label>
+              <input id="frameColor1" type="color" value="#f3c969">
+            </div>
+            <div>
+              <label for="frameColor2">Frame Color 2</label>
+              <input id="frameColor2" type="color" value="#ff9f5b">
             </div>
           </div>
 
           <div class="two-col">
             <div>
-              <label for="frameColorSecondary">Frame Secondary</label>
-              <input id="frameColorSecondary" type="color" value="#ff9f5b">
+              <label for="emblems">Emblem</label>
+              <select id="emblems"></select>
             </div>
             <div>
-              <label for="emblem">Emblem</label>
-              <select id="emblem"></select>
+              <label for="badges">Badge</label>
+              <select id="badges"></select>
             </div>
           </div>
 
-          <div class="two-col">
-            <div>
-              <label for="badge">Badge</label>
-              <select id="badge"></select>
-            </div>
-            <div>
-              <label for="effect">Effects</label>
-              <select id="effect"></select>
-            </div>
+          <label>Effects</label>
+          <div class="effect-row">
+            <button data-effect="none" class="active">None</button>
+            <button data-effect="glow">Glow</button>
+            <button data-effect="scan">Scan</button>
+            <button data-effect="particles">Particles</button>
           </div>
         </section>
 
@@ -271,21 +252,17 @@
         </section>
 
         <div class="hint-box">
-          Engine ini local-first dan asset-agnostic. Metadata ada di folder <code>data/</code>, sedangkan artwork resmi tidak dibundel.
-          Tambahkan asset yang kamu punya izin pakai lewat folder <code>assets/</code>.
+          Engine ini asset-agnostic. Hero/skin resmi tidak dibundel.
+          Tambahkan artwork yang kamu punya izin pakai lewat <code>manifest.json</code> atau folder <code>assets/</code>.
         </div>
 
         <div class="api-panel">
           <div class="section-title">
             <span>API Layer</span>
-            <small>Local database selalu utama. Remote hanya optional metadata update.</small>
+            <small>Primary remote + local fallback biar editor tetap nyala.</small>
           </div>
-          <p id="apiStatusText" class="api-status-copy">Memuat local database...</p>
-          <p id="apiSourceText" class="api-source-copy">Source: local</p>
-          <details id="apiDiagnostics" class="diagnostics-panel">
-            <summary>API Diagnostics</summary>
-            <div id="apiDiagnosticsList" class="diagnostics-list"></div>
-          </details>
+          <p id="apiStatusText" class="api-status-copy">Sedang cek koneksi API...</p>
+          <p id="apiSourceText" class="api-source-copy">Source: -</p>
         </div>
       </aside>
 
@@ -370,8 +347,8 @@
             </div>
 
             <div class="card-footer">
-              <span>MLBB PROFILE</span>
-              <span>SEASON 41 · MLBB STUDIO</span>
+              <span>MLBB FLEX PROFILE</span>
+              <span>SEASON GRIND · CUSTOM STUDIO</span>
             </div>
           </div>
         </div>

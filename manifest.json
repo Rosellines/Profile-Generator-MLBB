@@ -3,39 +3,37 @@
   "note": "Asset manifest untuk MLBB Flex Profile Studio. Ganti placeholder style/path dengan asset yang kamu punya izin gunakan.",
   "api": {
     "enabled": true,
-    "timeoutMs": 8000,
+    "timeoutMs": 5000,
     "providers": [
       {
-        "id": "openmlbb-rone",
-        "name": "OpenMLBB / Rone API",
-        "enabled": true,
-        "baseUrl": "https://mlbb.rone.dev/api",
-        "heroesEndpoint": "/heroes",
-        "heroDetailEndpoint": "/heroes/{hero_identifier}",
-        "emblemsEndpoint": "/academy/emblems",
-        "size": 200,
-        "index": 1,
-        "order": "asc",
-        "lang": "en"
+        "id": "primary",
+        "name": "Primary MLBB API",
+        "baseUrl": "https://api-mobilelegends.vercel.app",
+        "heroesEndpoint": "/api/heroes",
+        "emblemsEndpoint": "/api/emblem"
+      },
+      {
+        "id": "fallback",
+        "name": "Fallback MLBB API",
+        "baseUrl": "https://mlbb-api.vercel.app",
+        "heroesEndpoint": "/api/heroes",
+        "emblemsEndpoint": "/api/emblem"
       }
     ]
   },
   "titles": [
-    "Assassin Hunter",
-    "Marksman Sharpshooter",
-    "Mage Sovereign",
-    "Fighter Warbringer",
-    "Tank Juggernaut",
-    "Support Celestial"
+    "Assassin Main",
+    "Mythic Grinder",
+    "Collector Hunter",
+    "Rank Demon",
+    "Savage Farmer"
   ],
   "ranks": [
     "MYTHIC GLORY",
     "MYTHICAL IMMORTAL",
     "MYTHIC",
     "LEGEND",
-    "EPIC",
-    "GRAND MASTER",
-    "MASTER"
+    "EPIC"
   ],
   "backgrounds": [
     {
@@ -58,13 +56,75 @@
       "accent": "#74f0b3",
       "style": "radial-gradient(circle at 68% 18%,rgba(255,255,255,.24),transparent 22%),linear-gradient(145deg,#173f48 0%,#0b1321 56%,#2c6135 100%)",
       "asset": "assets/backgrounds/jade-temple.webp"
+    },
+    {
+      "id": "ember",
+      "name": "Ember Throne",
+      "accent": "#ff9c67",
+      "style": "radial-gradient(circle at 74% 20%,rgba(255,255,255,.22),transparent 18%),linear-gradient(145deg,#482719 0%,#0b1321 54%,#6c2222 100%)",
+      "asset": "assets/backgrounds/ember-throne.webp"
+    },
+    {
+      "id": "aurora",
+      "name": "Aurora Bloom",
+      "accent": "#9fc8ff",
+      "style": "radial-gradient(circle at 74% 16%,rgba(244,255,255,.35),transparent 20%),linear-gradient(145deg,#19285d 0%,#142445 48%,#7d4c91 100%)",
+      "asset": "assets/backgrounds/aurora-bloom.webp"
+    },
+    {
+      "id": "obsidian",
+      "name": "Obsidian Pulse",
+      "accent": "#ff4d81",
+      "style": "radial-gradient(circle at 72% 18%,rgba(255,255,255,.18),transparent 18%),linear-gradient(145deg,#2a1022 0%,#11111e 52%,#252045 100%)",
+      "asset": "assets/backgrounds/obsidian-pulse.webp"
+    },
+    {
+      "id": "ocean",
+      "name": "Ocean Current",
+      "accent": "#69e6e8",
+      "style": "radial-gradient(circle at 70% 16%,rgba(202,255,255,.28),transparent 19%),linear-gradient(145deg,#0c3d5a 0%,#0b182b 52%,#14545c 100%)",
+      "asset": "assets/backgrounds/ocean-current.webp"
+    },
+    {
+      "id": "solar",
+      "name": "Solar Crown",
+      "accent": "#ffd76b",
+      "style": "radial-gradient(circle at 72% 18%,rgba(255,248,214,.34),transparent 20%),linear-gradient(145deg,#51330f 0%,#22140b 48%,#8d4d10 100%)",
+      "asset": "assets/backgrounds/solar-crown.webp"
+    },
+    {
+      "id": "rose",
+      "name": "Rose Nebula",
+      "accent": "#ff86b5",
+      "style": "radial-gradient(circle at 74% 18%,rgba(255,223,236,.28),transparent 19%),linear-gradient(145deg,#441530 0%,#161225 52%,#5d244b 100%)",
+      "asset": "assets/backgrounds/rose-nebula.webp"
+    },
+    {
+      "id": "forest",
+      "name": "Forest Relic",
+      "accent": "#89f0a7",
+      "style": "radial-gradient(circle at 71% 16%,rgba(229,255,233,.25),transparent 18%),linear-gradient(145deg,#0f3424 0%,#0f171e 52%,#35592d 100%)",
+      "asset": "assets/backgrounds/forest-relic.webp"
+    },
+    {
+      "id": "midnight",
+      "name": "Midnight Prism",
+      "accent": "#7da2ff",
+      "style": "radial-gradient(circle at 70% 18%,rgba(255,255,255,.2),transparent 17%),linear-gradient(145deg,#151a3f 0%,#0a1020 50%,#30205a 100%)",
+      "asset": "assets/backgrounds/midnight-prism.webp"
     }
   ],
   "frames": [
-    { "id": "royal", "name": "Royal Gold", "color": "#f3c969", "asset": "assets/frames/royal-gold.webp" },
-    { "id": "frost", "name": "Frost", "color": "#9cd9ff", "asset": "assets/frames/frost.webp" },
-    { "id": "void", "name": "Void", "color": "#ca95ff", "asset": "assets/frames/void.webp" },
-    { "id": "crimson", "name": "Crimson", "color": "#ff8b8b", "asset": "assets/frames/crimson.webp" }
+    { "id": "royal", "name": "Royal Gold", "color": "#f3c969", "altColor": "#ff9f5b", "style": "linear-gradient(135deg,#f8db81 0%,#f3c969 45%,#ff9f5b 100%)", "asset": "assets/frames/royal-gold.webp" },
+    { "id": "frost", "name": "Frost", "color": "#9cd9ff", "altColor": "#e8f6ff", "style": "linear-gradient(135deg,#e8f6ff 0%,#9cd9ff 50%,#6db3ff 100%)", "asset": "assets/frames/frost.webp" },
+    { "id": "void", "name": "Void", "color": "#ca95ff", "altColor": "#7d63ff", "style": "linear-gradient(135deg,#f0d7ff 0%,#ca95ff 48%,#7d63ff 100%)", "asset": "assets/frames/void.webp" },
+    { "id": "crimson", "name": "Crimson", "color": "#ff8b8b", "altColor": "#ffb56b", "style": "linear-gradient(135deg,#ffd1cf 0%,#ff8b8b 45%,#ffb56b 100%)", "asset": "assets/frames/crimson.webp" },
+    { "id": "emerald", "name": "Emerald", "color": "#82f1b8", "altColor": "#2ebd89", "style": "linear-gradient(135deg,#dcffe8 0%,#82f1b8 48%,#2ebd89 100%)", "asset": "assets/frames/emerald.webp" },
+    { "id": "pearl", "name": "Pearl", "color": "#f4f5ff", "altColor": "#d8dcff", "style": "linear-gradient(135deg,#ffffff 0%,#f4f5ff 50%,#d8dcff 100%)", "asset": "assets/frames/pearl.webp" },
+    { "id": "sunfire", "name": "Sunfire", "color": "#ffb347", "altColor": "#ff5f6d", "style": "linear-gradient(135deg,#ffe39c 0%,#ffb347 42%,#ff5f6d 100%)", "asset": "assets/frames/sunfire.webp" },
+    { "id": "nebula", "name": "Nebula", "color": "#7f7fd5", "altColor": "#86a8e7", "style": "linear-gradient(135deg,#c8c7ff 0%,#7f7fd5 42%,#86a8e7 72%,#91eae4 100%)", "asset": "assets/frames/nebula.webp" },
+    { "id": "tidal", "name": "Tidal", "color": "#4facfe", "altColor": "#00f2fe", "style": "linear-gradient(135deg,#b8ecff 0%,#4facfe 44%,#00f2fe 100%)", "asset": "assets/frames/tidal.webp" },
+    { "id": "blossom", "name": "Blossom", "color": "#f093fb", "altColor": "#f5576c", "style": "linear-gradient(135deg,#ffd7f6 0%,#f093fb 44%,#f5576c 100%)", "asset": "assets/frames/blossom.webp" }
   ],
   "emblems": [
     { "id": "burst", "name": "Burst", "token": "Burst", "asset": "assets/emblems/burst.webp" },

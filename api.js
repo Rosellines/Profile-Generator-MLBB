@@ -13,16 +13,16 @@
     if (!payload || typeof payload !== "object") {
       return [];
     }
-
     const candidates = [
-      payload.records,
-      payload.items,
       payload.data,
       payload.heroes,
+      payload.hero,
+      payload.results,
+      payload.result,
+      payload.items,
       payload.emblems,
-      payload.results
+      payload.emblem
     ];
-
     for (const candidate of candidates) {
       if (Array.isArray(candidate)) {
         return candidate;
@@ -31,322 +31,225 @@
         return candidate.data;
       }
     }
-
     return [];
   }
 
-  function joinUrl(baseUrl, endpoint, query) {
+  function joinUrl(baseUrl, endpoint) {
     if (!endpoint) {
       return "";
     }
-
-    const raw = /^https?:\/\//i.test(endpoint)
-      ? endpoint
-      : `${String(baseUrl || "").replace(/\/$/, "")}/${String(endpoint).replace(/^\//, "")}`;
-
-    const url = new URL(raw);
-    Object.entries(query || {}).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== "") {
-        url.searchParams.set(key, String(value));
-      }
-    });
-    return url.toString();
+    if (/^https?:\/\//i.test(endpoint)) {
+      return endpoint;
+    }
+    return `${String(baseUrl || "").replace(/\/$/, "")}/${String(endpoint).replace(/^\//, "")}`;
   }
 
-  async function fetchJsonWithMeta(url, timeoutMs) {
-    const startedAt = performance.now();
+  async function fetchJson(url, timeoutMs) {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs || 6000);
-
+    const timer = setTimeout(() => controller.abort(), timeoutMs || 5000);
     try {
       const response = await fetch(url, {
         method: "GET",
         headers: { Accept: "application/json" },
         signal: controller.signal
       });
-
-      let payload = null;
-      try {
-        payload = await response.json();
-      } catch (_error) {
-        payload = null;
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
       }
-
-      const latencyMs = Math.round(performance.now() - startedAt);
-      return {
-        ok: response.ok,
-        status: response.status,
-        latencyMs,
-        payload
-      };
-    } catch (error) {
-      const latencyMs = Math.round(performance.now() - startedAt);
-      throw Object.assign(new Error(error.name === "AbortError" ? "Timeout" : error.message || "Failed to fetch"), {
-        latencyMs,
-        causeName: error.name || "Error"
-      });
+      return await response.json();
     } finally {
       clearTimeout(timer);
     }
   }
 
-  async function probeProvider(provider, timeoutMs) {
-    const query = {
-      size: provider.size || 200,
-      index: provider.index || 1,
-      order: provider.order || "asc",
-      lang: provider.lang || "en"
-    };
-    const heroUrl = joinUrl(provider.baseUrl, provider.heroesEndpoint || provider.heroesUrl, query);
-    const emblemUrl = joinUrl(provider.baseUrl, provider.emblemsEndpoint || provider.emblemsUrl, {
-      size: provider.size || 200,
-      index: provider.index || 1,
-      lang: provider.lang || "en"
-    });
-
-    const diagnostic = {
-      id: provider.id || slugify(provider.name || "provider"),
-      provider: provider.name || provider.id || "Remote Provider",
-      baseUrl: provider.baseUrl || "-",
-      heroUrl,
-      emblemUrl,
-      heroStatus: "idle",
-      emblemStatus: "idle",
-      httpStatus: "-",
-      latencyMs: "-",
-      heroCount: 0,
-      emblemCount: 0,
-      lastCheckedAt: new Date().toISOString(),
-      error: ""
-    };
-
-    try {
-      const heroResult = await fetchJsonWithMeta(heroUrl, timeoutMs);
-      diagnostic.heroStatus = heroResult.ok ? "ok" : "error";
-      diagnostic.httpStatus = heroResult.status;
-      diagnostic.latencyMs = heroResult.latencyMs;
-      diagnostic.heroCount = coerceArray(heroResult.payload).length;
-
-      if (!heroResult.ok) {
-        diagnostic.error = `Heroes HTTP ${heroResult.status}`;
-        return diagnostic;
-      }
-
-      if (emblemUrl) {
-        try {
-          const emblemResult = await fetchJsonWithMeta(emblemUrl, timeoutMs);
-          diagnostic.emblemStatus = emblemResult.ok ? "ok" : "error";
-          diagnostic.emblemCount = coerceArray(emblemResult.payload).length;
-          if (emblemResult.ok) {
-            diagnostic.httpStatus = `${heroResult.status}/${emblemResult.status}`;
-            diagnostic.latencyMs = Math.max(heroResult.latencyMs, emblemResult.latencyMs);
-          } else {
-            diagnostic.error = `Emblems HTTP ${emblemResult.status}`;
-          }
-        } catch (error) {
-          diagnostic.emblemStatus = "error";
-          diagnostic.error = error.message;
-        }
-      }
-
-      if (!diagnostic.error) {
-        diagnostic.error = "";
-      }
-
-      return diagnostic;
-    } catch (error) {
-      diagnostic.heroStatus = "error";
-      diagnostic.httpStatus = "network";
-      diagnostic.latencyMs = error.latencyMs || "-";
-      diagnostic.error = error.message || "Failed to fetch";
-      return diagnostic;
-    }
+  function fallbackHeroStyle(index) {
+    const palettes = [
+      "radial-gradient(circle at 56% 45%,rgba(116,86,255,.95),transparent 34%)",
+      "radial-gradient(circle at 56% 45%,rgba(105,241,255,.95),transparent 34%)",
+      "radial-gradient(circle at 56% 45%,rgba(255,138,193,.95),transparent 34%)",
+      "radial-gradient(circle at 56% 45%,rgba(255,122,122,.95),transparent 34%)",
+      "radial-gradient(circle at 56% 45%,rgba(197,223,255,.95),transparent 34%)"
+    ];
+    return `${palettes[index % palettes.length]},linear-gradient(135deg,transparent 20%,rgba(255,255,255,.28) 43%,transparent 56%),linear-gradient(160deg,rgba(255,255,255,.15),rgba(255,255,255,0) 34%)`;
   }
 
-  function extractHeroId(value) {
-    if (value === undefined || value === null || value === "") {
-      return "";
-    }
-    return String(value);
+  function fallbackSkinStyle(index) {
+    const palettes = [
+      "radial-gradient(circle at 58% 42%,rgba(158,137,255,1),transparent 34%)",
+      "radial-gradient(circle at 58% 42%,rgba(124,211,255,1),transparent 34%)",
+      "radial-gradient(circle at 58% 42%,rgba(87,255,160,1),transparent 34%)",
+      "radial-gradient(circle at 58% 42%,rgba(255,201,120,1),transparent 34%)",
+      "radial-gradient(circle at 58% 42%,rgba(255,145,183,1),transparent 34%)"
+    ];
+    return `${palettes[index % palettes.length]},linear-gradient(125deg,transparent 18%,rgba(255,255,255,.34) 43%,transparent 56%)`;
   }
 
-  function extractNamedEntries(payload, fieldKeys, nestedKeys) {
-    return coerceArray(payload)
-      .map((item) => {
-        if (typeof item === "string") {
-          return item;
-        }
-
-        const directValue = fieldKeys
-          .map((key) => item?.[key])
-          .find((value) => typeof value === "string" && value.trim());
-        if (directValue) {
-          return directValue.trim();
-        }
-
-        const nestedValue = nestedKeys
-          .map((path) => path.reduce((current, key) => current?.[key], item))
-          .find((value) => typeof value === "string" && value.trim());
-        return nestedValue ? nestedValue.trim() : "";
-      })
-      .filter(Boolean);
-  }
-
-  async function fetchHeroes(provider, timeoutMs) {
-    const query = {
-      size: provider.size || 200,
-      index: provider.index || 1,
-      order: provider.order || "asc",
-      lang: provider.lang || "en"
-    };
-    const heroUrl = joinUrl(provider.baseUrl, provider.heroesEndpoint || provider.heroesUrl, query);
-    const heroResult = await fetchJsonWithMeta(heroUrl, timeoutMs);
-
-    if (!heroResult.ok) {
-      throw new Error(`Heroes HTTP ${heroResult.status}`);
+  function normalizeSkin(skin, index, heroName) {
+    if (typeof skin === "string") {
+      return {
+        id: slugify(skin),
+        name: skin,
+        rarity: "Unknown",
+        style: fallbackSkinStyle(index),
+        asset: `assets/skins/${slugify(heroName)}/${slugify(skin)}.webp`
+      };
     }
 
+    const name = skin.name || skin.skin_name || skin.title || skin.label || `Skin ${index + 1}`;
     return {
-      heroUrl,
-      listPayload: heroResult.payload
-    };
-  }
-
-  async function fetchHeroDetail(provider, heroIdentifier, timeoutMs) {
-    const detailEndpointTemplate = provider.heroDetailEndpoint || "/heroes/{hero_identifier}";
-    if (!heroIdentifier || !detailEndpointTemplate) {
-      throw new Error("Missing hero identifier for detail request.");
-    }
-
-    const detailEndpoint = String(detailEndpointTemplate).replace("{hero_identifier}", encodeURIComponent(heroIdentifier));
-    const detailUrl = joinUrl(provider.baseUrl, detailEndpoint, {
-      size: provider.detailSize || 1,
-      index: provider.detailIndex || 1,
-      lang: provider.lang || "en"
-    });
-    const detailResult = await fetchJsonWithMeta(detailUrl, timeoutMs);
-    if (!detailResult.ok) {
-      throw new Error(`Hero detail HTTP ${detailResult.status}`);
-    }
-    return detailResult.payload;
-  }
-
-  function normalizeHero(raw) {
-    const listRecord = raw?.listRecord || raw?.list || raw;
-    const detailInput = raw?.detailRecord || raw?.detail || null;
-    const detailRecord = Array.isArray(detailInput) ? detailInput[0] : detailInput;
-    const listHero = listRecord?.data?.hero?.data || listRecord?.hero?.data || listRecord?.data || listRecord || {};
-    const detailRoot = detailRecord?.data || detailRecord || {};
-    const detailHero = detailRoot?.hero?.data || detailRoot?.hero || detailRoot || {};
-
-    const heroId = extractHeroId(
-      detailHero.heroid ||
-      detailHero.hero_id ||
-      detailRoot.heroid ||
-      detailRoot.hero_id ||
-      listHero.hero_id ||
-      listHero.heroid ||
-      raw?.hero_id ||
-      raw?.heroid
-    );
-    const name = String(detailHero.name || detailRoot.name || listHero.name || raw?.name || heroId).trim();
-    const roles = extractNamedEntries(
-      detailHero.sortid || detailRoot.sortid,
-      ["sort_title", "name", "title"],
-      [["data", "sort_title"], ["data", "name"], ["data", "title"]]
-    );
-    const specialty = extractNamedEntries(
-      detailHero.speciality || detailHero.specialty || detailRoot.speciality || detailRoot.specialty,
-      ["tagname", "name", "title"],
-      [["data", "tagname"], ["data", "name"], ["data", "title"]]
-    );
-
-    return {
-      id: slugify(name || heroId),
-      apiHeroId: heroId,
+      id: slugify(skin.id || skin.skin_id || name),
       name,
-      roles,
-      specialty,
-      portrait: detailRoot.head_big || detailRoot.head || listHero.head || "",
-      artwork: detailHero.painting || detailRoot.painting || "",
-      addedAt: listRecord?._updatedAt || listRecord?.updatedAt || detailRecord?._updatedAt || detailRecord?.updatedAt || ""
+      rarity: skin.rarity || skin.type || skin.tier || "Unknown",
+      style: skin.style || fallbackSkinStyle(index),
+      asset: skin.asset || skin.image || skin.icon || `assets/skins/${slugify(heroName)}/${slugify(name)}.webp`
     };
   }
 
-  function normalizeHeroList(payload) {
-    const listRecords = coerceArray(payload?.listPayload || payload);
+  function normalizeHero(hero, index, localHero) {
+    const name = hero.name || hero.hero_name || hero.title || hero.label || localHero?.name || `Hero ${index + 1}`;
+    const remoteSkins = coerceArray(hero.skins || hero.skin || hero.cosmetics || hero.appearances);
+    const localSkins = Array.isArray(localHero?.skins) ? localHero.skins : [];
+    const skinsSource = remoteSkins.length ? remoteSkins : localSkins.length ? localSkins : [{ name: "Core", rarity: "Base" }];
+    const skins = skinsSource.map((skin, skinIndex) => normalizeSkin(skin, skinIndex, name));
 
-    const seen = new Set();
-    return listRecords
-      .map((listRecord) => {
-        const listHero = listRecord?.data?.hero?.data || listRecord?.hero?.data || listRecord?.data || {};
-        return normalizeHero({
-          listRecord,
-          detailRecord: null
-        });
-      })
-      .filter((hero) => {
-        if (!hero.name || seen.has(hero.id)) {
-          return false;
-        }
-        seen.add(hero.id);
-        return true;
-      });
+    return {
+      id: slugify(hero.id || hero.hero_id || hero.key || name),
+      name,
+      style: hero.style || localHero?.style || fallbackHeroStyle(index),
+      asset: hero.asset || hero.image || hero.portrait || localHero?.asset || `assets/heroes/${slugify(name)}/base.webp`,
+      skins
+    };
   }
 
-  async function probeProviders(apiConfig) {
-    const providers = Array.isArray(apiConfig?.providers) ? apiConfig.providers : [];
-    const timeoutMs = apiConfig?.timeoutMs || 6000;
+  function normalizeEmblem(emblem, index, localEmblem) {
+    const name = emblem.name || emblem.emblem_name || emblem.title || localEmblem?.name || `Emblem ${index + 1}`;
+    return {
+      id: slugify(emblem.id || emblem.emblem_id || emblem.key || name),
+      name,
+      token: emblem.token || emblem.short_name || emblem.short || localEmblem?.token || name,
+      asset: emblem.asset || emblem.icon || localEmblem?.asset || `assets/emblems/${slugify(name)}.webp`
+    };
+  }
 
-    if (!apiConfig?.enabled || !providers.length) {
+  function dedupeById(items) {
+    const map = new Map();
+    items.forEach((item) => {
+      if (item && item.id && !map.has(item.id)) {
+        map.set(item.id, item);
+      }
+    });
+    return [...map.values()];
+  }
+
+  async function tryProvider(provider, baseManifest, timeoutMs) {
+    const heroUrl = joinUrl(provider.baseUrl, provider.heroesEndpoint || provider.heroesUrl);
+    const emblemUrl = joinUrl(provider.baseUrl, provider.emblemsEndpoint || provider.emblemsUrl);
+
+    if (!heroUrl) {
+      throw new Error("Provider tidak punya heroes endpoint.");
+    }
+
+    const localHeroMap = new Map((baseManifest.heroes || []).map((hero) => [slugify(hero.id || hero.name), hero]));
+    const localEmblemMap = new Map((baseManifest.emblems || []).map((emblem) => [slugify(emblem.id || emblem.name), emblem]));
+
+    const remoteHeroesPayload = await fetchJson(heroUrl, timeoutMs);
+    const remoteHeroRecords = coerceArray(remoteHeroesPayload);
+    if (!remoteHeroRecords.length) {
+      throw new Error("Heroes payload kosong.");
+    }
+
+    let remoteEmblems = [];
+    let emblemError = null;
+    if (emblemUrl) {
+      try {
+        const remoteEmblemsPayload = await fetchJson(emblemUrl, timeoutMs);
+        remoteEmblems = coerceArray(remoteEmblemsPayload);
+      } catch (error) {
+        emblemError = error;
+      }
+    }
+
+    const normalizedHeroes = remoteHeroRecords.map((hero, index) => {
+      const heroId = slugify(hero.id || hero.hero_id || hero.key || hero.name || hero.hero_name || `hero-${index + 1}`);
+      return normalizeHero(hero, index, localHeroMap.get(heroId));
+    });
+
+    const normalizedEmblems = remoteEmblems.length
+      ? remoteEmblems.map((emblem, index) => {
+          const emblemId = slugify(emblem.id || emblem.emblem_id || emblem.key || emblem.name || `emblem-${index + 1}`);
+          return normalizeEmblem(emblem, index, localEmblemMap.get(emblemId));
+        })
+      : baseManifest.emblems || [];
+
+    const localHeroRemainder = (baseManifest.heroes || []).filter((hero) => !normalizedHeroes.some((item) => item.id === hero.id));
+    const localEmblemRemainder = (baseManifest.emblems || []).filter((emblem) => !normalizedEmblems.some((item) => item.id === emblem.id));
+
+    return {
+      manifest: {
+        ...baseManifest,
+        heroes: dedupeById([...normalizedHeroes, ...localHeroRemainder]),
+        emblems: dedupeById([...normalizedEmblems, ...localEmblemRemainder])
+      },
+      status: {
+        mode: emblemError ? "partial" : "online",
+        provider: provider.name || provider.id || "Remote API",
+        sourceId: provider.id || "remote",
+        heroCount: normalizedHeroes.length,
+        emblemCount: normalizedEmblems.length,
+        message: emblemError
+          ? "Hero remote berhasil, emblem fallback lokal."
+          : "Hero dan emblem berhasil dimuat dari remote.",
+        checkedAt: new Date().toISOString()
+      }
+    };
+  }
+
+  async function enrichManifest(baseManifest) {
+    const manifest = JSON.parse(JSON.stringify(baseManifest || {}));
+    const apiConfig = manifest.api || {};
+    const providers = Array.isArray(apiConfig.providers) ? apiConfig.providers : [];
+    const timeoutMs = apiConfig.timeoutMs || 5000;
+
+    if (!apiConfig.enabled || !providers.length) {
       return {
-        mode: "local",
-        badge: "LOCAL DATABASE",
-        message: "Local database aktif. Remote API dimatikan.",
-        diagnostics: []
+        manifest,
+        status: {
+          mode: "disabled",
+          provider: "Local manifest",
+          sourceId: "local",
+          heroCount: (manifest.heroes || []).length,
+          emblemCount: (manifest.emblems || []).length,
+          message: "API dimatikan di manifest, pakai data lokal.",
+          checkedAt: new Date().toISOString()
+        }
       };
     }
 
-    const diagnostics = [];
+    const errors = [];
     for (const provider of providers) {
-      diagnostics.push(await probeProvider(provider, timeoutMs));
-    }
-
-    const hasSuccess = diagnostics.some((item) => item.heroStatus === "ok");
-    const hasPartial = diagnostics.some((item) => item.heroStatus === "ok" || item.emblemStatus === "ok");
-
-    if (hasSuccess) {
-      return {
-        mode: "remote",
-        badge: "REMOTE AVAILABLE",
-        message: "Local database aktif. Metadata remote tersedia sebagai update opsional.",
-        diagnostics
-      };
-    }
-
-    if (hasPartial) {
-      return {
-        mode: "partial",
-        badge: "REMOTE AVAILABLE",
-        message: "Local database aktif. Sebagian endpoint remote merespons.",
-        diagnostics
-      };
+      try {
+        return await tryProvider(provider, manifest, timeoutMs);
+      } catch (error) {
+        errors.push(`${provider.name || provider.id || "provider"}: ${error.message}`);
+      }
     }
 
     return {
-      mode: "offline",
-      badge: "REMOTE OFFLINE",
-      message: "Local database aktif. Remote API sedang offline atau diblokir browser.",
-      diagnostics
+      manifest,
+      status: {
+        mode: "fallback",
+        provider: "Local fallback",
+        sourceId: "local",
+        heroCount: (manifest.heroes || []).length,
+        emblemCount: (manifest.emblems || []).length,
+        message: errors.length ? `Remote gagal. ${errors.join(" | ")}` : "Remote gagal, pakai data lokal.",
+        checkedAt: new Date().toISOString()
+      }
     };
   }
 
   window.MLBBApi = {
-    probeProviders,
-    fetchHeroes,
-    fetchHeroDetail,
-    normalizeHero,
-    normalizeHeroList,
+    enrichManifest,
     slugify
   };
 })();
