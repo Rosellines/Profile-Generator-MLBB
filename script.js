@@ -66,6 +66,7 @@ const state = {
   data: null,
   appConfig: null,
   apiStatus: null,
+  heroDataStatus: { source: "local", error: "", count: 0, hasImageUrl: false },
   diagnostics: [],
   filters: { query: "", sort: "az" },
   selections: {},
@@ -205,6 +206,34 @@ async function loadAppConfig() {
   } catch (_error) {
     return { api: { enabled: false, providers: [] } };
   }
+}
+
+async function loadRemoteHeroes() {
+  const apiConfig = state.appConfig?.api;
+  if (!apiConfig?.enabled) {
+    throw new Error("Hero API is disabled in manifest.json.");
+  }
+
+  const provider = (Array.isArray(apiConfig.providers) ? apiConfig.providers : [])
+    .find((item) => item && item.enabled !== false);
+  if (!provider) {
+    throw new Error("No enabled hero API provider is configured.");
+  }
+
+  if (!window.MLBBApi?.fetchHeroes || !window.MLBBApi?.normalizeHeroList) {
+    throw new Error("MLBBApi hero helpers are unavailable.");
+  }
+
+  const payload = await window.MLBBApi.fetchHeroes(provider, apiConfig.timeoutMs);
+  const normalizedHeroes = window.MLBBApi.normalizeHeroList(payload);
+  console.log("[MLBB API] heroes:", normalizedHeroes.length);
+  console.log("[MLBB API] sample hero:", normalizedHeroes[0]);
+
+  if (!normalizedHeroes.length) {
+    throw new Error("Remote hero API returned zero heroes.");
+  }
+
+  return normalizedHeroes;
 }
 
 function buildTitles(roles) {
@@ -691,9 +720,17 @@ function render() {
   refs.card.style.setProperty("--accent", refs.accent.value);
   refs.card.style.setProperty("--frame", frameCss.shadow);
   refs.card.className = `profile-card ratio-${state.selections.mode} effect-${state.selections.effect}`;
+  refs.avatarLayer.style.isolation = "isolate";
+  refs.avatarImg.style.zIndex = "1";
+  refs.frameOut.style.zIndex = "2";
+  refs.badgeOut.style.zIndex = "3";
   refs.frameOut.style.border = "4px solid transparent";
   refs.frameOut.style.background = `linear-gradient(#09111d,#09111d) padding-box, ${frameCss.fill} border-box`;
-  refs.frameOut.style.boxShadow = `0 0 0 2px rgba(255,255,255,.18) inset, 0 0 30px ${hexToRgba(frameCss.shadow, 0.45)}`;
+  refs.frameOut.style.boxShadow = [
+    "0 0 0 2px rgba(255,255,255,.18) inset",
+    `0 0 30px ${hexToRgba(frameCss.shadow, 0.45)}`,
+    state.selections.effect === "glow" ? `0 0 18px ${hexToRgba(refs.accent.value, 0.4)}` : ""
+  ].filter(Boolean).join(", ");
   refs.badgeOut.textContent = badge.name;
   refs.badgeOut.style.background = `linear-gradient(135deg, ${badge.accent || frameCss.shadow}, ${refs.accent.value})`;
   refs.emblemOut.textContent = emblem.token || emblem.name;
@@ -826,8 +863,12 @@ function updateApiStatus(result) {
 
   refs.apiBadge.className = `api-pill ${badgeClass}`;
   refs.apiBadge.textContent = result.badge || "LOCAL DATABASE";
-  refs.apiStatusText.textContent = result.message || "Local database aktif.";
-  refs.apiSourceText.textContent = `Source: ${result.mode === "remote" || result.mode === "partial" ? "local + optional remote" : "local database"}`;
+  refs.apiStatusText.textContent = state.heroDataStatus.source === "remote"
+    ? "REMOTE HERO DATA LOADED"
+    : `LOCAL HERO FALLBACK${state.heroDataStatus.error ? ` (${state.heroDataStatus.error})` : ""}`;
+  refs.apiSourceText.textContent = state.heroDataStatus.source === "remote"
+    ? "Source: heroes=remote api, other data=local database"
+    : "Source: heroes=local fallback, other data=local database";
 
   refs.apiDiagnosticsList.innerHTML = state.diagnostics.length
     ? state.diagnostics.map((item) => `
@@ -849,8 +890,12 @@ async function refreshApiStatus() {
   refs.refreshApiBtn.textContent = "Refreshing...";
   refs.apiBadge.className = "api-pill api-idle";
   refs.apiBadge.textContent = "CHECKING...";
-  refs.apiStatusText.textContent = "Mengecek provider remote opsional...";
-  refs.apiSourceText.textContent = "Source: local database";
+  refs.apiStatusText.textContent = state.heroDataStatus.source === "remote"
+    ? "REMOTE HERO DATA LOADED"
+    : "LOCAL HERO FALLBACK";
+  refs.apiSourceText.textContent = state.heroDataStatus.source === "remote"
+    ? "Source: heroes=remote api, other data=local database"
+    : "Source: heroes=local fallback, other data=local database";
 
   const fallback = {
     mode: "local",
@@ -1376,8 +1421,29 @@ async function init() {
     loadAppConfig()
   ]);
 
-  state.data = enrichDatabase(db);
   state.appConfig = appConfig;
+  try {
+    const remoteHeroes = await loadRemoteHeroes();
+    db.heroes = {
+      ...db.heroes,
+      heroes: remoteHeroes
+    };
+    state.heroDataStatus = {
+      source: "remote",
+      error: "",
+      count: remoteHeroes.length,
+      hasImageUrl: remoteHeroes.some((hero) => Boolean(hero.artwork || hero.portrait))
+    };
+  } catch (error) {
+    state.heroDataStatus = {
+      source: "local",
+      error: error.message || "Remote hero API failed.",
+      count: Array.isArray(db.heroes?.heroes) ? db.heroes.heroes.length : 0,
+      hasImageUrl: Array.isArray(db.heroes?.heroes) ? db.heroes.heroes.some((hero) => Boolean(hero.artwork || hero.portrait)) : false
+    };
+  }
+
+  state.data = enrichDatabase(db);
   createDefaultSelections();
   restoreSavedState();
   ensureSelectionsValid();
@@ -1389,9 +1455,9 @@ async function init() {
   syncLayerControls();
   render();
   updateApiStatus({
-    mode: "local",
-    badge: "LOCAL DATABASE",
-    message: "Local database aktif. Remote sedang dicek sebagai update opsional.",
+    mode: state.heroDataStatus.source === "remote" ? "remote" : "local",
+    badge: state.heroDataStatus.source === "remote" ? "REMOTE AVAILABLE" : "LOCAL DATABASE",
+    message: state.heroDataStatus.source === "remote" ? "REMOTE HERO DATA LOADED" : "LOCAL HERO FALLBACK",
     diagnostics: []
   });
   await refreshApiStatus();

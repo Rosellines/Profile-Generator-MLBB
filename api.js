@@ -163,6 +163,177 @@
     }
   }
 
+  function extractHeroId(value) {
+    if (value === undefined || value === null || value === "") {
+      return "";
+    }
+    return String(value);
+  }
+
+  function extractNamedEntries(payload, fieldKeys, nestedKeys) {
+    return coerceArray(payload)
+      .map((item) => {
+        if (typeof item === "string") {
+          return item;
+        }
+
+        const directValue = fieldKeys
+          .map((key) => item?.[key])
+          .find((value) => typeof value === "string" && value.trim());
+        if (directValue) {
+          return directValue.trim();
+        }
+
+        const nestedValue = nestedKeys
+          .map((path) => path.reduce((current, key) => current?.[key], item))
+          .find((value) => typeof value === "string" && value.trim());
+        return nestedValue ? nestedValue.trim() : "";
+      })
+      .filter(Boolean);
+  }
+
+  async function fetchHeroes(provider, timeoutMs) {
+    const query = {
+      size: provider.size || 200,
+      index: provider.index || 1,
+      order: provider.order || "asc",
+      lang: provider.lang || "en"
+    };
+    const heroUrl = joinUrl(provider.baseUrl, provider.heroesEndpoint || provider.heroesUrl, query);
+    const heroResult = await fetchJsonWithMeta(heroUrl, timeoutMs);
+
+    if (!heroResult.ok) {
+      throw new Error(`Heroes HTTP ${heroResult.status}`);
+    }
+
+    const listRecords = coerceArray(heroResult.payload);
+    const detailEndpointTemplate = provider.heroDetailEndpoint || "/heroes/{hero_identifier}";
+    const detailPayloads = await Promise.all(listRecords.map(async (record) => {
+      const listHero = record?.data?.hero?.data || record?.hero?.data || record?.data || {};
+      const heroIdentifier = extractHeroId(listHero.hero_id || listHero.heroid || record?.hero_id || record?.heroid);
+
+      if (!heroIdentifier || !detailEndpointTemplate) {
+        return {
+          heroIdentifier,
+          ok: false,
+          status: 0,
+          payload: null,
+          url: "",
+          error: "Missing hero identifier for detail request."
+        };
+      }
+
+      const detailEndpoint = String(detailEndpointTemplate).replace("{hero_identifier}", encodeURIComponent(heroIdentifier));
+      const detailUrl = joinUrl(provider.baseUrl, detailEndpoint, {
+        size: provider.detailSize || 1,
+        index: provider.detailIndex || 1,
+        lang: provider.lang || "en"
+      });
+
+      try {
+        const detailResult = await fetchJsonWithMeta(detailUrl, timeoutMs);
+        return {
+          heroIdentifier,
+          ok: detailResult.ok,
+          status: detailResult.status,
+          payload: detailResult.payload,
+          url: detailUrl,
+          error: detailResult.ok ? "" : `Hero detail HTTP ${detailResult.status}`
+        };
+      } catch (error) {
+        return {
+          heroIdentifier,
+          ok: false,
+          status: 0,
+          payload: null,
+          url: detailUrl,
+          error: error.message || "Failed to fetch hero detail."
+        };
+      }
+    }));
+
+    return {
+      heroUrl,
+      listPayload: heroResult.payload,
+      detailPayloads
+    };
+  }
+
+  function normalizeHero(raw) {
+    const listRecord = raw?.listRecord || raw?.list || raw;
+    const detailRecord = raw?.detailRecord || raw?.detail || null;
+    const listHero = listRecord?.data?.hero?.data || listRecord?.hero?.data || listRecord?.data || listRecord || {};
+    const detailRoot = detailRecord?.data || detailRecord || {};
+    const detailHero = detailRoot?.hero?.data || detailRoot?.hero || detailRoot || {};
+
+    const heroId = extractHeroId(
+      detailHero.heroid ||
+      detailHero.hero_id ||
+      detailRoot.heroid ||
+      detailRoot.hero_id ||
+      listHero.hero_id ||
+      listHero.heroid ||
+      raw?.hero_id ||
+      raw?.heroid
+    );
+    const name = String(detailHero.name || detailRoot.name || listHero.name || raw?.name || heroId).trim();
+    const roles = extractNamedEntries(
+      detailHero.sortid || detailRoot.sortid,
+      ["sort_title", "name", "title"],
+      [["data", "sort_title"], ["data", "name"], ["data", "title"]]
+    );
+    const specialty = extractNamedEntries(
+      detailHero.speciality || detailHero.specialty || detailRoot.speciality || detailRoot.specialty,
+      ["tagname", "name", "title"],
+      [["data", "tagname"], ["data", "name"], ["data", "title"]]
+    );
+
+    return {
+      id: slugify(name || heroId),
+      apiHeroId: heroId,
+      name,
+      roles: roles.length ? roles : ["Unknown"],
+      specialty,
+      portrait: detailRoot.head_big || detailRoot.head || listHero.head || "",
+      artwork: detailHero.painting || detailRoot.painting || "",
+      addedAt: listRecord?._updatedAt || listRecord?.updatedAt || detailRecord?._updatedAt || detailRecord?.updatedAt || ""
+    };
+  }
+
+  function normalizeHeroList(payload) {
+    const listRecords = coerceArray(payload?.listPayload || payload);
+    const detailResults = Array.isArray(payload?.detailPayloads) ? payload.detailPayloads : [];
+    const detailMap = new Map();
+
+    detailResults.forEach((result) => {
+      if (!result?.heroIdentifier || !result?.payload) {
+        return;
+      }
+      const detailRecord = coerceArray(result.payload)[0];
+      if (detailRecord) {
+        detailMap.set(String(result.heroIdentifier), detailRecord);
+      }
+    });
+
+    const seen = new Set();
+    return listRecords
+      .map((listRecord) => {
+        const listHero = listRecord?.data?.hero?.data || listRecord?.hero?.data || listRecord?.data || {};
+        const heroIdentifier = extractHeroId(listHero.hero_id || listHero.heroid || listRecord?.hero_id || listRecord?.heroid);
+        return normalizeHero({
+          listRecord,
+          detailRecord: detailMap.get(heroIdentifier) || null
+        });
+      })
+      .filter((hero) => {
+        if (!hero.name || seen.has(hero.id)) {
+          return false;
+        }
+        seen.add(hero.id);
+        return true;
+      });
+  }
+
   async function probeProviders(apiConfig) {
     const providers = Array.isArray(apiConfig?.providers) ? apiConfig.providers : [];
     const timeoutMs = apiConfig?.timeoutMs || 6000;
@@ -212,6 +383,9 @@
 
   window.MLBBApi = {
     probeProviders,
+    fetchHeroes,
+    normalizeHero,
+    normalizeHeroList,
     slugify
   };
 })();
