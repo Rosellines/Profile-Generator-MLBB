@@ -1,16 +1,16 @@
 {
-  "version": 3,
+  "version": 4,
   "note": "Asset manifest untuk MLBB Flex Profile Studio. Ganti placeholder style/path dengan asset yang kamu punya izin gunakan.",
   "api": {
     "enabled": true,
-    "timeoutMs": 5000,
+    "timeoutMs": 2500,
     "providers": [
       {
-        "id": "primary",
+        "id": "primary-rone",
         "name": "Primary MLBB API",
-        "baseUrl": "https://api-mobilelegends.vercel.app",
-        "heroesEndpoint": "/api/heroes",
-        "emblemsEndpoint": "/api/emblem"
+        "baseUrl": "https://mlbb.rone.dev",
+        "heroesEndpoint": "/api/heroes?size=200&index=1&order=asc&lang=en",
+        "emblemsEndpoint": "/api/academy/emblems?lang=en"
       },
       {
         "id": "fallback",
@@ -115,28 +115,134 @@
     }
   ],
   "frames": [
-    { "id": "royal", "name": "Royal Gold", "color": "#f3c969", "altColor": "#ff9f5b", "style": "linear-gradient(135deg,#f8db81 0%,#f3c969 45%,#ff9f5b 100%)", "asset": "assets/frames/royal-gold.webp" },
-    { "id": "frost", "name": "Frost", "color": "#9cd9ff", "altColor": "#e8f6ff", "style": "linear-gradient(135deg,#e8f6ff 0%,#9cd9ff 50%,#6db3ff 100%)", "asset": "assets/frames/frost.webp" },
-    { "id": "void", "name": "Void", "color": "#ca95ff", "altColor": "#7d63ff", "style": "linear-gradient(135deg,#f0d7ff 0%,#ca95ff 48%,#7d63ff 100%)", "asset": "assets/frames/void.webp" },
-    { "id": "crimson", "name": "Crimson", "color": "#ff8b8b", "altColor": "#ffb56b", "style": "linear-gradient(135deg,#ffd1cf 0%,#ff8b8b 45%,#ffb56b 100%)", "asset": "assets/frames/crimson.webp" },
-    { "id": "emerald", "name": "Emerald", "color": "#82f1b8", "altColor": "#2ebd89", "style": "linear-gradient(135deg,#dcffe8 0%,#82f1b8 48%,#2ebd89 100%)", "asset": "assets/frames/emerald.webp" },
-    { "id": "pearl", "name": "Pearl", "color": "#f4f5ff", "altColor": "#d8dcff", "style": "linear-gradient(135deg,#ffffff 0%,#f4f5ff 50%,#d8dcff 100%)", "asset": "assets/frames/pearl.webp" },
-    { "id": "sunfire", "name": "Sunfire", "color": "#ffb347", "altColor": "#ff5f6d", "style": "linear-gradient(135deg,#ffe39c 0%,#ffb347 42%,#ff5f6d 100%)", "asset": "assets/frames/sunfire.webp" },
-    { "id": "nebula", "name": "Nebula", "color": "#7f7fd5", "altColor": "#86a8e7", "style": "linear-gradient(135deg,#c8c7ff 0%,#7f7fd5 42%,#86a8e7 72%,#91eae4 100%)", "asset": "assets/frames/nebula.webp" },
-    { "id": "tidal", "name": "Tidal", "color": "#4facfe", "altColor": "#00f2fe", "style": "linear-gradient(135deg,#b8ecff 0%,#4facfe 44%,#00f2fe 100%)", "asset": "assets/frames/tidal.webp" },
-    { "id": "blossom", "name": "Blossom", "color": "#f093fb", "altColor": "#f5576c", "style": "linear-gradient(135deg,#ffd7f6 0%,#f093fb 44%,#f5576c 100%)", "asset": "assets/frames/blossom.webp" }
+    {
+      "id": "royal",
+      "name": "Royal Gold",
+      "color": "#f3c969",
+      "altColor": "#ff9f5b",
+      "style": "linear-gradient(135deg,#f8db81 0%,#f3c969 45%,#ff9f5b 100%)",
+      "asset": "assets/frames/royal-gold.webp"
+    },
+    {
+      "id": "frost",
+      "name": "Frost",
+      "color": "#9cd9ff",
+      "altColor": "#e8f6ff",
+      "style": "linear-gradient(135deg,#e8f6ff 0%,#9cd9ff 50%,#6db3ff 100%)",
+      "asset": "assets/frames/frost.webp"
+    },
+    {
+      "id": "void",
+      "name": "Void",
+      "color": "#ca95ff",
+      "altColor": "#7d63ff",
+      "style": "linear-gradient(135deg,#f0d7ff 0%,#ca95ff 48%,#7d63ff 100%)",
+      "asset": "assets/frames/void.webp"
+    },
+    {
+      "id": "crimson",
+      "name": "Crimson",
+      "color": "#ff8b8b",
+      "altColor": "#ffb56b",
+      "style": "linear-gradient(135deg,#ffd1cf 0%,#ff8b8b 45%,#ffb56b 100%)",
+      "asset": "assets/frames/crimson.webp"
+    },
+    {
+      "id": "emerald",
+      "name": "Emerald",
+      "color": "#82f1b8",
+      "altColor": "#2ebd89",
+      "style": "linear-gradient(135deg,#dcffe8 0%,#82f1b8 48%,#2ebd89 100%)",
+      "asset": "assets/frames/emerald.webp"
+    },
+    {
+      "id": "pearl",
+      "name": "Pearl",
+      "color": "#f4f5ff",
+      "altColor": "#d8dcff",
+      "style": "linear-gradient(135deg,#ffffff 0%,#f4f5ff 50%,#d8dcff 100%)",
+      "asset": "assets/frames/pearl.webp"
+    },
+    {
+      "id": "sunfire",
+      "name": "Sunfire",
+      "color": "#ffb347",
+      "altColor": "#ff5f6d",
+      "style": "linear-gradient(135deg,#ffe39c 0%,#ffb347 42%,#ff5f6d 100%)",
+      "asset": "assets/frames/sunfire.webp"
+    },
+    {
+      "id": "nebula",
+      "name": "Nebula",
+      "color": "#7f7fd5",
+      "altColor": "#86a8e7",
+      "style": "linear-gradient(135deg,#c8c7ff 0%,#7f7fd5 42%,#86a8e7 72%,#91eae4 100%)",
+      "asset": "assets/frames/nebula.webp"
+    },
+    {
+      "id": "tidal",
+      "name": "Tidal",
+      "color": "#4facfe",
+      "altColor": "#00f2fe",
+      "style": "linear-gradient(135deg,#b8ecff 0%,#4facfe 44%,#00f2fe 100%)",
+      "asset": "assets/frames/tidal.webp"
+    },
+    {
+      "id": "blossom",
+      "name": "Blossom",
+      "color": "#f093fb",
+      "altColor": "#f5576c",
+      "style": "linear-gradient(135deg,#ffd7f6 0%,#f093fb 44%,#f5576c 100%)",
+      "asset": "assets/frames/blossom.webp"
+    }
   ],
   "emblems": [
-    { "id": "burst", "name": "Burst", "token": "Burst", "asset": "assets/emblems/burst.webp" },
-    { "id": "assassin", "name": "Assassin", "token": "Assassin", "asset": "assets/emblems/assassin.webp" },
-    { "id": "mage", "name": "Mage", "token": "Mage", "asset": "assets/emblems/mage.webp" },
-    { "id": "marksman", "name": "Marksman", "token": "MM", "asset": "assets/emblems/marksman.webp" }
+    {
+      "id": "burst",
+      "name": "Burst",
+      "token": "Burst",
+      "asset": "assets/emblems/burst.webp"
+    },
+    {
+      "id": "assassin",
+      "name": "Assassin",
+      "token": "Assassin",
+      "asset": "assets/emblems/assassin.webp"
+    },
+    {
+      "id": "mage",
+      "name": "Mage",
+      "token": "Mage",
+      "asset": "assets/emblems/mage.webp"
+    },
+    {
+      "id": "marksman",
+      "name": "Marksman",
+      "token": "MM",
+      "asset": "assets/emblems/marksman.webp"
+    }
   ],
   "badges": [
-    { "id": "mvp", "name": "MVP", "asset": "assets/badges/mvp.webp" },
-    { "id": "savage", "name": "Savage", "asset": "assets/badges/savage.webp" },
-    { "id": "legend", "name": "Legend", "asset": "assets/badges/legend.webp" },
-    { "id": "og", "name": "OG", "asset": "assets/badges/og.webp" }
+    {
+      "id": "mvp",
+      "name": "MVP",
+      "asset": "assets/badges/mvp.webp"
+    },
+    {
+      "id": "savage",
+      "name": "Savage",
+      "asset": "assets/badges/savage.webp"
+    },
+    {
+      "id": "legend",
+      "name": "Legend",
+      "asset": "assets/badges/legend.webp"
+    },
+    {
+      "id": "og",
+      "name": "OG",
+      "asset": "assets/badges/og.webp"
+    }
   ],
   "heroes": [
     {
@@ -212,5 +318,10 @@
         }
       ]
     }
-  ]
+  ],
+  "catalog": {
+    "heroes": 133,
+    "skins": 1060,
+    "source": "Sparkies01/Splash"
+  }
 }

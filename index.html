@@ -68,6 +68,10 @@
 
           <label for="photo">Profile Photo</label>
           <input id="photo" type="file" accept="image/*">
+
+          <label for="artwork">Hero Artwork</label>
+          <input id="artwork" type="file" accept="image/*">
+          <small class="field-help">Upload artwork sendiri; akan menjadi layer Hero Artwork dan bisa di-drag/scale/rotate.</small>
         </section>
 
         <section id="visual" class="tabpage">
@@ -287,7 +291,7 @@
             <div id="scanLayer" class="scan-layer"></div>
 
             <div class="top-line">
-              <span id="rankOut">MYTHIC GLORY</span>
+              <span class="rank-stack"><span id="rankOut">MYTHIC GLORY</span><img id="rankIcon" class="rank-icon" alt="MYTHIC GLORY"></span>
               <span id="titleOut">Assassin Main</span>
             </div>
 
@@ -371,6 +375,7 @@
   </div>
 
   <script src="api.js"></script>
+  <script src="hero-skin-catalog.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

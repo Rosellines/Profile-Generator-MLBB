@@ -10,6 +10,7 @@ const roleHeroes = {
   Tanker: ["Alice", "Atlas", "Barats", "Baxia", "Belerick", "Carmilla", "Chip", "Edith", "Esmeralda", "Fredrinn", "Franco", "Gatotkaca", "Gloo", "Grock", "Hilda", "Hylos", "Johnson", "Khufra", "Lolita", "Masha", "Minotaur", "Terizla", "Tigreal", "Uranus"]
 };
 
+const roleOptions = ["All", ...Object.keys(roleHeroes)];
 const rarityOptions = ["Mythic", "Legend", "Collector", "Epic", "Special", "Rare", "Elite", "Basic"];
 const emblemOptions = ["Best Carry", "Best Initiator", "Best Finisher", "Best Roamer", "Best Jungler", "Best Laner", "Best Tanker", "Best Damage Dealer", "Best Burst", "Best DPS", "Best Assassin", "Best Duelist", "Best Pusher"];
 const badgeOptions = ["MVP", "Legendary", "Savage", "Comeback King", "Victory Maker", "Godlike"];
@@ -161,7 +162,7 @@ const state = {
   manifest: fallbackManifest,
   apiStatus: null,
   selections: {
-    role: "Assassin",
+    role: "All",
     heroId: fallbackManifest.heroes[0].id,
     skinId: fallbackManifest.heroes[0].skins[0].id,
     backgroundId: fallbackManifest.backgrounds[0].id,
@@ -179,11 +180,131 @@ const state = {
   },
   activeLayer: "avatar",
   customBackground: false,
-  customFrame: false
+  customFrame: false,
+  avatarDataUrl: "",
+  artworkDataUrl: ""
 };
 
 const refs = {};
 let uiWired = false;
+
+const STORAGE_KEYS = {
+  manifest: "mlbb-flex:manifest:v6",
+  skinCatalog: "mlbb-flex:skin-catalog:v6",
+  state: "mlbb-flex:state:v6"
+};
+
+const EMBEDDED_SKIN_CATALOG = window.MLBB_EMBEDDED_CATALOG || null;
+
+function buildEmbeddedManifest() {
+  const catalogHeroes = Array.isArray(EMBEDDED_SKIN_CATALOG?.heroes)
+    ? EMBEDDED_SKIN_CATALOG.heroes
+    : [];
+
+  const base = {
+    ...fallbackManifest,
+    backgrounds: [...fallbackManifest.backgrounds],
+    frames: [...fallbackManifest.frames],
+    emblems: [...fallbackManifest.emblems],
+    badges: [...fallbackManifest.badges],
+    titles: [...fallbackManifest.titles],
+    ranks: [...fallbackManifest.ranks],
+    heroes: []
+  };
+
+  // Embedded catalog is the authoritative FIRST source for Hero/Skin names.
+  // Never wait for API/manifest.json to populate these selects.
+  if (catalogHeroes.length) {
+    base.heroes = catalogHeroes.map((hero, index) => {
+      const key = normalizeHeroKey(hero.id || hero.name);
+      const mappedRoles = roleForHero(hero.name);
+      const skins = Array.isArray(hero.skins) ? hero.skins : [];
+      return {
+        id: key,
+        name: hero.name,
+        roles: mappedRoles,
+        style: `radial-gradient(circle at 56% 45%,hsla(${(index * 37) % 360},82%,68%,.94),transparent 34%),linear-gradient(135deg,transparent 20%,rgba(255,255,255,.28) 43%,transparent 56%)`,
+        skins: skins.map((skin, skinIndex) => ({
+          id: slugify(skin.id || skin.name),
+          name: skin.name,
+          rarity: skin.rarity || "Rare",
+          asset: skin.asset || "",
+          style: fallbackSkinStyle(skinIndex)
+        }))
+      };
+    });
+  } else {
+    base.heroes = fallbackManifest.heroes.map((hero) => ({ ...hero, skins: [...(hero.skins || [])] }));
+  }
+
+  return base;
+}
+
+function normalizeEmbeddedCatalog(manifest) {
+  if (!manifest || !Array.isArray(manifest.heroes)) return buildEmbeddedManifest();
+  const embedded = buildEmbeddedManifest();
+  const byId = new Map(embedded.heroes.map((hero) => [hero.id, hero]));
+
+  // Keep local catalog authoritative. Remote data may enrich metadata later,
+  // but it must never remove Hero/Skin entries from the embedded catalog.
+  return {
+    ...manifest,
+    heroes: embedded.heroes.map((localHero) => {
+      const remoteHero = manifest.heroes.find((hero) => normalizeHeroKey(hero.id || hero.name) === localHero.id);
+      return {
+        ...localHero,
+        roles: [...new Set([...(localHero.roles || []), ...(remoteHero?.roles || [])])],
+        style: remoteHero?.style || localHero.style,
+        skins: localHero.skins.map((localSkin) => {
+          const remoteSkin = remoteHero?.skins?.find((skin) => slugify(skin.id || skin.name) === localSkin.id);
+          return { ...localSkin, rarity: remoteSkin?.rarity || localSkin.rarity, asset: localSkin.asset || remoteSkin?.asset || "" };
+        })
+      };
+    })
+  };
+}
+
+function readStorage(key, fallback = null) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch (_error) {
+    return fallback;
+  }
+}
+
+function writeStorage(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (_error) {
+    // Ignore quota/private-mode failures; the app still works without cache.
+  }
+}
+
+function saveUserState() {
+  writeStorage(STORAGE_KEYS.state, {
+    selections: state.selections,
+    layers: state.layers,
+    activeLayer: state.activeLayer,
+    customBackground: state.customBackground,
+    customFrame: state.customFrame,
+    avatarDataUrl: state.avatarDataUrl,
+    artworkDataUrl: state.artworkDataUrl
+  });
+}
+
+function restoreUserState() {
+  const cached = readStorage(STORAGE_KEYS.state);
+  if (!cached) return;
+  state.selections = { ...state.selections, ...(cached.selections || {}) };
+  state.layers = { ...state.layers, ...(cached.layers || {}) };
+  state.activeLayer = cached.activeLayer || state.activeLayer;
+  state.customBackground = Boolean(cached.customBackground);
+  state.customFrame = Boolean(cached.customFrame);
+  state.avatarDataUrl = cached.avatarDataUrl || "";
+  state.artworkDataUrl = cached.artworkDataUrl || "";
+}
+
 
 async function fetchLocalManifest() {
   try {
@@ -215,12 +336,12 @@ async function fetchLocalSkinCatalog() {
 
 function cacheRefs() {
   [
-    "ign", "pid", "server", "bio", "title", "rank", "photo", "role", "hero", "skin", "rarity", "backgrounds",
+    "ign", "pid", "server", "bio", "title", "rank", "photo", "artwork", "role", "hero", "skin", "rarity", "backgrounds",
     "frames", "emblems", "badges", "skinColor1", "skinColor2", "rarityColor", "backgroundColor1", "backgroundColor2", "backgroundColor3",
     "frameMode", "frameColor1", "frameColor2", "activeLayer", "layerScale", "layerRotate", "accent", "mode",
     "wr", "matches", "mvp", "savage", "legendary", "emblemLevel", "resetLayout", "presetBtn", "randomBtn",
     "copyBtn", "exportBtn", "closeModal", "modal", "card", "backgroundLayer", "heroArt", "avatarImg",
-    "frameOut", "badgeOut", "ignOut", "pidOut", "serverOut", "bioOut", "titleOut", "rankOut", "heroOut",
+    "frameOut", "badgeOut", "ignOut", "pidOut", "serverOut", "bioOut", "titleOut", "rankOut", "heroOut", "rankIcon",
     "skinOut", "rarityOut", "emblemOut", "wrOut", "matchesOut", "mvpOut", "savageOut", "legendaryOut",
     "emblemLevelOut", "modeOut", "dragHint", "heroLayer", "avatarLayer", "apiBadge", "apiStatusText",
     "apiSourceText", "refreshApiBtn"
@@ -270,7 +391,8 @@ function applyHeroCatalog(manifest) {
 }
 
 function buildSmoothGradient(color1, color2, angle = 135) {
-  return `linear-gradient(${angle}deg, ${color1} 0%, color-mix(in srgb, ${color1} 54%, ${color2}) 48%, ${color2} 100%)`;
+  // Avoid color-mix() here: it can produce visible banding/fallbacks in canvas/foreignObject rendering.
+  return `linear-gradient(${angle}deg, ${color1} 0%, ${color1} 28%, ${color2} 72%, ${color2} 100%)`;
 }
 
 function mergeSkinCatalog(manifest, skinCatalog) {
@@ -324,7 +446,11 @@ function countSkins(manifest) {
 }
 
 function getRoleHeroes() {
-  return state.manifest.heroes.filter((hero) => hero.roles?.includes(state.selections.role));
+  const heroes = Array.isArray(state.manifest.heroes) ? state.manifest.heroes : [];
+  if (state.selections.role === "All") return heroes;
+  const filtered = heroes.filter((hero) => hero.roles?.includes(state.selections.role));
+  // Never leave Hero select empty because of incomplete role metadata.
+  return filtered.length ? filtered : heroes;
 }
 
 function fillSelect(select, values, valueGetter = (item) => item, labelGetter = (item) => item) {
@@ -372,11 +498,14 @@ function ensureSelectionsValid() {
   if (!state.manifest.ranks?.length) {
     state.manifest.ranks = fallbackManifest.ranks;
   }
-  if (!Object.hasOwn(roleHeroes, state.selections.role)) {
-    state.selections.role = "Assassin";
+  if (!roleOptions.includes(state.selections.role)) {
+    state.selections.role = "All";
   }
 
   const availableHeroes = getRoleHeroes();
+  if (!availableHeroes.length && state.manifest.heroes.length) {
+    state.selections.role = "All";
+  }
   if (!availableHeroes.some((hero) => hero.id === state.selections.heroId)) {
     state.selections.heroId = availableHeroes[0]?.id || state.manifest.heroes[0].id;
   }
@@ -404,13 +533,41 @@ function ensureSelectionsValid() {
   }
 }
 
+function syncStyleInputsFromSelections() {
+  const background = getItem("backgrounds", state.selections.backgroundId);
+  const frame = getItem("frames", state.selections.frameId);
+  if (background) {
+    const colors = extractGradientColors(background.style);
+    refs.backgroundColor1.value = colors[0] || refs.backgroundColor1.value;
+    refs.backgroundColor2.value = colors[1] || refs.backgroundColor2.value;
+    refs.backgroundColor3.value = colors[2] || refs.backgroundColor3.value;
+    refs.accent.value = background.accent || refs.accent.value;
+  }
+  if (frame) {
+    refs.frameColor1.value = frame.color || refs.frameColor1.value;
+    refs.frameColor2.value = frame.altColor || refs.frameColor2.value;
+  }
+}
+
+function extractGradientColors(style = "") {
+  const hexes = String(style).match(/#[0-9a-f]{6}/gi) || [];
+  return [...new Set(hexes)].slice(0, 3);
+}
+
 function paintControls() {
   const selectedEmblem = refs.emblems.value || emblemOptions[0];
   const selectedBadge = refs.badges.value || badgeOptions[0];
   fillSelect(refs.title, state.manifest.titles);
   fillSelect(refs.rank, state.manifest.ranks);
-  fillSelect(refs.role, Object.keys(roleHeroes));
-  fillSelect(refs.hero, getRoleHeroes(), (hero) => hero.id, (hero) => hero.name);
+  fillSelect(refs.role, roleOptions);
+  const heroOptions = getRoleHeroes();
+  fillSelect(refs.hero, heroOptions, (hero) => hero.id, (hero) => hero.name);
+  if (!heroOptions.length && state.manifest.heroes.length) {
+    state.selections.role = "All";
+    fillSelect(refs.role, roleOptions);
+    refs.role.value = "All";
+    fillSelect(refs.hero, state.manifest.heroes, (hero) => hero.id, (hero) => hero.name);
+  }
   fillSelect(refs.rarity, rarityOptions);
   fillSelect(refs.emblems, emblemOptions);
   fillSelect(refs.badges, badgeOptions);
@@ -425,7 +582,7 @@ function paintControls() {
   paintSwatches("backgrounds", state.manifest.backgrounds, state.selections.backgroundId, (item) => {
     state.selections.backgroundId = item.id;
     state.customBackground = false;
-    refs.accent.value = item.accent || refs.accent.value;
+    syncStyleInputsFromSelections();
     render();
   }, (button, item) => {
     button.classList.add("swatch-orb");
@@ -436,6 +593,7 @@ function paintControls() {
   paintSwatches("frames", state.manifest.frames, state.selections.frameId, (item) => {
     state.selections.frameId = item.id;
     state.customFrame = false;
+    syncStyleInputsFromSelections();
     render();
   }, (button, item) => {
     button.classList.add("swatch-orb");
@@ -540,10 +698,19 @@ function render() {
   refs.card.style.setProperty("--glow-secondary", frameAltColor);
   refs.card.style.setProperty("--rarity", refs.rarityColor.value);
   refs.card.className = `profile-card ratio-${state.selections.mode} effect-${state.selections.effect}${refs.card.classList.contains("is-hovering") ? " is-hovering" : ""}`;
-  refs.heroArt.style.background = `${skinStyle}, ${skin.style || ""}, ${hero.style || ""}`;
+  const heroAsset = state.artworkDataUrl || skin.asset || hero.asset || "";
+  const artLayers = [
+    heroAsset ? `url("${heroAsset}") center/cover no-repeat` : "",
+    skinStyle,
+    skin.style || "",
+    hero.style || ""
+  ].filter(Boolean);
+  refs.heroArt.style.background = artLayers.join(", ");
+  refs.avatarImg.style.background = state.avatarDataUrl ? `url("${state.avatarDataUrl}") center/cover no-repeat` : "radial-gradient(circle at 30% 28%,#ffe9b8 0,#e69f7a 26%,#4d425c 58%,#1a2130 100%)";
   refs.frameOut.style.borderColor = "transparent";
-  refs.frameOut.style.background = frameFill;
-  refs.frameOut.style.boxShadow = `0 0 0 2px rgba(255,255,255,.18) inset, 0 0 34px color-mix(in srgb, ${frameColor} 68%, ${frameAltColor})`;
+  refs.frameOut.style.background = `linear-gradient(transparent,transparent) padding-box, ${frameFill} border-box`;
+  refs.frameOut.style.boxShadow = `0 0 0 2px rgba(255,255,255,.18) inset, 0 0 26px ${frameColor}88`;
+
   refs.badgeOut.textContent = refs.badges.value;
   refs.badgeOut.style.background = buildSmoothGradient(frameColor, refs.accent.value, 140);
   refs.emblemOut.textContent = refs.emblems.value;
@@ -554,6 +721,17 @@ function render() {
   refs.bioOut.textContent = refs.bio.value || "No status.";
   refs.titleOut.textContent = refs.title.value;
   refs.rankOut.textContent = refs.rank.value;
+  const rankKey = slugify(refs.rank.value);
+  refs.rankOut.className = `rank-tier rank-tier-${rankKey}`;
+  const rankIcons = {
+    "mythical-immortal": "https://mobile-legends.fandom.com/wiki/Special:FilePath/Mythical%20Immortal.png",
+    "mythic-glory": "https://mobile-legends.fandom.com/wiki/Special:FilePath/Mythic%20Glory.png",
+    "mythic": "https://mobile-legends.fandom.com/wiki/Special:FilePath/Mythic.png",
+    "legend": "https://mobile-legends.fandom.com/wiki/Special:FilePath/Legend.png",
+    "epic": "https://mobile-legends.fandom.com/wiki/Special:FilePath/Epic.png"
+  };
+  refs.rankIcon.src = rankIcons[rankKey] || rankIcons.mythic;
+  refs.rankIcon.alt = refs.rank.value;
   refs.heroOut.textContent = hero.name.toUpperCase();
   refs.skinOut.textContent = skin.name;
   refs.rarityOut.textContent = refs.rarity.value.toUpperCase();
@@ -573,6 +751,7 @@ function render() {
 
   applyLayerTransform("avatar");
   applyLayerTransform("hero");
+  saveUserState();
 }
 
 function wireEvents() {
@@ -680,11 +859,20 @@ function wireEvents() {
 
   refs.photo.addEventListener("change", async (event) => {
     const file = event.target.files?.[0];
-    if (!file) {
-      return;
-    }
+    if (!file) return;
     const dataUrl = await readFileAsDataUrl(file);
-    refs.avatarImg.style.background = `url(${dataUrl}) center/cover`;
+    state.avatarDataUrl = dataUrl;
+    render();
+  });
+
+  refs.artwork.addEventListener("change", async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const dataUrl = await readFileAsDataUrl(file);
+    state.artworkDataUrl = dataUrl;
+    state.activeLayer = "hero";
+    syncLayerControls();
+    render();
   });
 
   refs.presetBtn.addEventListener("click", () => refs.modal.classList.remove("hidden"));
@@ -755,6 +943,9 @@ function applyPreset(name) {
   state.selections.emblemId = preset.emblem;
 
   refs.accent.value = getItem("backgrounds", preset.background).accent || refs.accent.value;
+  state.customBackground = false;
+  state.customFrame = false;
+  syncStyleInputsFromSelections();
   document.querySelectorAll(".effect-row button").forEach((button) => {
     button.classList.toggle("active", button.dataset.effect === preset.effect);
   });
@@ -788,6 +979,9 @@ function randomizeProfile() {
   refs.legendary.value = Math.floor(Math.random() * 1200) + 80;
   refs.emblemLevel.value = Math.floor(Math.random() * 40) + 20;
   refs.accent.value = getItem("backgrounds", state.selections.backgroundId).accent || refs.accent.value;
+  state.customBackground = false;
+  state.customFrame = false;
+  syncStyleInputsFromSelections();
 
   document.querySelectorAll(".effect-row button").forEach((button) => {
     button.classList.toggle("active", button.dataset.effect === state.selections.effect);
@@ -958,62 +1152,149 @@ function loadImage(url) {
   });
 }
 
-async function refreshApiData() {
+async function loadLocalData() {
+  // LocalStorage is a preference/cache only. Embedded catalog remains authoritative.
+  const embedded = buildEmbeddedManifest();
+  const cachedManifest = readStorage(STORAGE_KEYS.manifest);
+  const localManifest = normalizeEmbeddedCatalog(cachedManifest || embedded);
+
+  state.manifest = {
+    ...embedded,
+    ...localManifest,
+    backgrounds: localManifest.backgrounds?.length ? localManifest.backgrounds : embedded.backgrounds,
+    frames: localManifest.frames?.length ? localManifest.frames : embedded.frames,
+    emblems: localManifest.emblems?.length ? localManifest.emblems : embedded.emblems,
+    badges: localManifest.badges?.length ? localManifest.badges : embedded.badges,
+    titles: localManifest.titles?.length ? localManifest.titles : embedded.titles,
+    ranks: localManifest.ranks?.length ? localManifest.ranks : embedded.ranks,
+    heroes: embedded.heroes
+  };
+  ensureSelectionsValid();
+  syncStyleInputsFromSelections();
+  paintControls();
+  syncLayerControls();
+  writeStorage(STORAGE_KEYS.manifest, state.manifest);
+  writeStorage(STORAGE_KEYS.skinCatalog, EMBEDDED_SKIN_CATALOG || { heroes: [] });
+  updateApiStatus({
+    mode: "disabled",
+    provider: "Embedded catalog / LocalStorage",
+    sourceId: "local",
+    heroCount: state.manifest.heroes.length,
+    skinCount: countSkins(state.manifest),
+    emblemCount: state.manifest.emblems.length,
+    message: `Local catalog siap: ${state.manifest.heroes.length} hero / ${countSkins(state.manifest)} skin. Remote API berjalan di background.`,
+    checkedAt: new Date().toISOString()
+  });
+  render();
+}
+
+async function refreshApiData({ background = true } = {}) {
   refs.refreshApiBtn.disabled = true;
   refs.refreshApiBtn.textContent = "Refreshing...";
-  refs.apiBadge.className = "api-pill api-idle";
-  refs.apiBadge.textContent = "API: Checking";
-  refs.apiStatusText.textContent = "Sedang ambil data remote...";
-  refs.apiSourceText.textContent = "Source: checking";
 
-  const [localManifest, localSkinCatalog] = await Promise.all([fetchLocalManifest(), fetchLocalSkinCatalog()]);
-  const mergedLocalManifest = {
-    ...fallbackManifest,
-    ...localManifest,
-    backgrounds: localManifest.backgrounds?.length ? localManifest.backgrounds : fallbackManifest.backgrounds,
-    frames: localManifest.frames?.length ? localManifest.frames : fallbackManifest.frames,
-    emblems: localManifest.emblems?.length ? localManifest.emblems : fallbackManifest.emblems,
-    badges: localManifest.badges?.length ? localManifest.badges : fallbackManifest.badges,
-    heroes: localManifest.heroes?.length ? localManifest.heroes : fallbackManifest.heroes,
-    titles: localManifest.titles?.length ? localManifest.titles : fallbackManifest.titles,
-    ranks: localManifest.ranks?.length ? localManifest.ranks : fallbackManifest.ranks
-  };
-
-  let apiResult = {
-    manifest: mergedLocalManifest,
-    status: {
-      mode: "fallback",
-      provider: "Local fallback",
-      heroCount: mergedLocalManifest.heroes.length,
-      emblemCount: mergedLocalManifest.emblems.length,
-      message: "API helper tidak tersedia, pakai data lokal.",
+  const runRemote = async () => {
+    updateApiStatus({
+      mode: "idle",
+      provider: "Remote API",
+      sourceId: "remote",
+      heroCount: state.manifest.heroes.length,
+      skinCount: countSkins(state.manifest),
+      emblemCount: state.manifest.emblems.length,
+      message: "Remote API sedang disinkronkan di background...",
       checkedAt: new Date().toISOString()
+    });
+
+    const localManifest = state.manifest;
+    let apiResult = null;
+    try {
+      if (window.MLBBApi?.enrichManifest) {
+        apiResult = await window.MLBBApi.enrichManifest(localManifest);
+      }
+    } catch (error) {
+      apiResult = {
+        manifest: localManifest,
+        status: { mode: "fallback", provider: "LocalStorage cache", message: `Remote error: ${error.message}` }
+      };
+    }
+
+    try {
+      if (apiResult?.manifest) {
+        const cachedSkinCatalog = readStorage(STORAGE_KEYS.skinCatalog);
+        state.manifest = normalizeEmbeddedCatalog(apiResult.manifest);
+        ensureSelectionsValid();
+        syncStyleInputsFromSelections();
+        writeStorage(STORAGE_KEYS.manifest, state.manifest);
+        updateApiStatus({
+          ...apiResult.status,
+          skinCount: countSkins(state.manifest)
+        });
+        paintControls();
+        syncLayerControls();
+        render();
+      } else {
+        updateApiStatus({
+          mode: "fallback",
+          provider: "LocalStorage cache",
+          sourceId: "local",
+          heroCount: state.manifest.heroes.length,
+          skinCount: countSkins(state.manifest),
+          emblemCount: state.manifest.emblems.length,
+          message: "Remote tidak mengembalikan data. Preview tetap memakai data lokal.",
+          checkedAt: new Date().toISOString()
+        });
+      }
+    } catch (error) {
+      updateApiStatus({
+        mode: "fallback",
+        provider: "LocalStorage cache",
+        sourceId: "local",
+        heroCount: state.manifest.heroes.length,
+        skinCount: countSkins(state.manifest),
+        emblemCount: state.manifest.emblems.length,
+        message: `Remote gagal: ${error.message}. Preview tetap lokal.`,
+        checkedAt: new Date().toISOString()
+      });
+    } finally {
+      refs.refreshApiBtn.disabled = false;
+      refs.refreshApiBtn.textContent = "Refresh API";
     }
   };
 
-  if (window.MLBBApi?.enrichManifest) {
-    apiResult = await window.MLBBApi.enrichManifest(mergedLocalManifest);
+  if (background) {
+    void runRemote();
+  } else {
+    await runRemote();
   }
-
-  state.manifest = applyHeroCatalog(mergeSkinCatalog(apiResult.manifest, localSkinCatalog));
-  ensureSelectionsValid();
-  updateApiStatus({
-    ...apiResult.status,
-    skinCount: countSkins(state.manifest)
-  });
-  refs.accent.value = getItem("backgrounds", state.selections.backgroundId).accent || refs.accent.value;
-  paintControls();
-  syncLayerControls();
-  render();
-
-  refs.refreshApiBtn.disabled = false;
-  refs.refreshApiBtn.textContent = "Refresh API";
 }
 
 async function init() {
   cacheRefs();
   wireEvents();
-  await refreshApiData();
+  restoreUserState();
+
+  // First paint uses the full embedded 133-hero / 1060-skin catalog immediately.
+  // No network request is required to populate Hero/Skin selects.
+  state.manifest = buildEmbeddedManifest();
+  ensureSelectionsValid();
+  syncStyleInputsFromSelections();
+  paintControls();
+  syncLayerControls();
+  updateApiStatus({
+    mode: "disabled",
+    provider: "Local fallback",
+    sourceId: "local",
+    heroCount: state.manifest.heroes.length,
+    skinCount: countSkins(state.manifest),
+    emblemCount: state.manifest.emblems.length,
+    message: "Preview siap. Katalog lokal dan Remote API dimuat di background.",
+    checkedAt: new Date().toISOString()
+  });
+  render();
+  writeStorage(STORAGE_KEYS.manifest, state.manifest);
+  writeStorage(STORAGE_KEYS.skinCatalog, EMBEDDED_SKIN_CATALOG || { heroes: [] });
+
+  // Hydrate cache without replacing the embedded catalog, then run remote API in background.
+  void loadLocalData().then(() => refreshApiData({ background: true }));
 }
 
 init();
