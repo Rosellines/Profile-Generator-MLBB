@@ -1174,6 +1174,7 @@ async function elementToPng(element, mode) {
   clone.style.position = "relative";
   clone.style.left = "0";
   clone.style.top = "0";
+  clone.style.setProperty("--look-y", "0deg");
   clone.style.transform = "none";
   clone.style.transition = "none";
   clone.style.animation = "none";
@@ -1190,6 +1191,7 @@ async function elementToPng(element, mode) {
   clone.style.height = `${sourceH}px`;
   clone.style.position = "relative";
   clone.style.margin = "0";
+  clone.style.setProperty("--look-y", "0deg");
   clone.style.transform = "none";
   clone.style.transition = "none";
   clone.style.animation = "none";
