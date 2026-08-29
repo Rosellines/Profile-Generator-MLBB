@@ -983,6 +983,10 @@ function wireEvents() {
     state.selections.heroId = refs.hero.value;
     ensureSelectionsValid();
     paintSkinSelect();
+    // Selecting a new hero switches the background layer back to artwork-auto,
+    // so the selected hero/skin artwork controls the blurred background.
+    state.selections.backgroundMode = "artwork";
+    state.customBackground = false;
     render();
   });
 
@@ -1003,6 +1007,11 @@ function wireEvents() {
     // surviving through LocalStorage until the cache is cleared.
     state.artworkDataUrl = "";
     state.layers.hero = { x: 0, y: 0, scale: 100, rotate: 0 };
+
+    // Selecting a skin also refreshes the background from the selected
+    // artwork, even if a theme/custom background had been selected before.
+    state.selections.backgroundMode = "artwork";
+    state.customBackground = false;
 
     refs.rarity.value = rarityOptions.includes(getSkin().rarity) ? getSkin().rarity : "Rare";
     render();
