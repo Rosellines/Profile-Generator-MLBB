@@ -28,6 +28,27 @@ const rankVisuals = {
   "EPIC": { className: "rank-epic", icon: RANK_ASSETS["EPIC"] }
 };
 
+const genderOptions = {
+  male: { label: "♂ Male", icon: "♂", className: "gender-male" },
+  female: { label: "♀ Female", icon: "♀", className: "gender-female" }
+};
+
+const regionOptions = [
+  ["ID", "Indonesia", "🇮🇩"], ["MY", "Malaysia", "🇲🇾"], ["SG", "Singapore", "🇸🇬"],
+  ["PH", "Philippines", "🇵🇭"], ["TH", "Thailand", "🇹🇭"], ["VN", "Vietnam", "🇻🇳"],
+  ["KH", "Cambodia", "🇰🇭"], ["MM", "Myanmar", "🇲🇲"], ["LA", "Laos", "🇱🇦"],
+  ["BN", "Brunei", "🇧🇳"], ["JP", "Japan", "🇯🇵"], ["KR", "South Korea", "🇰🇷"],
+  ["CN", "China", "🇨🇳"], ["TW", "Taiwan", "🇹🇼"], ["HK", "Hong Kong", "🇭🇰"],
+  ["IN", "India", "🇮🇳"], ["PK", "Pakistan", "🇵🇰"], ["BD", "Bangladesh", "🇧🇩"],
+  ["SA", "Saudi Arabia", "🇸🇦"], ["AE", "United Arab Emirates", "🇦🇪"], ["TR", "Türkiye", "🇹🇷"],
+  ["GB", "United Kingdom", "🇬🇧"], ["DE", "Germany", "🇩🇪"], ["FR", "France", "🇫🇷"],
+  ["IT", "Italy", "🇮🇹"], ["ES", "Spain", "🇪🇸"], ["NL", "Netherlands", "🇳🇱"],
+  ["RU", "Russia", "🇷🇺"], ["US", "United States", "🇺🇸"], ["CA", "Canada", "🇨🇦"],
+  ["MX", "Mexico", "🇲🇽"], ["BR", "Brazil", "🇧🇷"], ["AR", "Argentina", "🇦🇷"],
+  ["AU", "Australia", "🇦🇺"], ["NZ", "New Zealand", "🇳🇿"], ["ZA", "South Africa", "🇿🇦"],
+  ["EG", "Egypt", "🇪🇬"], ["NG", "Nigeria", "🇳🇬"]
+];
+
 const rarityOptions = ["Mythic", "Legend", "Collector", "Epic", "Special", "Rare", "Elite", "Basic"];
 const emblemOptions = ["Best Carry", "Best Initiator", "Best Finisher", "Best Roamer", "Best Jungler", "Best Laner", "Best Tanker", "Best Damage Dealer", "Best Burst", "Best DPS", "Best Assassin", "Best Duelist", "Best Pusher"];
 const badgeOptions = ["MVP", "Legendary", "Savage", "Comeback King", "Victory Maker", "Godlike"];
@@ -189,7 +210,10 @@ const state = {
     effect: "none",
     title: fallbackManifest.titles[0],
     rank: fallbackManifest.ranks[0],
-    mode: "story"
+    gender: "male",
+    region: "ID",
+    mode: "story",
+    backgroundMode: "artwork"
   },
   layers: {
     avatar: { x: 0, y: 0, scale: 100, rotate: 0 },
@@ -257,6 +281,7 @@ function seedEmbeddedCatalogToStorage() {
 function saveUserState() {
   writeStorage(STORAGE_KEYS.state, {
     selections: state.selections,
+    backgroundMode: state.selections.backgroundMode,
     layers: state.layers,
     activeLayer: state.activeLayer,
     customBackground: state.customBackground,
@@ -270,6 +295,8 @@ function restoreUserState() {
   const cached = readStorage(STORAGE_KEYS.state);
   if (!cached) return;
   state.selections = { ...state.selections, ...(cached.selections || {}) };
+  if (cached.backgroundMode) state.selections.backgroundMode = cached.backgroundMode;
+  else if (typeof cached.customBackground === "boolean") state.selections.backgroundMode = cached.customBackground ? "custom" : "artwork";
   state.layers = { ...state.layers, ...(cached.layers || {}) };
   state.activeLayer = cached.activeLayer || state.activeLayer;
   state.customBackground = Boolean(cached.customBackground);
@@ -309,14 +336,14 @@ async function fetchLocalSkinCatalog() {
 
 function cacheRefs() {
   [
-    "ign", "pid", "server", "bio", "title", "rank", "photo", "artwork", "role", "hero", "skin", "rarity", "backgrounds",
+    "ign", "pid", "server", "bio", "title", "rank", "gender", "region", "rankPoints", "photo", "artwork", "role", "hero", "skin", "rarity", "backgrounds",
     "frames", "emblems", "badges", "skinColor1", "skinColor2", "rarityColor", "backgroundColor1", "backgroundColor2", "backgroundColor3",
-    "frameMode", "frameColor1", "frameColor2", "activeLayer", "layerScale", "layerRotate", "accent", "mode",
+    "frameMode", "frameColor1", "frameColor2", "backgroundMode", "activeLayer", "layerScale", "layerRotate", "accent", "mode",
     "wr", "matches", "mvp", "savage", "legendary", "emblemLevel", "resetLayout", "presetBtn", "randomBtn",
     "copyBtn", "exportBtn", "closeModal", "modal", "cropModal", "cropTitle", "cropViewport", "cropImage", "cropZoom", "cropX", "cropY", "cropCancel", "cropApply", "card", "backgroundLayer", "heroArt", "avatarImg",
     "frameOut", "badgeOut", "ignOut", "pidOut", "serverOut", "bioOut", "titleOut", "rankOut", "heroOut",
-    "skinOut", "rarityOut", "emblemOut", "rankIconOut", "wrOut", "matchesOut", "mvpOut", "savageOut", "legendaryOut",
-    "emblemLevelOut", "modeOut", "dragHint", "heroLayer", "avatarLayer", "apiBadge", "apiStatusText",
+    "skinOut", "rarityOut", "emblemOut", "rankIconOut", "rankPointsOut", "artworkRankIconOut", "artworkRankPointsOut", "globalHeroOut", "genderOut", "regionOut", "wrOut", "matchesOut", "mvpOut", "savageOut", "legendaryOut",
+    "emblemLevelOut", "modeOut", "dragHint", "heroLayer", "regionFlagOut", "avatarLayer", "apiBadge", "apiStatusText",
     "apiSourceText", "refreshApiBtn"
   ].forEach((id) => {
     refs[id] = $(id);
@@ -528,6 +555,9 @@ function paintControls() {
   const selectedBadge = refs.badges.value || badgeOptions[0];
   fillSelect(refs.title, state.manifest.titles);
   fillSelect(refs.rank, state.manifest.ranks);
+  if (refs.backgroundMode) refs.backgroundMode.value = state.selections.backgroundMode || (state.customBackground ? "custom" : "artwork");
+  fillSelect(refs.gender, Object.entries(genderOptions), ([key]) => key, ([, value]) => value.label);
+  fillSelect(refs.region, regionOptions, (item) => item[0], (item) => `${item[2]} ${item[1]}`);
   fillSelect(refs.role, ["All", ...Object.keys(roleHeroes)]);
   fillSelect(refs.hero, getRoleHeroes(), (hero) => hero.id, (hero) => hero.name);
   fillSelect(refs.rarity, rarityOptions);
@@ -536,6 +566,8 @@ function paintControls() {
 
   refs.title.value = state.selections.title;
   refs.rank.value = state.selections.rank;
+  refs.gender.value = state.selections.gender || "male";
+  refs.region.value = state.selections.region || "ID";
   refs.role.value = state.selections.role;
   refs.hero.value = state.selections.heroId;
   refs.emblems.value = emblemOptions.includes(selectedEmblem) ? selectedEmblem : emblemOptions[0];
@@ -544,6 +576,7 @@ function paintControls() {
   paintSwatches("backgrounds", state.manifest.backgrounds, state.selections.backgroundId, (item) => {
     state.selections.backgroundId = item.id;
     state.customBackground = false;
+    state.selections.backgroundMode = "theme";
     syncStyleInputsFromSelections();
     render();
   }, (button, item) => {
@@ -636,6 +669,70 @@ function updateApiStatus(status) {
   refs.apiSourceText.textContent = `Source: ${status?.provider || "-"} | Heroes ${status?.heroCount || 0} | Skins ${status?.skinCount || 0} | Emblems ${status?.emblemCount || 0}`;
 }
 
+
+function fitHeroTitleToCard() {
+  const el = refs.heroOut;
+  const box = el?.parentElement;
+  if (!el || !box) return;
+
+  el.style.whiteSpace = "nowrap";
+  el.style.overflow = "visible";
+  el.style.fontSize = "68px";
+
+  const available = Math.max(1, box.clientWidth);
+  let lo = 20;
+  let hi = 68;
+  let best = 20;
+
+  for (let i = 0; i < 14; i += 1) {
+    const mid = (lo + hi) / 2;
+    el.style.fontSize = `${mid}px`;
+    if (el.scrollWidth <= available + 1) {
+      best = mid;
+      lo = mid;
+    } else {
+      hi = mid;
+    }
+  }
+
+  el.style.fontSize = `${Math.max(20, Math.min(68, best))}px`;
+}
+
+function renderBioLine(value) {
+  const raw = String(value || "No status.").trim();
+  // Keep normal bios untouched. Only truncate after 50 characters.
+  if (raw.length <= 50) return raw;
+  return `${raw.slice(0, 50).trimEnd()}........`;
+}
+
+function fitBioToCard() {
+  const el = refs.bioOut;
+  const box = el?.parentElement;
+  if (!el || !box) return;
+
+  el.style.whiteSpace = "nowrap";
+  el.style.overflow = "visible";
+  el.style.textOverflow = "clip";
+  el.style.fontSize = "12px";
+
+  const available = Math.max(1, box.clientWidth);
+  let lo = 8;
+  let hi = 12;
+  let best = 8;
+
+  for (let i = 0; i < 12; i += 1) {
+    const mid = (lo + hi) / 2;
+    el.style.fontSize = `${mid}px`;
+    if (el.scrollWidth <= available + 1) {
+      best = mid;
+      lo = mid;
+    } else {
+      hi = mid;
+    }
+  }
+  el.style.fontSize = `${Math.max(8, Math.min(12, best))}px`;
+}
+
 function render() {
   const background = getItem("backgrounds", state.selections.backgroundId);
   const frame = getItem("frames", state.selections.frameId);
@@ -651,7 +748,19 @@ function render() {
   const frameFill = state.customFrame ? customFrameFill : presetFrameFill;
   const frameColor = state.customFrame ? refs.frameColor1.value : frame.color;
   const frameAltColor = state.customFrame ? refs.frameColor2.value : presetFrameSecondary;
-  refs.backgroundLayer.style.background = state.customBackground ? customBackground : background.style;
+  const backgroundMode = state.selections.backgroundMode || (state.customBackground ? "custom" : "artwork");
+  const heroBackgroundAsset = state.artworkDataUrl || skin.asset || hero.asset || "";
+  refs.backgroundLayer.classList.toggle("artwork-auto", backgroundMode === "artwork" && Boolean(heroBackgroundAsset));
+  refs.backgroundLayer.style.removeProperty("--art-bg");
+  refs.backgroundLayer.style.background = "";
+  if (backgroundMode === "artwork" && heroBackgroundAsset) {
+    refs.backgroundLayer.style.setProperty("--art-bg", `url("${heroBackgroundAsset}")`);
+    refs.backgroundLayer.style.background = "linear-gradient(145deg,rgba(5,10,20,.48),rgba(7,12,22,.76)), var(--art-bg) center/cover no-repeat";
+  } else if (backgroundMode === "custom") {
+    refs.backgroundLayer.style.background = customBackground;
+  } else {
+    refs.backgroundLayer.style.background = background.style;
+  }
   refs.card.style.setProperty("--accent", refs.accent.value);
   refs.card.style.setProperty("--frame", frameColor);
   refs.card.style.setProperty("--frame-alt", frameAltColor);
@@ -680,14 +789,34 @@ function render() {
   refs.ignOut.textContent = refs.ign.value || "PLAYER";
   refs.pidOut.textContent = refs.pid.value || "00000000";
   refs.serverOut.textContent = refs.server.value || "0000";
-  refs.bioOut.textContent = refs.bio.value || "No status.";
+  refs.bioOut.textContent = renderBioLine(refs.bio.value);
+  fitBioToCard();
   refs.titleOut.textContent = refs.title.value;
   const rankVisual = rankVisuals[refs.rank.value] || rankVisuals["MYTHIC GLORY"];
   refs.rankOut.textContent = refs.rank.value;
   refs.rankOut.className = `rank-label ${rankVisual.className}`;
   refs.rankIconOut.src = rankVisual.icon;
   refs.rankIconOut.alt = `${refs.rank.value} rank icon`;
+  const rankPoints = Math.max(0, Number(refs.rankPoints.value || 0));
+  const rankPointsText = `⭐ ${rankPoints.toLocaleString("en-US")}`;
+  refs.rankPointsOut.textContent = rankPointsText;
+  refs.artworkRankIconOut.src = rankVisual.icon;
+  refs.artworkRankIconOut.alt = `${refs.rank.value} rank icon`;
+  refs.artworkRankPointsOut.textContent = rankPointsText;
+  refs.globalHeroOut.textContent = hero.name;
+  const gender = genderOptions[refs.gender.value] || genderOptions.male;
+  refs.genderOut.textContent = gender.icon;
+  refs.genderOut.className = `gender-mark ${gender.className}`;
+  const region = regionOptions.find((item) => item[0] === refs.region.value) || regionOptions[0];
+  refs.regionOut.firstChild.nodeValue = region[0];
+  refs.regionOut.title = region[1];
+  if (refs.regionFlagOut) {
+    refs.regionFlagOut.src = `https://flagcdn.com/w40/${region[0].toLowerCase()}.png`;
+    refs.regionFlagOut.alt = `${region[1]} flag`;
+    refs.regionFlagOut.title = region[1];
+  }
   refs.heroOut.textContent = hero.name.toUpperCase();
+  fitHeroTitleToCard();
   refs.skinOut.textContent = skin.name;
   refs.rarityOut.textContent = refs.rarity.value.toUpperCase();
 
@@ -832,13 +961,19 @@ function wireEvents() {
     });
   });
 
-  ["ign", "pid", "server", "bio", "title", "rank", "wr", "matches", "mvp", "savage", "legendary", "emblemLevel", "accent"].forEach((id) => {
+  ["ign", "pid", "server", "bio", "title", "rank", "gender", "region", "rankPoints", "wr", "matches", "mvp", "savage", "legendary", "emblemLevel", "accent"].forEach((id) => {
     refs[id].addEventListener("input", () => {
       if (id === "title") {
         state.selections.title = refs.title.value;
       }
       if (id === "rank") {
         state.selections.rank = refs.rank.value;
+      }
+      if (id === "gender") {
+        state.selections.gender = refs.gender.value;
+      }
+      if (id === "region") {
+        state.selections.region = refs.region.value;
       }
       render();
     });
@@ -875,10 +1010,18 @@ function wireEvents() {
   });
 
   refs.rarity.addEventListener("change", () => render());
+  if (refs.backgroundMode) {
+    refs.backgroundMode.addEventListener("change", () => {
+      state.selections.backgroundMode = refs.backgroundMode.value;
+      state.customBackground = refs.backgroundMode.value === "custom";
+      render();
+    });
+  }
   ["skinColor1", "skinColor2", "rarityColor"].forEach((id) => refs[id].addEventListener("input", render));
   ["backgroundColor1", "backgroundColor2", "backgroundColor3"].forEach((id) => {
     refs[id].addEventListener("input", () => {
       state.customBackground = true;
+      state.selections.backgroundMode = "custom";
       render();
     });
   });
@@ -1008,6 +1151,7 @@ function applyPreset(name) {
   state.selections.title = preset.title;
   state.selections.effect = preset.effect;
   state.selections.backgroundId = preset.background;
+  state.selections.backgroundMode = "theme";
   state.selections.frameId = preset.frame;
   state.selections.badgeId = preset.badge;
   state.selections.emblemId = preset.emblem;
@@ -1118,7 +1262,10 @@ async function copyConfig() {
       server: refs.server.value,
       bio: refs.bio.value,
       title: refs.title.value,
-      rank: refs.rank.value
+      rank: refs.rank.value,
+      gender: refs.gender.value,
+      region: refs.region.value,
+      rankPoints: Number(refs.rankPoints.value || 0)
     },
     selections: state.selections,
     stats: {
@@ -1214,11 +1361,23 @@ async function elementToPng(element, mode) {
   clone.style.boxSizing = "border-box";
   clone.style.borderRadius = getComputedStyle(element).borderRadius || "34px";
 
+  // Preserve the transparent stat cards while keeping their gradient border
+  // inside the exported SVG. The live preview uses a pseudo-element border,
+  // which is not serialized by XMLSerializer.
+  clone.querySelectorAll(".stats-grid article").forEach((node) => {
+    node.style.border = "1px solid transparent";
+    node.style.backgroundColor = "transparent";
+    node.style.backgroundImage = "linear-gradient(transparent,transparent),linear-gradient(135deg,rgba(255,255,255,.78),rgba(243,201,105,.88),rgba(126,102,255,.82),rgba(88,190,255,.55))";
+    node.style.backgroundOrigin = "border-box";
+    node.style.backgroundClip = "padding-box,border-box";
+    node.style.boxShadow = "none";
+  });
+
   // Keep the text geometry identical to the live preview. Chromium's
   // foreignObject renderer can otherwise reflow long labels differently.
   const nowrapSelectors = [
     ".rank-label",
-    ".top-line > #titleOut",
+    ".top-rank-title",
     ".hero-copy-line",
     ".hero-copy-line > #skinOut",
     ".hero-copy-line > #rarityOut",

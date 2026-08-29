@@ -1,5 +1,14 @@
-# MLBB Flex Profile Studio - v21
+# MLBB Flex Profile Studio - Redesign
 
-v21 is based on v20 and fixes PNG export layout drift.
+Based on the supplied v21 build. Existing functionality is retained; this revision only adds the requested profile-card redesign.
 
-The exporter now waits for fonts and explicitly preserves the live-preview single-line layout for long rank/title/skin/footer text. Skin name and rarity remain on the same row with the live-preview gap.
+## Changes
+- Rank moved to the upper-right with larger local rank artwork and editable rank points.
+- Rank points render as `⭐ <points>` with a subtle glow.
+- Avatar, IGN, Player ID, server, gender, region, and bio are grouped in the upper-left.
+- Gender dropdown with blue Male / pink Female icon.
+- Region/Country dropdown with country flag icon.
+- Rank panel beside the hero artwork with animated soft aura.
+- Global Ranking label and `No. 1 <selected hero>` are driven by the selected hero.
+- Statistics cards now use a premium gradient border.
+- Existing hero/skin catalog, crop, effects, 3D tilt, light sweep, thickness, save/load, and PNG export are preserved.

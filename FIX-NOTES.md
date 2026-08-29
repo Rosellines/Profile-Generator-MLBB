@@ -1,11 +1,13 @@
-# v21 Export Fix
+# v24 redesign notes
 
-Based on Profile-Generator-MLBB-fixed-v20.
+This build keeps the supplied v21 functionality and changes only the requested card layout/features.
 
-## Export fixes
-- Waits for `document.fonts.ready` before measuring/serializing the card.
-- Forces the same single-line text behavior used by the live preview for rank, title, skin, rarity, and footer labels.
-- Prevents flex/text reflow inside the exported SVG foreignObject.
-- Keeps skin name → rarity spacing on the same flex row.
-- Does not change the live card design or dimensions.
-- Existing local artwork/background inlining and rounded-corner clipping remain intact.
+- Added editable Rank Points.
+- Added Gender selector and colored gender icon.
+- Added Region/Country selector with flag icon.
+- Moved rank to upper-right and enlarged local rank icon.
+- Added second rank display beside hero artwork with animated aura.
+- Global hero name follows the Hero dropdown.
+- Server remains editable and is rendered from the existing Server field.
+- Added premium gradient borders to statistic cards.
+- Removed no existing features.

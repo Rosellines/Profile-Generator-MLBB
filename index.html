@@ -66,6 +66,23 @@
             </div>
           </div>
 
+          <div class="two-col">
+            <div>
+              <label for="gender">Gender</label>
+              <select id="gender">
+                <option value="male">♂ Male</option>
+                <option value="female">♀ Female</option>
+              </select>
+            </div>
+            <div>
+              <label for="region">Region / Country</label>
+              <select id="region"></select>
+            </div>
+          </div>
+
+          <label for="rankPoints">Rank Points</label>
+          <input id="rankPoints" type="number" min="0" value="125">
+
           <label for="photo">Profile Photo</label>
           <input id="photo" type="file" accept="image/*">
 
@@ -116,7 +133,14 @@
             </div>
           </div>
 
-          <label>Background</label>
+          <label for="backgroundMode">Background Source</label>
+          <select id="backgroundMode">
+            <option value="artwork">Artwork Hero (Auto Blur)</option>
+            <option value="theme">Theme</option>
+            <option value="custom">Custom Colors</option>
+          </select>
+
+          <label>Background Theme</label>
           <div id="backgrounds" class="swatch-grid"></div>
           <div class="three-col">
             <div>
@@ -289,17 +313,24 @@
             <div id="particlesLayer" class="particles-layer"></div>
             <div id="scanLayer" class="scan-layer"></div>
 
-            <div class="top-line">
-              <div class="rank-stack">
-                <span id="rankOut" class="rank-label rank-mythic-glory">MYTHIC GLORY</span>
-                <img id="rankIconOut" class="rank-icon" alt="Rank icon">
-              </div>
-              <span id="titleOut">Assassin Main</span>
+            <div class="top-rank-panel">
+              <img id="rankIconOut" class="top-rank-icon" alt="Rank icon">
+              <span id="rankOut" class="rank-label rank-mythic-glory">MYTHIC GLORY</span>
+              <div id="rankPointsOut" class="top-rank-points">⭐ 125</div>
+              <div id="titleOut" class="top-rank-title">Assassin Main</div>
             </div>
 
             <div id="heroLayer" class="hero-layer draggable" data-layer="hero">
               <div class="hero-backdrop"></div>
               <div id="heroArt" class="hero-art"></div>
+            </div>
+
+            <div class="artwork-rank-panel">
+              <div class="rank-aura" aria-hidden="true"></div>
+              <img id="artworkRankIconOut" class="artwork-rank-icon" alt="Rank icon">
+              <div id="artworkRankPointsOut" class="artwork-rank-points">⭐ 125</div>
+              <div class="artwork-global-label">Global Ranking</div>
+              <div class="artwork-global-hero">No. 1 <span id="globalHeroOut">Gusion</span></div>
             </div>
 
             <div class="identity-block">
@@ -310,7 +341,11 @@
               </div>
               <div class="identity-copy">
                 <h2 id="ignOut">MIKASA</h2>
-                <p class="identity-meta">ID <span id="pidOut">88888888</span> · SERVER <span id="serverOut">9999</span></p>
+                <p class="identity-meta"><span id="pidOut">88888888</span> (<span id="serverOut">9999</span>)</p>
+                <div class="identity-extra">
+                  <span id="genderOut" class="gender-mark gender-male" title="Male">♂</span>
+                  <span id="regionOut" class="region-mark" title="Indonesia">ID<img id="regionFlagOut" class="region-flag" alt="Indonesia flag" crossorigin="anonymous"></span>
+                </div>
                 <p id="bioOut" class="identity-bio">Never stop climbing.</p>
               </div>
             </div>
