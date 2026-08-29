@@ -248,7 +248,7 @@ input:disabled{opacity:.7}
 .identity-copy h2{
   margin:0;font:900 clamp(34px,6vw,52px)/.92 "Arial Black","Trebuchet MS",sans-serif;text-transform:uppercase
 }
-.identity-meta{margin:8px 0 0;font-size:12px;color:#d2ddf6}
+.identity-meta{margin:8px 0 0;font-size:12px;color:#ffd700}
 .identity-bio{margin:8px 0 0;max-width:280px;font-size:12px;line-height:1.5;color:var(--muted)}
 
 .hero-copy{
@@ -262,16 +262,16 @@ input:disabled{opacity:.7}
 #rarityOut{color:var(--rarity)}
 
 .side-stack{
-  position:absolute;right:26px;bottom:24%;z-index:7;display:grid;gap:10px;justify-items:end
+  position:absolute;right:26px;bottom:40%;z-index:7;display:grid;gap:10px;justify-items:end
 }
 .side-token{
-  padding:12px 14px;border-radius:18px;background:rgba(8,16,28,.7);border:1px solid rgba(255,255,255,.12);
+  padding:7px 10px;border-radius:18px;background:rgba(8,16,28,.7);border:1px solid rgba(255,255,255,.12);
   font-size:13px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase
 }
 .side-token.muted{color:var(--muted)}
 
 .stats-grid{
-  position:absolute;left:22px;right:22px;bottom:8.5%;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;z-index:7
+  position:absolute;left:22px;right:22px;bottom:11.5%;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;z-index:7
 }
 .stats-grid article{
   padding:14px 10px 12px;border-radius:18px;background:linear-gradient(180deg,rgba(6,11,20,.72),rgba(255,255,255,.04));
@@ -363,9 +363,9 @@ select option{background:#0c1522;color:#edf3ff}
 
 /* v9: rank label + emblem */
 .rank-stack{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:92px}
-.rank-label{font-weight:900;letter-spacing:1.5px;text-shadow:0 0 12px currentColor,0 0 24px currentColor}
-.rank-mythic-glory{color:#ffd76b}.rank-mythical-immortal{color:#fff1bd}.rank-mythic{color:#d7a4ff}.rank-legend{color:#ffe08a}.rank-epic{color:#73e7ff}
-.rank-icon{width:34px;height:34px;object-fit:contain;display:block;filter:drop-shadow(0 2px 7px rgba(0,0,0,.45));margin-left:2px}
+.rank-label{font-weight:900;letter-spacing:1.5px;text-shadow:0 0 12px currentColor,0 0 px currentColor}
+.rank-mythical-immortal{color:#fff1bd}.rank-mythic-glory{color:#ffd76b}.rank-mythic-honor{color:#9ff7ff}.rank-mythic{color:#d7a4ff}.rank-legends{color:#ffe08a}.rank-epic{color:#73e7ff}
+.rank-icon{width:42px;height:46px;object-fit:contain;display:block;filter:drop-shadow(0 2px 7px rgba(0,0,0,.55));margin-left:0}
 .rank-icon[src=""]{display:none}
 
 /* v9: crop dialog */
@@ -380,3 +380,98 @@ select option{background:#0c1522;color:#edf3ff}
 .crop-controls input{width:100%;padding:0}
 .crop-help{display:block;color:var(--muted);margin-bottom:14px}
 .crop-actions{margin-top:4px}
+
+/* v16: holographic light sweep + faux card thickness for live 3D tilt */
+.profile-card{
+  --depth:#050912;
+  --sweep-pos:-30%;
+  box-shadow:
+    0 28px 60px rgba(0,0,0,.48),
+    7px 8px 0 rgba(5,9,18,.82),
+    11px 12px 0 rgba(5,9,18,.62),
+    15px 16px 0 rgba(5,9,18,.42);
+}
+.profile-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  z-index:6;
+  border:1px solid rgba(255,255,255,.12);
+  background:
+    linear-gradient(105deg,transparent 0 38%,rgba(255,255,255,.10) 46%,rgba(255,255,255,.34) 50%,rgba(255,255,255,.08) 54%,transparent 62%);
+  background-size:220% 100%;
+  background-position:var(--sweep-pos) 0;
+  mix-blend-mode:screen;
+  opacity:.0;
+  animation:cardLightSweep 5.8s ease-in-out infinite;
+}
+.profile-card::after{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  border-radius:inherit;
+  pointer-events:none;
+  z-index:8;
+  background:linear-gradient(115deg,
+    transparent 0%,
+    transparent 39%,
+    rgba(255,255,255,.04) 44%,
+    rgba(255,255,255,.72) 49.5%,
+    rgba(255,255,255,.16) 53%,
+    transparent 60%,
+    transparent 100%);
+  transform:translateX(-130%);
+  mix-blend-mode:screen;
+  opacity:.78;
+  animation:cardShine 5.8s cubic-bezier(.4,0,.2,1) infinite;
+}
+@keyframes cardLightSweep{
+  0%,12%{opacity:0;background-position:-120% 0}
+  24%{opacity:.32}
+  43%{opacity:.58;background-position:120% 0}
+  55%,100%{opacity:0;background-position:120% 0}
+}
+@keyframes cardShine{
+  0%,18%{transform:translateX(-130%) skewX(-12deg);opacity:0}
+  28%{opacity:.25}
+  48%{transform:translateX(130%) skewX(-12deg);opacity:.82}
+  58%,100%{transform:translateX(130%) skewX(-12deg);opacity:0}
+}
+.profile-card.exporting,
+.profile-card.exporting::before,
+.profile-card.exporting::after{
+  animation:none !important;
+}
+.profile-card.exporting{
+  box-shadow:none !important;
+}
+@media (prefers-reduced-motion: reduce){
+  .profile-card::before,.profile-card::after{animation:none;opacity:0}
+}
+
+
+
+/* v21: export typography must preserve the exact single-line live-preview layout */
+.top-line > #titleOut,
+.rank-label,
+.hero-copy-line,
+.hero-copy-line > #skinOut,
+.hero-copy-line > #rarityOut,
+.card-footer .footer-brand span {
+  white-space: nowrap;
+}
+.top-line > #titleOut { flex: 0 0 auto; }
+.rank-stack { flex: 0 0 auto; }
+.hero-copy-line { flex-wrap: nowrap; align-items: baseline; }
+.footer-brand { flex: 0 0 auto; }
+.card-footer .footer-brand-right { margin-left: auto; }
+
+/* v18: local rank artwork + branded footer banners */
+.footer-brand{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
+.footer-brand img{display:block;width:auto;height:28px;max-width:132px;object-fit:contain;object-position:left center}
+.footer-brand-right{align-items:flex-end;text-align:right}
+.footer-brand-right img{object-position:right center}
+.card-footer .footer-brand span{display:block}
+@media (max-width:640px){.footer-brand img{height:22px;max-width:104px}.card-footer{gap:8px}}

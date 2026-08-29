@@ -11,18 +11,20 @@ const roleHeroes = {
 };
 
 const RANK_ASSETS = {
-  "MYTHICAL IMMORTAL": "assets/rank/mythical-immortal.svg",
-  "MYTHIC GLORY": "assets/rank/mythic-glory.svg",
-  "MYTHIC": "assets/rank/mythic.svg",
-  "LEGEND": "assets/rank/legend.svg",
-  "EPIC": "assets/rank/epic.svg"
+  "MYTHICAL IMMORTAL": "assets/rank/mythical-immortal.png",
+  "MYTHIC GLORY": "assets/rank/mythic-glory.png",
+  "MYTHIC HONOR": "assets/rank/mythical-honor.png",
+  "MYTHIC": "assets/rank/mythic.png",
+  "LEGENDS": "assets/rank/legends.png",
+  "EPIC": "assets/rank/epic.png"
 };
 
 const rankVisuals = {
   "MYTHICAL IMMORTAL": { className: "rank-mythical-immortal", icon: RANK_ASSETS["MYTHICAL IMMORTAL"] },
   "MYTHIC GLORY": { className: "rank-mythic-glory", icon: RANK_ASSETS["MYTHIC GLORY"] },
+  "MYTHIC HONOR": { className: "rank-mythic-honor", icon: RANK_ASSETS["MYTHIC HONOR"] },
   "MYTHIC": { className: "rank-mythic", icon: RANK_ASSETS["MYTHIC"] },
-  "LEGEND": { className: "rank-legend", icon: RANK_ASSETS["LEGEND"] },
+  "LEGENDS": { className: "rank-legends", icon: RANK_ASSETS["LEGENDS"] },
   "EPIC": { className: "rank-epic", icon: RANK_ASSETS["EPIC"] }
 };
 
@@ -37,7 +39,7 @@ const heroAliases = {
 const fallbackManifest = {
   version: 3,
   titles: ["Assassin Main", "Mythic Grinder", "Collector Hunter", "Rank Demon", "Savage Farmer"],
-  ranks: ["MYTHIC GLORY", "MYTHICAL IMMORTAL", "MYTHIC", "LEGEND", "EPIC"],
+  ranks: ["MYTHICAL IMMORTAL", "MYTHIC GLORY", "MYTHIC HONOR", "MYTHIC", "LEGENDS", "EPIC"],
   backgrounds: [
     {
       id: "starlight",
@@ -169,7 +171,7 @@ const fallbackManifest = {
 const presets = {
   mythic: { rank: "MYTHIC GLORY", title: "Mythic Grinder", wr: 87, matches: 2431, mvp: 318, savage: 27, legendary: 501, effect: "glow", background: "starlight", frame: "royal", badge: "mvp", emblem: "burst" },
   collector: { rank: "MYTHICAL IMMORTAL", title: "Collector Hunter", wr: 92, matches: 1732, mvp: 402, savage: 33, legendary: 622, effect: "particles", background: "neon", frame: "void", badge: "legend", emblem: "assassin" },
-  og: { rank: "LEGEND", title: "OG", wr: 74, matches: 5210, mvp: 260, savage: 14, legendary: 844, effect: "scan", background: "jade", frame: "frost", badge: "og", emblem: "marksman" },
+  og: { rank: "LEGENDS", title: "OG", wr: 74, matches: 5210, mvp: 260, savage: 14, legendary: 844, effect: "scan", background: "jade", frame: "frost", badge: "og", emblem: "marksman" },
   whale: { rank: "MYTHICAL IMMORTAL", title: "Whale Energy", wr: 96, matches: 3611, mvp: 701, savage: 49, legendary: 1182, effect: "glow", background: "ember", frame: "royal", badge: "goat", emblem: "mage" }
 };
 
@@ -858,8 +860,18 @@ function wireEvents() {
 
   refs.skin.addEventListener("change", () => {
     state.selections.skinId = refs.skin.value;
+
+    // A manually uploaded Hero Artwork is a temporary override. When the
+    // user explicitly selects another skin, the preview must immediately
+    // switch back to that skin's artwork instead of continuing to use the
+    // previous uploaded image. This also prevents stale artwork from
+    // surviving through LocalStorage until the cache is cleared.
+    state.artworkDataUrl = "";
+    state.layers.hero = { x: 0, y: 0, scale: 100, rotate: 0 };
+
     refs.rarity.value = rarityOptions.includes(getSkin().rarity) ? getSkin().rarity : "Rare";
     render();
+    saveUserState();
   });
 
   refs.rarity.addEventListener("change", () => render());
@@ -1152,16 +1164,20 @@ async function exportPNG() {
 }
 
 async function elementToPng(element, mode) {
+  // Make sure the same web fonts used by the live preview are ready before
+  // measuring/serializing. This prevents export-only font fallback and text wrapping.
+  if (document.fonts && document.fonts.ready) {
+    try { await document.fonts.ready; } catch (_error) {}
+  }
+
   const outputSize = {
     story: { width: 1080, height: 1920 },
     feed: { width: 1080, height: 1350 },
     card: { width: 900, height: 1200 }
   }[mode] || { width: 1080, height: 1920 };
 
-  // IMPORTANT: render the clone at the SAME CSS dimensions as the live card.
-  // The previous exporter changed the clone itself to 1080x1920 before
-  // serializing it. That broke percentage/absolute positioning and produced
-  // a small card with a large black/empty remainder.
+  // Export from the exact live-preview geometry, then rasterize directly
+  // at the final PNG resolution. Never export a screenshot-sized bitmap.
   const rect = element.getBoundingClientRect();
   const sourceW = Math.max(1, Math.round(element.clientWidth || rect.width));
   const sourceH = Math.max(1, Math.round(element.clientHeight || rect.height));
@@ -1182,11 +1198,10 @@ async function elementToPng(element, mode) {
   clone.style.boxSizing = "border-box";
   clone.classList.remove("is-hovering");
 
-  // Copy computed styles so the foreignObject looks exactly like the live card.
+  // Copy the rendered styles so the exported card matches the live preview.
   inlineStyles(element, clone);
 
-  // inlineStyles copies the original computed width/height/transform.
-  // Re-apply the export-safe root geometry after that operation.
+  // Re-apply export-safe root geometry after computed styles are copied.
   clone.style.width = `${sourceW}px`;
   clone.style.height = `${sourceH}px`;
   clone.style.position = "relative";
@@ -1197,22 +1212,62 @@ async function elementToPng(element, mode) {
   clone.style.animation = "none";
   clone.style.overflow = "hidden";
   clone.style.boxSizing = "border-box";
+  clone.style.borderRadius = getComputedStyle(element).borderRadius || "34px";
 
+  // Keep the text geometry identical to the live preview. Chromium's
+  // foreignObject renderer can otherwise reflow long labels differently.
+  const nowrapSelectors = [
+    ".rank-label",
+    ".top-line > #titleOut",
+    ".hero-copy-line",
+    ".hero-copy-line > #skinOut",
+    ".hero-copy-line > #rarityOut",
+    ".card-footer .footer-brand span"
+  ];
+  nowrapSelectors.forEach((selector) => {
+    clone.querySelectorAll(selector).forEach((node) => {
+      node.style.whiteSpace = "nowrap";
+      node.style.wordBreak = "normal";
+      node.style.overflowWrap = "normal";
+      node.style.flexWrap = "nowrap";
+    });
+  });
+  const exportedHeroLine = clone.querySelector(".hero-copy-line");
+  if (exportedHeroLine) {
+    exportedHeroLine.style.display = "flex";
+    exportedHeroLine.style.flexWrap = "nowrap";
+    exportedHeroLine.style.whiteSpace = "nowrap";
+  }
+
+  // IMPORTANT: Hero/skin artwork is a CSS background-image, not an <img>.
+  // The previous exporter only inlined <img> elements, so remote skin artwork
+  // could remain external and disappear inside the SVG foreignObject.
   await inlineImagesAsDataUrls(clone);
+  await inlineBackgroundImagesAsDataUrls(clone);
 
-  // SVG/foreignObject is used only as a self-contained snapshot of the
-  // already-laid-out card. We then scale that snapshot to the requested
-  // export resolution. This preserves the exact live-preview proportions.
   const serializer = new XMLSerializer();
   const html = serializer.serializeToString(clone);
 
-  // IMPORTANT: rasterize the SVG directly at the final export resolution.
-  // The old exporter first rasterized at the small live-preview size and only
-  // then enlarged it to 1080/1920, which made text and artwork look blurry.
-  // Using the final SVG viewport here preserves much more detail.
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${outputSize.width}" height="${outputSize.height}" viewBox="0 0 ${sourceW} ${sourceH}"><foreignObject x="0" y="0" width="${sourceW}" height="${sourceH}"><div xmlns="http://www.w3.org/1999/xhtml" style="width:${sourceW}px;height:${sourceH}px;overflow:hidden;margin:0;padding:0">${html}</div></foreignObject></svg>`;
+  // Clip the entire foreignObject to the card's rounded shape. This prevents
+  // Chromium from leaving square/transparent corner artifacts around the PNG.
+  const radius = 34;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${outputSize.width}" height="${outputSize.height}" viewBox="0 0 ${sourceW} ${sourceH}">
+    <defs>
+      <clipPath id="cardClip" clipPathUnits="userSpaceOnUse">
+        <rect x="0" y="0" width="${sourceW}" height="${sourceH}" rx="${radius}" ry="${radius}"/>
+      </clipPath>
+    </defs>
+    <rect width="${sourceW}" height="${sourceH}" fill="transparent"/>
+    <foreignObject x="0" y="0" width="${sourceW}" height="${sourceH}" clip-path="url(#cardClip)">
+      <div xmlns="http://www.w3.org/1999/xhtml" style="width:${sourceW}px;height:${sourceH}px;overflow:hidden;margin:0;padding:0;border-radius:${radius}px;">
+        ${html}
+      </div>
+    </foreignObject>
+  </svg>`;
+
   const url = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
   const image = await loadImage(url);
+
   const canvas = document.createElement("canvas");
   canvas.width = outputSize.width;
   canvas.height = outputSize.height;
@@ -1221,9 +1276,8 @@ async function elementToPng(element, mode) {
   context.imageSmoothingQuality = "high";
   context.clearRect(0, 0, canvas.width, canvas.height);
 
-  // The SVG viewBox already scales the complete live card to the final PNG.
-  // Do not paint a rectangular background: that was responsible for the
-  // black, sharp-looking corners around the rounded card.
+  // SVG viewBox scales the complete card directly to the requested output.
+  // Transparent canvas outside the rounded clip remains transparent.
   context.drawImage(image, 0, 0, outputSize.width, outputSize.height);
 
   return canvas.toDataURL("image/png");
@@ -1235,16 +1289,87 @@ async function inlineImagesAsDataUrls(root) {
     const src = img.getAttribute("src");
     if (!src || src.startsWith("data:")) return;
     try {
-      const response = await fetch(src, { mode: "cors" });
+      const response = await fetch(new URL(src, document.baseURI).href, { mode: "cors" });
       if (!response.ok) return;
       const blob = await response.blob();
       const reader = new FileReader();
-      const dataUrl = await new Promise((resolve, reject) => { reader.onload = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(blob); });
+      const dataUrl = await new Promise((resolve, reject) => {
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
       img.setAttribute("src", dataUrl);
     } catch (_error) {
-      // Keep the original source; preview remains unaffected even if export cannot inline it.
+      // Keep original source; local/data images continue to render normally.
     }
   }));
+}
+
+async function inlineBackgroundImagesAsDataUrls(root) {
+  // CSS backgrounds are where skin artwork normally lives. Convert every
+  // url(...) found in inline/computed background-image declarations to a
+  // data URL before serializing the card into SVG.
+  const nodes = [root, ...root.querySelectorAll("*")];
+  const jobs = [];
+
+  for (const node of nodes) {
+    const style = node.getAttribute("style");
+    if (!style || !/url\(/i.test(style)) continue;
+
+    const rewritten = await replaceCssUrlsWithDataUrls(style);
+    if (rewritten !== style) node.setAttribute("style", rewritten);
+  }
+
+  // Some backgrounds are represented only by computed styles. Copy the
+  // computed background image into inline style, then inline any URLs.
+  for (const node of nodes) {
+    const computed = getComputedStyle(node);
+    const bg = computed.backgroundImage;
+    if (!bg || bg === "none" || !/url\(/i.test(bg)) continue;
+
+    const rewritten = await replaceCssUrlsWithDataUrls(bg);
+    if (rewritten !== bg) {
+      const current = node.getAttribute("style") || "";
+      node.setAttribute("style", `${current};background-image:${rewritten};`);
+    }
+  }
+}
+
+async function replaceCssUrlsWithDataUrls(cssText) {
+  const matches = [];
+  const regex = /url\(\s*(['"]?)(.*?)\1\s*\)/gi;
+  let match;
+  while ((match = regex.exec(cssText))) {
+    const rawUrl = match[2];
+    if (!rawUrl || rawUrl.startsWith("data:") || rawUrl.startsWith("blob:")) continue;
+    matches.push({ full: match[0], url: rawUrl });
+  }
+
+  if (!matches.length) return cssText;
+
+  let result = cssText;
+  for (const item of matches) {
+    try {
+      const absoluteUrl = new URL(item.url, document.baseURI).href;
+      const response = await fetch(absoluteUrl, { mode: "cors" });
+      if (!response.ok) continue;
+
+      const blob = await response.blob();
+      const reader = new FileReader();
+      const dataUrl = await new Promise((resolve, reject) => {
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+
+      result = result.split(item.full).join(`url("${dataUrl}")`);
+    } catch (_error) {
+      // If an asset server does not permit CORS, leave the URL untouched.
+      // Same-origin/local assets and GitHub raw assets normally succeed.
+    }
+  }
+
+  return result;
 }
 
 function inlineStyles(source, target) {

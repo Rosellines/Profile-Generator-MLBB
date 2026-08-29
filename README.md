@@ -1,22 +1,5 @@
-# MLBB Flex Profile Studio V3
+# MLBB Flex Profile Studio - v21
 
-Open [index.html](./index.html) in a modern browser.
+v21 is based on v20 and fixes PNG export layout drift.
 
-What V3 adds:
-- `api.js` for remote hero/emblem loading with local fallback
-- API status badge: `ONLINE`, `PARTIAL`, `FALLBACK`, or `DISABLED`
-- `Refresh API` button to retry remote sources
-- normalized remote -> local manifest merge, so the editor still uses one data shape
-- all V2 editor features: presets, randomize, drag/scale/rotate, live preview, and PNG export
-
-Files:
-- `index.html`: editor UI + API status blocks
-- `script.js`: editor state, rendering, export, and API refresh flow
-- `api.js`: remote provider fetch + normalization + fallback merge
-- `manifest.json`: local asset registry plus API provider config
-
-Important notes:
-- Official MLBB artwork is still not bundled.
-- Remote API support depends on the provider endpoint staying alive and allowing browser requests.
-- If you open from `file://`, some browsers may block fetch behavior more aggressively; a tiny local server is the safest path for API mode.
-- If the configured API URL changes, edit `manifest.json` under `api.providers`.
+The exporter now waits for fonts and explicitly preserves the live-preview single-line layout for long rank/title/skin/footer text. Skin name and rarity remain on the same row with the live-preview gap.
