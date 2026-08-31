@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "note": "Asset manifest untuk MLBB Flex Profile Studio. Ganti placeholder style/path dengan asset yang kamu punya izin gunakan.",
   "api": {
     "enabled": true,
@@ -29,10 +29,11 @@
     "Savage Farmer"
   ],
   "ranks": [
-    "MYTHIC GLORY",
     "MYTHICAL IMMORTAL",
-    "MYTHIC",
-    "LEGEND",
+    "MYTHICAL GLORY",
+    "MYTHICAL HONOR",
+    "MYTHICAL",
+    "LEGENDS",
     "EPIC"
   ],
   "backgrounds": [

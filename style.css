@@ -136,6 +136,7 @@ input:disabled{opacity:.7}
   --glow-primary:var(--frame);
   --glow-secondary:var(--frame-alt);
   --rarity:#f3c969;
+  --skin-accent:var(--accent);
   --cursor-x:65%;
   --cursor-y:32%;
   --loop-x:24%;
@@ -145,7 +146,7 @@ input:disabled{opacity:.7}
   --tilt-z:0deg;
   --look-y:0deg;
   position:relative;width:min(500px,90vw);overflow:hidden;border-radius:34px;background:#09111d;
-  border:1px solid rgba(255,255,255,.08);box-shadow:var(--shadow);isolation:isolate;
+  border:1px solid var(--skin-accent);box-shadow:var(--shadow),0 0 18px color-mix(in srgb,var(--skin-accent) 28%,transparent);isolation:isolate;
   transform:perspective(1400px) rotateX(var(--tilt-x)) rotateY(calc(var(--tilt-y) + var(--look-y))) rotateZ(var(--tilt-z));
   transform-style:preserve-3d;transition:transform .18s ease, box-shadow .18s ease;animation:cardLook 7s ease-in-out infinite
 }
@@ -242,8 +243,8 @@ input:disabled{opacity:.7}
   box-shadow:0 0 0 2px rgba(255,255,255,.18) inset,0 0 30px var(--frame)88
 }
 .badge-chip{
-  position:absolute;right:-2px;bottom:9px;padding:7px 10px;border-radius:999px;background:linear-gradient(135deg,var(--accent),#ff8d5c);
-  color:#1e0f00;font-size:11px;font-weight:900;letter-spacing:1.3px;text-transform:uppercase
+  position:absolute;right:-2px;bottom:9px;padding:2px 6px;border-radius:999px;background:linear-gradient(135deg,var(--accent),#ff8d5c);
+  color:#1e0f00;font-size:7px;font-weight:900;letter-spacing:1.3px;text-transform:uppercase
 }
 .identity-copy h2{
   margin:0;font:900 clamp(34px,6vw,52px)/.92 "Arial Black","Trebuchet MS",sans-serif;text-transform:uppercase
@@ -271,7 +272,7 @@ input:disabled{opacity:.7}
 .side-token.muted{color:var(--muted)}
 
 .stats-grid{
-  position:absolute;left:22px;right:22px;bottom:11.5%;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;z-index:7
+  position:absolute;left:22px;right:22px;bottom:9.5%;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;z-index:7
 }
 .stats-grid article{
   padding:14px 10px 12px;border-radius:18px;background:linear-gradient(180deg,rgba(6,11,20,.72),rgba(255,255,255,.04));
@@ -398,7 +399,7 @@ select option{background:#0c1522;color:#edf3ff}
   border-radius:inherit;
   pointer-events:none;
   z-index:6;
-  border:1px solid rgba(255,255,255,.12);
+  border:1px solid color-mix(in srgb,var(--skin-accent) 72%,transparent);
   background:
     linear-gradient(105deg,transparent 0 38%,rgba(255,255,255,.10) 46%,rgba(255,255,255,.34) 50%,rgba(255,255,255,.08) 54%,transparent 62%);
   background-size:220% 100%;
@@ -596,7 +597,7 @@ select option{background:#0c1522;color:#edf3ff}
   color:#cfd9eb;
 }
 .artwork-global-hero{
-  margin-top:6px;
+  margin-top:0px;
   font-size:17px;
   font-weight:800;
   color:#fff;
@@ -734,4 +735,86 @@ select option{background:#0c1522;color:#edf3ff}
 .identity-extra,
 .identity-bio{
   transform:translateY(-4px);
+}
+
+
+/* v29 export-only compatibility: keep rank text readable in SVG/PNG. */
+.top-rank-panel .rank-label{
+  display:block;
+  width:100%;
+  max-width:100%;
+  overflow:visible;
+  text-overflow:clip;
+  white-space:nowrap;
+}
+
+/* Keep Global Ranking block above the hero title when rasterized. */
+.artwork-global-label,.artwork-global-hero{position:relative;z-index:1}
+
+/* v28 requested-only: selectable avatar border assets */
+.avatar-frame{
+  inset:0;
+  border:0 !important;
+  border-radius:0 !important;
+  background-repeat:no-repeat !important;
+  background-position:center !important;
+  background-size:100% 100% !important;
+  -webkit-mask:none !important;
+  mask:none !important;
+  box-shadow:none !important;
+  pointer-events:none;
+}
+
+
+
+/* v32 requested-only fixes */
+/* Top-right: remove rank artwork/label; keep only points, then title. */
+.top-rank-panel .top-rank-icon,
+.top-rank-panel .rank-label{
+  display:none !important;
+}
+.top-rank-panel .top-rank-points{
+  margin-top:0;
+}
+
+/* Global Ranking must stay on one line in both live preview and export. */
+.artwork-global-label{
+  display:block !important;
+  width:max-content !important;
+  max-width:none !important;
+  white-space:nowrap !important;
+  word-break:normal !important;
+  overflow:visible !important;
+}
+
+
+/* v32 requested-only additions: achievement icons above each stat. */
+.stats-grid article{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+.stats-grid .stat-icon{
+  display:block;
+  width:30px;
+  height:30px;
+  object-fit:contain;
+  margin:0 auto 3px;
+  flex:0 0 30px;
+}
+.stats-grid b{
+  font-size:16px !important;
+}
+
+/* v32 requested-only: rank icon slightly larger with a softer shadow. */
+.artwork-rank-icon{
+  width:168px;
+  height:173px;
+  filter:drop-shadow(0 7px 14px rgba(0,0,0,.52)) drop-shadow(0 0 15px var(--rank-glow));
+}
+
+/* v32 requested-only: top-right title is 6px. */
+.top-rank-title{
+  font-size:6px !important;
 }

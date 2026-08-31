@@ -12,20 +12,26 @@ const roleHeroes = {
 
 const RANK_ASSETS = {
   "MYTHICAL IMMORTAL": "assets/rank/mythical-immortal.png",
-  "MYTHIC GLORY": "assets/rank/mythic-glory.png",
-  "MYTHIC HONOR": "assets/rank/mythical-honor.png",
-  "MYTHIC": "assets/rank/mythic.png",
-  "LEGENDS": "assets/rank/legends.png",
+  "MYTHICAL GLORY": "assets/rank/mythic-glory.png",
+  "MYTHICAL HONOR": "assets/rank/mythical-honor.png",
+  "MYTHICAL": "assets/rank/mythic.png",
+  "LEGENDS": "assets/rank/Legends.png",
   "EPIC": "assets/rank/epic.png"
 };
 
+const AVATAR_BORDER_ASSETS = ["frame_001_part1.png", "frame_002_part1.png", "frame_003_part1.png", "frame_004_part1.png", "frame_005_part1.png", "frame_006_part1.png", "frame_007_part1.png", "frame_008_part1.png", "frame_009_part1.png", "frame_010_part1.png", "frame_011_part1.png", "frame_012_part1.png", "frame_013_part1.png", "frame_014_part1.png", "frame_015_part1.png", "frame_016_part1.png", "frame_017_part1.png", "frame_018_part1.png", "frame_019_part1.png", "frame_020_part1.png", "frame_021_part1.png", "frame_022_part1.png", "frame_023_part1.png", "frame_024_part1.png", "frame_025_part1.png", "frame_026_part1.png", "frame_027_part1.png", "frame_028_part1.png", "frame_029_part1.png", "frame_030_part1.png", "frame_031_part1.png", "frame_032_part1.png", "frame_033_part1.png", "frame_034_part1.png", "frame_035_part1.png", "frame_036_part1.png", "frame_037_part1.png", "frame_038_part1.png", "frame_039_part1.png", "frame_040_part1.png", "frame_041_part1.png", "frame_042_part1.png", "frame_043_part1.png", "frame_044_part1.png", "frame_045_part1.png", "frame_046_part1.png", "frame_047_part1.png", "frame_048_part1.png", "frame_049_part1.png", "frame_050_part1.png", "frame_051_part2.png", "frame_052_part2.png", "frame_053_part2.png", "frame_054_part2.png", "frame_055_part2.png", "frame_056_part2.png", "frame_057_part2.png", "frame_058_part2.png", "frame_059_part2.png", "frame_060_part2.png", "frame_061_part2.png", "frame_062_part2.png", "frame_063_part2.png", "frame_064_part2.png", "frame_065_part2.png", "frame_066_part2.png", "frame_067_part2.png", "frame_068_part2.png", "frame_069_part2.png", "frame_070_part2.png", "frame_071_part2.png", "frame_072_part2.png", "frame_073_part2.png", "frame_074_part2.png", "frame_075_part2.png", "frame_076_part2.png", "frame_077_part2.png", "frame_078_part2.png", "frame_079_part2.png", "frame_080_part2.png", "frame_081_part2.png", "frame_082_part2.png", "frame_083_part2.png", "frame_084_part2.png", "frame_085_part2.png", "frame_086_part2.png", "frame_087_part2.png", "frame_088_part2.png", "frame_089_part2.png", "frame_090_part2.png", "frame_091_part2.png", "frame_092_part2.png", "frame_093_part2.png", "frame_094_part2.png", "frame_095_part2.png", "frame_096_part2.png", "frame_097_part2.png", "frame_098_part2.png", "frame_099_part2.png", "frame_100_part2.png", "frame_101_part3.png", "frame_102_part3.png", "frame_103_part3.png", "frame_104_part3.png", "frame_105_part3.png", "frame_106_part3.png", "frame_107_part3.png", "frame_108_part3.png", "frame_109_part3.png", "frame_110_part3.png", "frame_111_part3.png", "frame_112_part3.png", "frame_113_part3.png", "frame_114_part3.png", "frame_115_part3.png", "frame_116_part3.png", "frame_117_part3.png", "frame_118_part3.png", "frame_119_part3.png", "frame_120_part3.png", "frame_121_part3.png", "frame_122_part3.png", "frame_123_part3.png", "frame_124_part3.png", "frame_125_part3.png", "frame_126_part3.png", "frame_127_part3.png", "frame_128_part3.png", "frame_129_part3.png", "frame_130_part3.png", "frame_131_part3.png", "frame_132_part3.png", "frame_133_part3.png", "frame_134_part3.png", "frame_135_part3.png", "frame_136_part3.png", "frame_137_part3.png", "frame_138_part3.png", "frame_139_part3.png", "frame_140_part3.png", "frame_141_part3.png", "frame_142_part3.png", "frame_143_part3.png", "frame_144_part3.png", "frame_145_part3.png", "frame_146_part3.png", "frame_147_part3.png", "frame_148_part3.png", "frame_149_part3.png", "frame_150_part3.png", "frame_151_part3.png", "frame_152_part3.png", "frame_153_part3.png", "frame_154_part3.png", "frame_155_part3.png", "frame_156_part3.png", "frame_157_part3.png", "frame_158_part3.png", "frame_159_part4.png", "frame_160_part4.png", "frame_161_part4.png", "frame_162_part4.png", "frame_163_part4.png", "frame_164_part4.png", "frame_165_part4.png", "frame_166_part4.png", "frame_167_part4.png", "frame_168_part4.png", "frame_169_part4.png", "frame_170_part4.png", "frame_171_part4.png", "frame_172_part4.png", "frame_173_part4.png", "frame_174_part4.png", "frame_175_part4.png", "frame_176_part4.png", "frame_177_part4.png", "frame_178_part4.png", "frame_179_part4.png", "frame_180_part4.png", "frame_181_part4.png", "frame_182_part4.png", "frame_183_part4.png", "frame_184_part4.png", "frame_185_part4.png", "frame_186_part4.png", "frame_187_part4.png"];
+
 const rankVisuals = {
   "MYTHICAL IMMORTAL": { className: "rank-mythical-immortal", icon: RANK_ASSETS["MYTHICAL IMMORTAL"] },
-  "MYTHIC GLORY": { className: "rank-mythic-glory", icon: RANK_ASSETS["MYTHIC GLORY"] },
-  "MYTHIC HONOR": { className: "rank-mythic-honor", icon: RANK_ASSETS["MYTHIC HONOR"] },
-  "MYTHIC": { className: "rank-mythic", icon: RANK_ASSETS["MYTHIC"] },
+  "MYTHICAL GLORY": { className: "rank-mythic-glory", icon: RANK_ASSETS["MYTHICAL GLORY"] },
+  "MYTHICAL HONOR": { className: "rank-mythic-honor", icon: RANK_ASSETS["MYTHICAL HONOR"] },
+  "MYTHICAL": { className: "rank-mythic", icon: RANK_ASSETS["MYTHICAL"] },
   "LEGENDS": { className: "rank-legends", icon: RANK_ASSETS["LEGENDS"] },
-  "EPIC": { className: "rank-epic", icon: RANK_ASSETS["EPIC"] }
+  "EPIC": { className: "rank-epic", icon: RANK_ASSETS["EPIC"] },
+  // Backward compatibility for profiles saved with v29 names.
+  "MYTHIC GLORY": { className: "rank-mythic-glory", icon: RANK_ASSETS["MYTHICAL GLORY"] },
+  "MYTHIC HONOR": { className: "rank-mythic-honor", icon: RANK_ASSETS["MYTHICAL HONOR"] },
+  "MYTHIC": { className: "rank-mythic", icon: RANK_ASSETS["MYTHICAL"] }
 };
 
 const genderOptions = {
@@ -60,7 +66,7 @@ const heroAliases = {
 const fallbackManifest = {
   version: 3,
   titles: ["Assassin Main", "Mythic Grinder", "Collector Hunter", "Rank Demon", "Savage Farmer"],
-  ranks: ["MYTHICAL IMMORTAL", "MYTHIC GLORY", "MYTHIC HONOR", "MYTHIC", "LEGENDS", "EPIC"],
+  ranks: ["MYTHICAL IMMORTAL", "MYTHICAL GLORY", "MYTHICAL HONOR", "MYTHICAL", "LEGENDS", "EPIC"],
   backgrounds: [
     {
       id: "starlight",
@@ -190,7 +196,7 @@ const fallbackManifest = {
 };
 
 const presets = {
-  mythic: { rank: "MYTHIC GLORY", title: "Mythic Grinder", wr: 87, matches: 2431, mvp: 318, savage: 27, legendary: 501, effect: "glow", background: "starlight", frame: "royal", badge: "mvp", emblem: "burst" },
+  mythic: { rank: "MYTHICAL GLORY", title: "Mythic Grinder", wr: 87, matches: 2431, mvp: 318, savage: 27, legendary: 501, effect: "glow", background: "starlight", frame: "royal", badge: "mvp", emblem: "burst" },
   collector: { rank: "MYTHICAL IMMORTAL", title: "Collector Hunter", wr: 92, matches: 1732, mvp: 402, savage: 33, legendary: 622, effect: "particles", background: "neon", frame: "void", badge: "legend", emblem: "assassin" },
   og: { rank: "LEGENDS", title: "OG", wr: 74, matches: 5210, mvp: 260, savage: 14, legendary: 844, effect: "scan", background: "jade", frame: "frost", badge: "og", emblem: "marksman" },
   whale: { rank: "MYTHICAL IMMORTAL", title: "Whale Energy", wr: 96, matches: 3611, mvp: 701, savage: 49, legendary: 1182, effect: "glow", background: "ember", frame: "royal", badge: "goat", emblem: "mage" }
@@ -213,7 +219,8 @@ const state = {
     gender: "male",
     region: "ID",
     mode: "story",
-    backgroundMode: "artwork"
+    backgroundMode: "artwork",
+    avatarBorder: AVATAR_BORDER_ASSETS[0] || ""
   },
   layers: {
     avatar: { x: 0, y: 0, scale: 100, rotate: 0 },
@@ -230,14 +237,14 @@ const refs = {};
 let uiWired = false;
 
 const STORAGE_KEYS = {
-  catalog: "mlbb-flex:catalog:v9",
-  heroes: "mlbb-flex:heroes:v9",
-  skinsByHero: "mlbb-flex:skins-by-hero:v9",
-  manifest: "mlbb-flex:manifest:v9",
-  state: "mlbb-flex:state:v9"
+  catalog: "mlbb-flex:catalog:v10",
+  heroes: "mlbb-flex:heroes:v10",
+  skinsByHero: "mlbb-flex:skins-by-hero:v10",
+  manifest: "mlbb-flex:manifest:v10",
+  state: "mlbb-flex:state:v10"
 };
 
-const CATALOG_VERSION = 9;
+const CATALOG_VERSION = 10;
 
 function readStorage(key, fallback = null) {
   try {
@@ -295,6 +302,8 @@ function restoreUserState() {
   const cached = readStorage(STORAGE_KEYS.state);
   if (!cached) return;
   state.selections = { ...state.selections, ...(cached.selections || {}) };
+  const legacyRankNames = { "MYTHIC GLORY": "MYTHICAL GLORY", "MYTHIC HONOR": "MYTHICAL HONOR", "MYTHIC": "MYTHICAL" };
+  if (legacyRankNames[state.selections.rank]) state.selections.rank = legacyRankNames[state.selections.rank];
   if (cached.backgroundMode) state.selections.backgroundMode = cached.backgroundMode;
   else if (typeof cached.customBackground === "boolean") state.selections.backgroundMode = cached.customBackground ? "custom" : "artwork";
   state.layers = { ...state.layers, ...(cached.layers || {}) };
@@ -337,7 +346,7 @@ async function fetchLocalSkinCatalog() {
 function cacheRefs() {
   [
     "ign", "pid", "server", "bio", "title", "rank", "gender", "region", "rankPoints", "photo", "artwork", "role", "hero", "skin", "rarity", "backgrounds",
-    "frames", "emblems", "badges", "skinColor1", "skinColor2", "rarityColor", "backgroundColor1", "backgroundColor2", "backgroundColor3",
+    "frames", "avatarBorder", "emblems", "badges", "skinColor1", "skinColor2", "rarityColor", "backgroundColor1", "backgroundColor2", "backgroundColor3",
     "frameMode", "frameColor1", "frameColor2", "backgroundMode", "activeLayer", "layerScale", "layerRotate", "accent", "mode",
     "wr", "matches", "mvp", "savage", "legendary", "emblemLevel", "resetLayout", "presetBtn", "randomBtn",
     "copyBtn", "exportBtn", "closeModal", "modal", "cropModal", "cropTitle", "cropViewport", "cropImage", "cropZoom", "cropX", "cropY", "cropCancel", "cropApply", "card", "backgroundLayer", "heroArt", "avatarImg",
@@ -514,6 +523,10 @@ function ensureSelectionsValid() {
     state.selections.skinId = hero.skins[0].id;
   }
 
+  if (!AVATAR_BORDER_ASSETS.includes(state.selections.avatarBorder)) {
+    state.selections.avatarBorder = AVATAR_BORDER_ASSETS[0] || "";
+  }
+
   ["backgrounds", "frames", "emblems", "badges"].forEach((listName) => {
     const key = `${listName.slice(0, -1)}Id`;
     if (!state.manifest[listName].some((item) => item.id === state.selections[key])) {
@@ -557,6 +570,7 @@ function paintControls() {
   fillSelect(refs.rank, state.manifest.ranks);
   if (refs.backgroundMode) refs.backgroundMode.value = state.selections.backgroundMode || (state.customBackground ? "custom" : "artwork");
   fillSelect(refs.gender, Object.entries(genderOptions), ([key]) => key, ([, value]) => value.label);
+  if (refs.avatarBorder) fillSelect(refs.avatarBorder, AVATAR_BORDER_ASSETS, (name) => name, (name) => name.replace(/\.png$/i, "").replace(/_/g, " ").replace(/\bpart\d+\b/i, "").trim());
   fillSelect(refs.region, regionOptions, (item) => item[0], (item) => `${item[2]} ${item[1]}`);
   fillSelect(refs.role, ["All", ...Object.keys(roleHeroes)]);
   fillSelect(refs.hero, getRoleHeroes(), (hero) => hero.id, (hero) => hero.name);
@@ -567,6 +581,7 @@ function paintControls() {
   refs.title.value = state.selections.title;
   refs.rank.value = state.selections.rank;
   refs.gender.value = state.selections.gender || "male";
+  if (refs.avatarBorder) refs.avatarBorder.value = state.selections.avatarBorder || AVATAR_BORDER_ASSETS[0] || "";
   refs.region.value = state.selections.region || "ID";
   refs.role.value = state.selections.role;
   refs.hero.value = state.selections.heroId;
@@ -698,6 +713,35 @@ function fitHeroTitleToCard() {
   el.style.fontSize = `${Math.max(20, Math.min(68, best))}px`;
 }
 
+function fitIgnToCard() {
+  const el = refs.ignOut;
+  const box = el?.parentElement;
+  if (!el || !box) return;
+
+  el.style.whiteSpace = "nowrap";
+  el.style.overflow = "visible";
+  el.style.textOverflow = "clip";
+  el.style.fontSize = "48px";
+
+  const available = Math.max(1, box.clientWidth);
+  let lo = 18;
+  let hi = 48;
+  let best = 18;
+
+  for (let i = 0; i < 14; i += 1) {
+    const mid = (lo + hi) / 2;
+    el.style.fontSize = `${mid}px`;
+    if (el.scrollWidth <= available + 1) {
+      best = mid;
+      lo = mid;
+    } else {
+      hi = mid;
+    }
+  }
+
+  el.style.fontSize = `${Math.max(18, Math.min(48, best))}px`;
+}
+
 function renderBioLine(value) {
   const raw = String(value || "No status.").trim();
   // Keep normal bios untouched. Only truncate after 50 characters.
@@ -761,7 +805,15 @@ function render() {
   } else {
     refs.backgroundLayer.style.background = background.style;
   }
+  // The first color in a skin style is the skin accent. Do not use the
+  // generic editor accent as the card border color; the border must follow
+  // the currently selected skin every time the skin changes.
+  const skinAccentMatch = String(skin?.style || "").match(/radial-gradient\([^,]+,\s*((?:rgba?|hsla?)\([^)]*\)|#[0-9a-fA-F]{3,8})/);
+  const skinAccent = skinAccentMatch
+    ? skinAccentMatch[1]
+    : (String(skin?.style || "").match(/(?:rgba?|hsla?)\([^)]*\)|#[0-9a-fA-F]{3,8}/)?.[0] || refs.accent.value);
   refs.card.style.setProperty("--accent", refs.accent.value);
+  refs.card.style.setProperty("--skin-accent", skinAccent);
   refs.card.style.setProperty("--frame", frameColor);
   refs.card.style.setProperty("--frame-alt", frameAltColor);
   refs.card.style.setProperty("--frame-fill", frameFill);
@@ -778,21 +830,23 @@ function render() {
   ].filter(Boolean);
   refs.heroArt.style.background = artLayers.join(", ");
   if (state.avatarDataUrl) refs.avatarImg.style.background = `url(${state.avatarDataUrl}) center/cover`;
+  const avatarBorderAsset = state.selections.avatarBorder || AVATAR_BORDER_ASSETS[0] || "";
   refs.frameOut.style.borderColor = "transparent";
-  refs.frameOut.style.background = frameFill;
-  refs.frameOut.style.boxShadow = `0 0 0 2px rgba(255,255,255,.18) inset, 0 0 26px ${frameColor}88`;
+  refs.frameOut.style.background = avatarBorderAsset ? `url("assets/border-avatar/${avatarBorderAsset}") center/100% 100% no-repeat` : "transparent";
+  refs.frameOut.style.boxShadow = "none";
 
   refs.badgeOut.textContent = refs.badges.value;
   refs.badgeOut.style.background = buildSmoothGradient(frameColor, refs.accent.value, 140);
   refs.emblemOut.textContent = refs.emblems.value;
 
   refs.ignOut.textContent = refs.ign.value || "PLAYER";
+  fitIgnToCard();
   refs.pidOut.textContent = refs.pid.value || "00000000";
   refs.serverOut.textContent = refs.server.value || "0000";
   refs.bioOut.textContent = renderBioLine(refs.bio.value);
   fitBioToCard();
   refs.titleOut.textContent = refs.title.value;
-  const rankVisual = rankVisuals[refs.rank.value] || rankVisuals["MYTHIC GLORY"];
+  const rankVisual = rankVisuals[refs.rank.value] || rankVisuals["MYTHICAL GLORY"];
   refs.rankOut.textContent = refs.rank.value;
   refs.rankOut.className = `rank-label ${rankVisual.className}`;
   refs.rankIconOut.src = rankVisual.icon;
@@ -1017,6 +1071,14 @@ function wireEvents() {
     render();
     saveUserState();
   });
+
+  if (refs.avatarBorder) {
+    refs.avatarBorder.addEventListener("change", () => {
+      state.selections.avatarBorder = refs.avatarBorder.value;
+      render();
+      saveUserState();
+    });
+  }
 
   refs.rarity.addEventListener("change", () => render());
   if (refs.backgroundMode) {
@@ -1370,15 +1432,17 @@ async function elementToPng(element, mode) {
   clone.style.boxSizing = "border-box";
   clone.style.borderRadius = getComputedStyle(element).borderRadius || "34px";
 
-  // Preserve the transparent stat cards while keeping their gradient border
-  // inside the exported SVG. The live preview uses a pseudo-element border,
-  // which is not serialized by XMLSerializer.
+  // Keep exported stats truly transparent. The live preview uses a pseudo-element
+  // for the gradient border, but pseudo-elements are not serialized reliably by
+  // the foreignObject exporter. Recreate only the visible border inline without
+  // painting any gradient/fill inside the stat.
   clone.querySelectorAll(".stats-grid article").forEach((node) => {
-    node.style.border = "1px solid transparent";
+    node.style.background = "transparent";
     node.style.backgroundColor = "transparent";
-    node.style.backgroundImage = "linear-gradient(transparent,transparent),linear-gradient(135deg,rgba(255,255,255,.78),rgba(243,201,105,.88),rgba(126,102,255,.82),rgba(88,190,255,.55))";
-    node.style.backgroundOrigin = "border-box";
-    node.style.backgroundClip = "padding-box,border-box";
+    node.style.backgroundImage = "none";
+    node.style.backgroundOrigin = "initial";
+    node.style.backgroundClip = "border-box";
+    node.style.border = "1px solid rgba(243,201,105,.72)";
     node.style.boxShadow = "none";
   });
 
@@ -1400,6 +1464,65 @@ async function elementToPng(element, mode) {
       node.style.flexWrap = "nowrap";
     });
   });
+  const exportedTopRank = clone.querySelector(".top-rank-panel");
+  if (exportedTopRank) {
+    exportedTopRank.style.overflow = "visible";
+  }
+  clone.querySelectorAll(".top-rank-panel .rank-label").forEach((node) => {
+    node.style.display = "block";
+    node.style.width = "100%";
+    node.style.maxWidth = "100%";
+    node.style.overflow = "visible";
+    node.style.textOverflow = "clip";
+    node.style.whiteSpace = "nowrap";
+    node.style.fontSize = "7px";
+    node.style.letterSpacing = "1px";
+  });
+  // v32 requested-only: the top-right rank icon and rank name stay hidden in PNG export.
+  clone.querySelectorAll(".top-rank-panel .top-rank-icon, .top-rank-panel .rank-label").forEach((node) => {
+    node.style.display = "none";
+    node.style.visibility = "hidden";
+  });
+  const exportedTitle = clone.querySelector(".top-rank-title");
+  if (exportedTitle) {
+    // Do not apply the live editor's ellipsis during SVG serialization.
+    // Keep the complete title on one line, matching the live preview.
+    exportedTitle.style.width = "max-content";
+    exportedTitle.style.maxWidth = "none";
+    exportedTitle.style.overflow = "visible";
+    exportedTitle.style.textOverflow = "clip";
+    exportedTitle.style.whiteSpace = "nowrap";
+    exportedTitle.style.flex = "0 0 auto";
+  }
+  clone.querySelectorAll(".artwork-global-label, .artwork-global-hero").forEach((node) => {
+    node.style.position = "relative";
+    node.style.zIndex = "1";
+  });
+  const exportedGlobalLabel = clone.querySelector(".artwork-global-label");
+  if (exportedGlobalLabel) {
+    exportedGlobalLabel.style.display = "block";
+    exportedGlobalLabel.style.width = "max-content";
+    exportedGlobalLabel.style.maxWidth = "none";
+    exportedGlobalLabel.style.whiteSpace = "nowrap";
+    exportedGlobalLabel.style.wordBreak = "normal";
+    exportedGlobalLabel.style.overflow = "visible";
+  }
+  const exportedGlobalHero = clone.querySelector(".artwork-global-hero");
+  if (exportedGlobalHero) {
+    exportedGlobalHero.style.whiteSpace = "nowrap";
+    exportedGlobalHero.style.overflow = "visible";
+    exportedGlobalHero.style.fontSize = "17px";
+    exportedGlobalHero.style.marginTop = "0px";
+  }
+
+  // Keep the selected skin accent on the outer card in PNG export too.
+  // Resolve the CSS variable to an actual color before SVG serialization.
+  // foreignObject renderers are inconsistent with CSS custom properties.
+  const exportedSkinAccent = getComputedStyle(element).getPropertyValue("--skin-accent").trim() || refs.accent.value;
+  clone.style.setProperty("--skin-accent", exportedSkinAccent);
+  clone.style.border = `1px solid ${exportedSkinAccent}`;
+  clone.style.boxShadow = `var(--shadow),0 0 18px ${exportedSkinAccent}`;
+
   const exportedHeroLine = clone.querySelector(".hero-copy-line");
   if (exportedHeroLine) {
     exportedHeroLine.style.display = "flex";
