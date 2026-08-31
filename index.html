@@ -14,11 +14,6 @@
         <h1>MLBB Flex Profile Studio V3</h1>
       </div>
       <div class="topbar-actions">
-        <span id="apiBadge" class="api-pill api-idle">API: Checking</span>
-        <button id="presetBtn" class="ghost">Preset</button>
-        <button id="refreshApiBtn" class="ghost">Refresh API</button>
-        <button id="randomBtn" class="ghost">Randomize</button>
-        <button id="copyBtn" class="ghost">Copy Config</button>
         <button id="exportBtn" class="primary">Export PNG</button>
       </div>
     </header>
@@ -191,6 +186,21 @@
             </div>
           </div>
 
+          <div class="three-col">
+            <div>
+              <label for="badgeColor1">Badge Color 1</label>
+              <input id="badgeColor1" type="color" value="#f3c969">
+            </div>
+            <div>
+              <label for="badgeColor2">Badge Color 2</label>
+              <input id="badgeColor2" type="color" value="#ff8d5c">
+            </div>
+            <div>
+              <label>Priority</label>
+              <div class="api-source-copy">Skin accent first</div>
+            </div>
+          </div>
+
           <label>Effects</label>
           <div class="effect-row">
             <button data-effect="none" class="active">None</button>
@@ -205,6 +215,61 @@
             <span>Mini Figma Mode</span>
             <small>Pilih layer lalu drag di canvas. Scale pakai slider.</small>
           </div>
+
+          <label for="cardLayout">Card Layout</label>
+          <select id="cardLayout">
+            <option value="classic">Classic</option>
+            <option value="minimal">Minimal</option>
+            <option value="cyber">Cyber</option>
+            <option value="esports">Esports</option>
+            <option value="mythic">Mythic</option>
+            <option value="showcase">Showcase</option>
+          </select>
+
+          <div class="section-title feature-subtitle">
+            <span>Hero Artwork Position</span>
+            <small>Atur posisi dan transform artwork hero.</small>
+          </div>
+          <div class="two-col">
+            <div><label for="heroX">X</label><input id="heroX" type="range" min="-250" max="250" value="0"></div>
+            <div><label for="heroY">Y</label><input id="heroY" type="range" min="-250" max="250" value="0"></div>
+          </div>
+          <div class="two-col">
+            <div><label for="heroScale">Scale</label><input id="heroScale" type="range" min="50" max="180" value="100"></div>
+            <div><label for="heroRotate">Rotation</label><input id="heroRotate" type="range" min="-30" max="30" value="0"></div>
+          </div>
+
+          <div class="section-title feature-subtitle">
+            <span>Background Effects</span>
+            <small>Pilih efek dan atur intensitasnya.</small>
+          </div>
+          <label for="backgroundEffect">Effect</label>
+          <select id="backgroundEffect">
+            <option value="none">None</option>
+            <option value="particles">Particles</option>
+            <option value="glow">Glow</option>
+            <option value="smoke">Smoke</option>
+            <option value="rays">Light Rays</option>
+            <option value="geometric">Geometric Pattern</option>
+            <option value="ring">Energy Ring</option>
+          </select>
+          <label for="effectIntensity">Intensity</label>
+          <input id="effectIntensity" type="range" min="0" max="100" value="55">
+
+          <label for="roleBadge">Role Badge</label>
+          <select id="roleBadge">
+            <option value="auto">Auto from Hero</option>
+            <option value="Assassin">ASSASSIN</option>
+            <option value="Mage">MAGE</option>
+            <option value="Fighter">FIGHTER</option>
+            <option value="Marksman">MARKSMAN</option>
+            <option value="Jungler">JUNGLER</option>
+            <option value="Support">SUPPORT</option>
+            <option value="Tanker">TANK</option>
+          </select>
+
+          <label for="playerTitle">Player Title</label>
+          <input id="playerTitle" placeholder="GUSION SPECIALIST">
 
           <label for="activeLayer">Active Layer</label>
           <select id="activeLayer">
@@ -281,19 +346,6 @@
           </div>
         </section>
 
-        <div class="hint-box">
-          Engine ini asset-agnostic. Hero/skin resmi tidak dibundel.
-          Tambahkan artwork yang kamu punya izin pakai lewat <code>manifest.json</code> atau folder <code>assets/</code>.
-        </div>
-
-        <div class="api-panel">
-          <div class="section-title">
-            <span>API Layer</span>
-            <small>Primary remote + local fallback biar editor tetap nyala.</small>
-          </div>
-          <p id="apiStatusText" class="api-status-copy">Sedang cek koneksi API...</p>
-          <p id="apiSourceText" class="api-source-copy">Source: -</p>
-        </div>
       </aside>
 
       <main class="stage">
@@ -308,13 +360,15 @@
           </div>
         </div>
 
-        <div class="stage-scroll">
+        <div id="stageScroll" class="stage-scroll">
           <div id="card" class="profile-card ratio-story">
             <div class="card-noise"></div>
             <div id="backgroundLayer" class="background-layer"></div>
             <div id="effectGlow" class="effect-glow"></div>
             <div id="particlesLayer" class="particles-layer"></div>
             <div id="scanLayer" class="scan-layer"></div>
+            <div id="backgroundEffectLayer" class="background-effect-layer"></div>
+            <div id="roleBadgeOut" class="role-badge-out">ASSASSIN</div>
 
             <div class="top-rank-panel">
               <img id="rankIconOut" class="top-rank-icon" alt="Rank icon">

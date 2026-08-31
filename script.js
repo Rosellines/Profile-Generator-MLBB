@@ -196,10 +196,10 @@ const fallbackManifest = {
 };
 
 const presets = {
-  mythic: { rank: "MYTHICAL GLORY", title: "Mythic Grinder", wr: 87, matches: 2431, mvp: 318, savage: 27, legendary: 501, effect: "glow", background: "starlight", frame: "royal", badge: "mvp", emblem: "burst" },
+  mythic: { rank: "MYTHICAL GLORY", title: "Mythic Grinder", wr: 87, matches: 2431, mvp: 318, savage: 27, legendary: 501, effect: "glow", cardLayout: "classic", backgroundEffect: "none", effectIntensity: 55, roleBadge: "auto", playerTitle: "", background: "starlight", frame: "royal", badge: "mvp", emblem: "burst" },
   collector: { rank: "MYTHICAL IMMORTAL", title: "Collector Hunter", wr: 92, matches: 1732, mvp: 402, savage: 33, legendary: 622, effect: "particles", background: "neon", frame: "void", badge: "legend", emblem: "assassin" },
   og: { rank: "LEGENDS", title: "OG", wr: 74, matches: 5210, mvp: 260, savage: 14, legendary: 844, effect: "scan", background: "jade", frame: "frost", badge: "og", emblem: "marksman" },
-  whale: { rank: "MYTHICAL IMMORTAL", title: "Whale Energy", wr: 96, matches: 3611, mvp: 701, savage: 49, legendary: 1182, effect: "glow", background: "ember", frame: "royal", badge: "goat", emblem: "mage" }
+  whale: { rank: "MYTHICAL IMMORTAL", title: "Whale Energy", wr: 96, matches: 3611, mvp: 701, savage: 49, legendary: 1182, effect: "glow", cardLayout: "classic", backgroundEffect: "none", effectIntensity: 55, roleBadge: "auto", playerTitle: "", background: "ember", frame: "royal", badge: "goat", emblem: "mage" }
 };
 
 const state = {
@@ -220,6 +220,11 @@ const state = {
     region: "ID",
     mode: "story",
     backgroundMode: "artwork",
+    cardLayout: "classic",
+    backgroundEffect: "none",
+    effectIntensity: 55,
+    roleBadge: "auto",
+    playerTitle: "",
     avatarBorder: AVATAR_BORDER_ASSETS[0] || ""
   },
   layers: {
@@ -347,13 +352,11 @@ function cacheRefs() {
   [
     "ign", "pid", "server", "bio", "title", "rank", "gender", "region", "rankPoints", "photo", "artwork", "role", "hero", "skin", "rarity", "backgrounds",
     "frames", "avatarBorder", "emblems", "badges", "skinColor1", "skinColor2", "rarityColor", "backgroundColor1", "backgroundColor2", "backgroundColor3",
-    "frameMode", "frameColor1", "frameColor2", "backgroundMode", "activeLayer", "layerScale", "layerRotate", "accent", "mode",
-    "wr", "matches", "mvp", "savage", "legendary", "emblemLevel", "resetLayout", "presetBtn", "randomBtn",
-    "copyBtn", "exportBtn", "closeModal", "modal", "cropModal", "cropTitle", "cropViewport", "cropImage", "cropZoom", "cropX", "cropY", "cropCancel", "cropApply", "card", "backgroundLayer", "heroArt", "avatarImg",
-    "frameOut", "badgeOut", "ignOut", "pidOut", "serverOut", "bioOut", "titleOut", "rankOut", "heroOut",
+    "frameMode", "frameColor1", "frameColor2", "badgeColor1", "badgeColor2", "backgroundMode", "cardLayout", "heroX", "heroY", "heroScale", "heroRotate", "backgroundEffect", "effectIntensity", "roleBadge", "playerTitle", "activeLayer", "layerScale", "layerRotate", "accent", "mode",
+    "wr", "matches", "mvp", "savage", "legendary", "emblemLevel", "resetLayout", "exportBtn", "closeModal", "modal", "cropModal", "cropTitle", "cropViewport", "cropImage", "cropZoom", "cropX", "cropY", "cropCancel", "cropApply", "card", "stageScroll", "backgroundLayer", "backgroundEffectLayer", "heroArt", "avatarImg",
+    "frameOut", "badgeOut", "roleBadgeOut", "ignOut", "pidOut", "serverOut", "bioOut", "titleOut", "rankOut", "heroOut",
     "skinOut", "rarityOut", "emblemOut", "rankIconOut", "rankPointsOut", "artworkRankIconOut", "artworkRankPointsOut", "globalHeroOut", "genderOut", "regionOut", "wrOut", "matchesOut", "mvpOut", "savageOut", "legendaryOut",
-    "emblemLevelOut", "modeOut", "dragHint", "heroLayer", "regionFlagOut", "avatarLayer", "apiBadge", "apiStatusText",
-    "apiSourceText", "refreshApiBtn"
+    "emblemLevelOut", "modeOut", "dragHint", "heroLayer", "regionFlagOut", "avatarLayer"
   ].forEach((id) => {
     refs[id] = $(id);
   });
@@ -580,6 +583,11 @@ function paintControls() {
 
   refs.title.value = state.selections.title;
   refs.rank.value = state.selections.rank;
+  if (refs.cardLayout) refs.cardLayout.value = state.selections.cardLayout || "classic";
+  if (refs.backgroundEffect) refs.backgroundEffect.value = state.selections.backgroundEffect || "none";
+  if (refs.effectIntensity) refs.effectIntensity.value = state.selections.effectIntensity ?? 55;
+  if (refs.roleBadge) refs.roleBadge.value = state.selections.roleBadge || "auto";
+  if (refs.playerTitle) refs.playerTitle.value = state.selections.playerTitle || "";
   refs.gender.value = state.selections.gender || "male";
   if (refs.avatarBorder) refs.avatarBorder.value = state.selections.avatarBorder || AVATAR_BORDER_ASSETS[0] || "";
   refs.region.value = state.selections.region || "ID";
@@ -678,10 +686,13 @@ function updateApiStatus(status) {
     disabled: "api-disabled"
   }[status?.mode] || "api-idle";
 
-  refs.apiBadge.className = `api-pill ${badgeClass}`;
-  refs.apiBadge.textContent = `API: ${String(status?.mode || "idle").toUpperCase()}`;
-  refs.apiStatusText.textContent = status?.message || "Status API belum tersedia.";
-  refs.apiSourceText.textContent = `Source: ${status?.provider || "-"} | Heroes ${status?.heroCount || 0} | Skins ${status?.skinCount || 0} | Emblems ${status?.emblemCount || 0}`;
+  if (!refs.apiBadge && !refs.apiStatusText && !refs.apiSourceText) return;
+  if (refs.apiBadge) {
+    refs.apiBadge.className = `api-pill ${badgeClass}`;
+    refs.apiBadge.textContent = `API: ${String(status?.mode || "idle").toUpperCase()}`;
+  }
+  if (refs.apiStatusText) refs.apiStatusText.textContent = status?.message || "Status API belum tersedia.";
+  if (refs.apiSourceText) refs.apiSourceText.textContent = `Source: ${status?.provider || "-"} | Heroes ${status?.heroCount || 0} | Skins ${status?.skinCount || 0} | Emblems ${status?.emblemCount || 0}`;
 }
 
 
@@ -777,11 +788,30 @@ function fitBioToCard() {
   el.style.fontSize = `${Math.max(8, Math.min(12, best))}px`;
 }
 
+function getSkinAccentColor(skin) {
+  const text = String(skin?.style || "");
+  const match = text.match(/(?:rgba?|hsla?)\([^)]*\)|#[0-9a-fA-F]{3,8}/);
+  return match?.[0] || refs.accent?.value || "#f3c969";
+}
+
+function updateStageAccent(accent) {
+  if (!refs.stageScroll) return;
+  refs.stageScroll.style.setProperty("--stage-accent", accent);
+}
+
+function updateHeroArtworkControls() {
+  const layer = state.layers.hero;
+  if (!refs.heroX) return;
+  refs.heroX.value = layer.x; refs.heroY.value = layer.y; refs.heroScale.value = layer.scale; refs.heroRotate.value = layer.rotate;
+}
+
 function render() {
   const background = getItem("backgrounds", state.selections.backgroundId);
   const frame = getItem("frames", state.selections.frameId);
   const hero = getHero();
   const skin = getSkin();
+  const skinAccent = getSkinAccentColor(skin);
+  updateStageAccent(skinAccent);
   const skinStyle = `radial-gradient(circle at 58% 42%,${refs.skinColor1.value},transparent 34%),linear-gradient(125deg,transparent 18%,${refs.skinColor2.value}66 43%,transparent 56%)`;
   const customBackground = `radial-gradient(circle at 72% 18%,${refs.backgroundColor3.value}88,transparent 20%),linear-gradient(145deg,${refs.backgroundColor1.value} 0%,${refs.backgroundColor2.value} 54%,${refs.backgroundColor3.value} 100%)`;
   const presetFrameFill = frame.style || frame.color;
@@ -808,19 +838,39 @@ function render() {
   // The first color in a skin style is the skin accent. Do not use the
   // generic editor accent as the card border color; the border must follow
   // the currently selected skin every time the skin changes.
-  const skinAccentMatch = String(skin?.style || "").match(/radial-gradient\([^,]+,\s*((?:rgba?|hsla?)\([^)]*\)|#[0-9a-fA-F]{3,8})/);
-  const skinAccent = skinAccentMatch
-    ? skinAccentMatch[1]
-    : (String(skin?.style || "").match(/(?:rgba?|hsla?)\([^)]*\)|#[0-9a-fA-F]{3,8}/)?.[0] || refs.accent.value);
   refs.card.style.setProperty("--accent", refs.accent.value);
   refs.card.style.setProperty("--skin-accent", skinAccent);
+  const customBorderColor1 = refs.frameColor1?.value || refs.accent.value;
+  const customBorderColor2 = refs.frameColor2?.value || refs.accent.value;
+  const cardBorder = refs.frameMode?.value === "gradient"
+    ? `linear-gradient(135deg,${skinAccent},${customBorderColor2})`
+    : skinAccent;
+  refs.card.style.setProperty("--card-border", cardBorder);
+  refs.card.style.border = `1px solid ${skinAccent}`;
+  if (refs.frameMode?.value === "gradient") {
+    refs.card.style.borderImage = `${cardBorder} 1`;
+  } else {
+    refs.card.style.borderImage = "none";
+  }
   refs.card.style.setProperty("--frame", frameColor);
   refs.card.style.setProperty("--frame-alt", frameAltColor);
   refs.card.style.setProperty("--frame-fill", frameFill);
   refs.card.style.setProperty("--glow-primary", frameColor);
   refs.card.style.setProperty("--glow-secondary", frameAltColor);
   refs.card.style.setProperty("--rarity", refs.rarityColor.value);
-  refs.card.className = `profile-card ratio-${state.selections.mode} effect-${state.selections.effect}${refs.card.classList.contains("is-hovering") ? " is-hovering" : ""}`;
+  refs.card.className = `profile-card ratio-${state.selections.mode} layout-${state.selections.cardLayout || "classic"} effect-${state.selections.effect}${refs.card.classList.contains("is-hovering") ? " is-hovering" : ""}`;
+  const bgEffect = state.selections.backgroundEffect || "none";
+  const intensity = Math.max(0, Math.min(100, Number(state.selections.effectIntensity ?? 55)));
+  if (refs.backgroundEffectLayer) {
+    refs.backgroundEffectLayer.className = `background-effect-layer bgfx-${bgEffect}`;
+    refs.backgroundEffectLayer.style.setProperty("--effect-intensity", String(intensity / 100));
+    refs.backgroundEffectLayer.style.setProperty("--effect-accent", skinAccent);
+  }
+  const selectedRole = state.selections.roleBadge === "auto" ? (hero.roles?.[0] || roleForHero(hero.name)[0] || "Assassin") : state.selections.roleBadge;
+  if (refs.roleBadgeOut) refs.roleBadgeOut.textContent = String(selectedRole).toUpperCase();
+  const playerTitle = refs.playerTitle?.value?.trim() || state.selections.playerTitle || refs.title.value;
+  if (refs.titleOut) refs.titleOut.textContent = playerTitle;
+  updateHeroArtworkControls();
   const heroAsset = state.artworkDataUrl || skin.asset || hero.asset || "";
   const artLayers = [
     heroAsset ? `url("${heroAsset}") center/cover no-repeat` : "",
@@ -836,7 +886,9 @@ function render() {
   refs.frameOut.style.boxShadow = "none";
 
   refs.badgeOut.textContent = refs.badges.value;
-  refs.badgeOut.style.background = buildSmoothGradient(frameColor, refs.accent.value, 140);
+  refs.badgeOut.style.setProperty("--badge-accent", skinAccent);
+  refs.badgeOut.style.setProperty("--badge-color2", refs.badgeColor2?.value || "#ff8d5c");
+  refs.badgeOut.style.background = buildSmoothGradient(skinAccent, refs.badgeColor2?.value || "#ff8d5c", 140);
   refs.emblemOut.textContent = refs.emblems.value;
 
   refs.ignOut.textContent = refs.ign.value || "PLAYER";
@@ -845,7 +897,6 @@ function render() {
   refs.serverOut.textContent = refs.server.value || "0000";
   refs.bioOut.textContent = renderBioLine(refs.bio.value);
   fitBioToCard();
-  refs.titleOut.textContent = refs.title.value;
   const rankVisual = rankVisuals[refs.rank.value] || rankVisuals["MYTHICAL GLORY"];
   refs.rankOut.textContent = refs.rank.value;
   refs.rankOut.className = `rank-label ${rankVisual.className}`;
@@ -1118,6 +1169,18 @@ function wireEvents() {
     });
   });
 
+  refs.cardLayout.addEventListener("change", () => { state.selections.cardLayout = refs.cardLayout.value; render(); saveUserState(); });
+  [refs.heroX, refs.heroY, refs.heroScale, refs.heroRotate].forEach((el) => el.addEventListener("input", () => {
+    state.layers.hero.x = Number(refs.heroX.value); state.layers.hero.y = Number(refs.heroY.value);
+    state.layers.hero.scale = Number(refs.heroScale.value); state.layers.hero.rotate = Number(refs.heroRotate.value);
+    applyLayerTransform("hero"); render();
+  }));
+  refs.backgroundEffect.addEventListener("change", () => { state.selections.backgroundEffect = refs.backgroundEffect.value; render(); saveUserState(); });
+  refs.effectIntensity.addEventListener("input", () => { state.selections.effectIntensity = Number(refs.effectIntensity.value); render(); });
+  refs.roleBadge.addEventListener("change", () => { state.selections.roleBadge = refs.roleBadge.value; render(); saveUserState(); });
+  refs.playerTitle.addEventListener("input", () => { state.selections.playerTitle = refs.playerTitle.value; render(); });
+  [refs.badgeColor1, refs.badgeColor2].filter(Boolean).forEach((input) => input.addEventListener("input", () => render()));
+
   refs.activeLayer.addEventListener("change", () => {
     state.activeLayer = refs.activeLayer.value;
     syncLayerControls();
@@ -1159,7 +1222,6 @@ function wireEvents() {
     event.target.value = "";
   });
 
-  refs.presetBtn.addEventListener("click", () => refs.modal.classList.remove("hidden"));
   refs.closeModal.addEventListener("click", () => refs.modal.classList.add("hidden"));
   refs.modal.addEventListener("click", (event) => {
     if (event.target === refs.modal) {
@@ -1174,10 +1236,7 @@ function wireEvents() {
     });
   });
 
-  refs.randomBtn.addEventListener("click", randomizeProfile);
-  refs.copyBtn.addEventListener("click", copyConfig);
   refs.exportBtn.addEventListener("click", exportPNG);
-  refs.refreshApiBtn.addEventListener("click", refreshApiData);
 
   enableDragging(refs.avatarLayer, "avatar");
   enableDragging(refs.heroLayer, "hero");
@@ -1254,6 +1313,11 @@ function randomizeProfile() {
 
   refs.title.value = state.selections.title;
   refs.rank.value = state.selections.rank;
+  if (refs.cardLayout) refs.cardLayout.value = state.selections.cardLayout || "classic";
+  if (refs.backgroundEffect) refs.backgroundEffect.value = state.selections.backgroundEffect || "none";
+  if (refs.effectIntensity) refs.effectIntensity.value = state.selections.effectIntensity ?? 55;
+  if (refs.roleBadge) refs.roleBadge.value = state.selections.roleBadge || "auto";
+  if (refs.playerTitle) refs.playerTitle.value = state.selections.playerTitle || "";
   refs.wr.value = Math.floor(Math.random() * 35) + 60;
   refs.matches.value = Math.floor(Math.random() * 4500) + 500;
   refs.mvp.value = Math.floor(Math.random() * 700) + 80;
@@ -1520,7 +1584,14 @@ async function elementToPng(element, mode) {
   // foreignObject renderers are inconsistent with CSS custom properties.
   const exportedSkinAccent = getComputedStyle(element).getPropertyValue("--skin-accent").trim() || refs.accent.value;
   clone.style.setProperty("--skin-accent", exportedSkinAccent);
-  clone.style.border = `1px solid ${exportedSkinAccent}`;
+  const exportedBorderImage = getComputedStyle(element).borderImageSource;
+  if (exportedBorderImage && exportedBorderImage !== "none") {
+    clone.style.border = getComputedStyle(element).border;
+    clone.style.borderImage = exportedBorderImage;
+  } else {
+    clone.style.border = `1px solid ${exportedSkinAccent}`;
+    clone.style.borderImage = "none";
+  }
   clone.style.boxShadow = `var(--shadow),0 0 18px ${exportedSkinAccent}`;
 
   const exportedHeroLine = clone.querySelector(".hero-copy-line");
@@ -1734,8 +1805,10 @@ async function loadLocalData() {
 }
 
 async function refreshApiData({ background = true } = {}) {
-  refs.refreshApiBtn.disabled = true;
-  refs.refreshApiBtn.textContent = "Refreshing...";
+  if (refs.refreshApiBtn) {
+    refs.refreshApiBtn.disabled = true;
+    refs.refreshApiBtn.textContent = "Refreshing...";
+  }
 
   const runRemote = async () => {
     updateApiStatus({
@@ -1773,8 +1846,10 @@ async function refreshApiData({ background = true } = {}) {
       });
     }
 
-    refs.refreshApiBtn.disabled = false;
-    refs.refreshApiBtn.textContent = "Refresh API";
+    if (refs.refreshApiBtn) {
+      refs.refreshApiBtn.disabled = false;
+      refs.refreshApiBtn.textContent = "Refresh API";
+    }
   };
 
   if (background) {

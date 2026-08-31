@@ -125,8 +125,8 @@ input:disabled{opacity:.7}
 .stage-scroll{
   flex:1;padding:28px;overflow:auto;display:grid;place-items:center;
   background:
-    radial-gradient(circle at center,rgba(138,199,255,.1),transparent 26%),
-    linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,0))
+    radial-gradient(circle at center,color-mix(in srgb,var(--stage-accent,#8ac7ff) 22%,transparent),transparent 30%),
+    linear-gradient(180deg,color-mix(in srgb,var(--stage-accent,#8ac7ff) 16%,#07111d),#04070d)
 }
 
 .profile-card{
@@ -243,8 +243,8 @@ input:disabled{opacity:.7}
   box-shadow:0 0 0 2px rgba(255,255,255,.18) inset,0 0 30px var(--frame)88
 }
 .badge-chip{
-  position:absolute;right:-2px;bottom:9px;padding:2px 6px;border-radius:999px;background:linear-gradient(135deg,var(--accent),#ff8d5c);
-  color:#1e0f00;font-size:7px;font-weight:900;letter-spacing:1.3px;text-transform:uppercase
+  position:absolute;right:-2px;bottom:9px;padding:7px 10px;border-radius:999px;background:linear-gradient(135deg,var(--accent),#ff8d5c);
+  color:#1e0f00;font-size:11px;font-weight:900;letter-spacing:1.3px;text-transform:uppercase
 }
 .identity-copy h2{
   margin:0;font:900 clamp(34px,6vw,52px)/.92 "Arial Black","Trebuchet MS",sans-serif;text-transform:uppercase
@@ -817,4 +817,43 @@ select option{background:#0c1522;color:#edf3ff}
 /* v32 requested-only: top-right title is 6px. */
 .top-rank-title{
   font-size:6px !important;
+}
+
+/* v35 requested features: multiple card layouts, artwork controls, background effects, role badge, player title */
+.feature-subtitle{margin-top:20px;margin-bottom:10px}
+#heroX,#heroY,#heroScale,#heroRotate,#effectIntensity{width:100%}
+.role-badge-out{position:absolute;left:26px;top:28%;z-index:8;padding:2px 4px;border:1px solid var(--skin-accent);border-radius:999px;background:rgba(5,10,18,.68);color:var(--skin-accent);font-size:7px;font-weight:900;letter-spacing:1.7px;text-transform:uppercase;box-shadow:0 0 18px color-mix(in srgb,var(--skin-accent) 30%,transparent);backdrop-filter:blur(8px)}
+.background-effect-layer{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:var(--effect-intensity,.55);mix-blend-mode:screen;color:var(--effect-accent,var(--skin-accent))}
+.bgfx-none{display:none}
+.bgfx-particles{background-image:radial-gradient(circle,var(--effect-accent) 0 1px,transparent 1.8px);background-size:34px 34px;animation:particleDrift 14s linear infinite}
+.bgfx-glow{background:radial-gradient(circle at 50% 45%,color-mix(in srgb,var(--effect-accent) 75%,transparent),transparent 36%),radial-gradient(circle at 80% 20%,color-mix(in srgb,var(--effect-accent) 42%,transparent),transparent 28%)}
+.bgfx-smoke{background:radial-gradient(ellipse at 20% 70%,color-mix(in srgb,var(--effect-accent) 28%,transparent),transparent 42%),radial-gradient(ellipse at 75% 55%,rgba(255,255,255,.14),transparent 38%);filter:blur(20px);animation:smokeDrift 10s ease-in-out infinite alternate}
+.bgfx-rays{background:repeating-conic-gradient(from 210deg at 50% 42%,transparent 0deg 13deg,color-mix(in srgb,var(--effect-accent) 20%,transparent) 14deg 16deg,transparent 17deg 30deg);filter:blur(2px)}
+.bgfx-geometric{background-image:linear-gradient(135deg,color-mix(in srgb,var(--effect-accent) 20%,transparent) 1px,transparent 1px),linear-gradient(45deg,color-mix(in srgb,var(--effect-accent) 14%,transparent) 1px,transparent 1px);background-size:46px 46px}
+.bgfx-ring{inset:12% 10%;border:2px solid color-mix(in srgb,var(--effect-accent) 45%,transparent);border-radius:50%;box-shadow:0 0 35px color-mix(in srgb,var(--effect-accent) 55%,transparent),inset 0 0 35px color-mix(in srgb,var(--effect-accent) 25%,transparent);animation:energyPulse 3s ease-in-out infinite}
+@keyframes particleDrift{to{background-position:120px 180px}}
+@keyframes smokeDrift{to{transform:translate(3%, -2%) scale(1.08)}}
+@keyframes energyPulse{0%,100%{transform:scale(.92) rotate(0deg);opacity:.5}50%{transform:scale(1.04) rotate(8deg);opacity:1}}
+
+.layout-minimal{border-radius:20px}.layout-minimal .card-noise{opacity:.05}.layout-minimal .effect-glow,.layout-minimal .particles-layer{opacity:.06}.layout-minimal .role-badge-out{background:transparent;box-shadow:none}
+.layout-cyber{border-radius:10px}.layout-cyber .role-badge-out{border-radius:4px}.layout-cyber .stats-grid article{border-radius:6px}.layout-cyber::before{clip-path:polygon(0 0,100% 0,100% 3px,3px 3px,3px 100%,0 100%)}
+.layout-esports .identity-block{left:34px;right:34px}.layout-esports .hero-copy{left:34px}.layout-esports .stats-grid{gap:6px}.layout-esports .stats-grid article{border-radius:8px}
+.layout-mythic{border-radius:30px}.layout-mythic .role-badge-out{font-size:11px;box-shadow:0 0 28px color-mix(in srgb,var(--skin-accent) 50%,transparent)}.layout-mythic .stats-grid article{box-shadow:0 0 16px color-mix(in srgb,var(--skin-accent) 12%,transparent)}
+.layout-showcase .hero-layer{width:100%;height:55%;right:-10%;top:8%}.layout-showcase .identity-block{top:42%}.layout-showcase .hero-copy{bottom:20%}.layout-showcase .role-badge-out{top:31%}
+.stage-scroll{background:radial-gradient(circle at center,var(--stage-accent,#8ac7ff) 0%,color-mix(in srgb,var(--stage-accent,#8ac7ff) 38%,#07111d) 16%,#07111d 48%),linear-gradient(180deg,color-mix(in srgb,var(--stage-accent,#8ac7ff) 20%,#07111d),#04070d)}
+
+
+/* v36 requested-only: compact badge chip. */
+.badge-chip{
+  position:absolute;
+  right:-2px;
+  bottom:9px;
+  padding:3px 5px;
+  border-radius:999px;
+  background:linear-gradient(135deg,var(--badge-accent,var(--skin-accent)),var(--badge-color2,#ff8d5c));
+  color:#1e0f00;
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:1.3px;
+  text-transform:uppercase
 }
