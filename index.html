@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>MLBB Flex Profile Studio V3</title>
+  <title>MLBB Flex Profile Studio V4</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,9 +11,14 @@
     <header class="topbar">
       <div>
         <p class="eyebrow">CINEMATIC PROFILE BUILDER</p>
-        <h1>MLBB Flex Profile Studio V3</h1>
+        <h1>MLBB Flex Profile Studio V4</h1>
       </div>
       <div class="topbar-actions">
+        <span id="apiBadge" class="api-pill api-idle">API: Checking</span>
+        <button id="presetBtn" class="ghost">Preset</button>
+        <button id="refreshApiBtn" class="ghost">Refresh API</button>
+        <button id="randomBtn" class="ghost">Randomize</button>
+        <button id="copyBtn" class="ghost">Copy Config</button>
         <button id="exportBtn" class="primary">Export PNG</button>
       </div>
     </header>
@@ -25,6 +30,7 @@
           <button class="tab" data-tab="visual">Visual</button>
           <button class="tab" data-tab="layout">Layout</button>
           <button class="tab" data-tab="stats">Stats</button>
+          <button class="tab" data-tab="engine">Engine</button>
         </div>
 
         <section id="identity" class="tabpage active">
@@ -186,21 +192,6 @@
             </div>
           </div>
 
-          <div class="three-col">
-            <div>
-              <label for="badgeColor1">Badge Color 1</label>
-              <input id="badgeColor1" type="color" value="#f3c969">
-            </div>
-            <div>
-              <label for="badgeColor2">Badge Color 2</label>
-              <input id="badgeColor2" type="color" value="#ff8d5c">
-            </div>
-            <div>
-              <label>Priority</label>
-              <div class="api-source-copy">Skin accent first</div>
-            </div>
-          </div>
-
           <label>Effects</label>
           <div class="effect-row">
             <button data-effect="none" class="active">None</button>
@@ -215,61 +206,6 @@
             <span>Mini Figma Mode</span>
             <small>Pilih layer lalu drag di canvas. Scale pakai slider.</small>
           </div>
-
-          <label for="cardLayout">Card Layout</label>
-          <select id="cardLayout">
-            <option value="classic">Classic</option>
-            <option value="minimal">Minimal</option>
-            <option value="cyber">Cyber</option>
-            <option value="esports">Esports</option>
-            <option value="mythic">Mythic</option>
-            <option value="showcase">Showcase</option>
-          </select>
-
-          <div class="section-title feature-subtitle">
-            <span>Hero Artwork Position</span>
-            <small>Atur posisi dan transform artwork hero.</small>
-          </div>
-          <div class="two-col">
-            <div><label for="heroX">X</label><input id="heroX" type="range" min="-250" max="250" value="0"></div>
-            <div><label for="heroY">Y</label><input id="heroY" type="range" min="-250" max="250" value="0"></div>
-          </div>
-          <div class="two-col">
-            <div><label for="heroScale">Scale</label><input id="heroScale" type="range" min="50" max="180" value="100"></div>
-            <div><label for="heroRotate">Rotation</label><input id="heroRotate" type="range" min="-30" max="30" value="0"></div>
-          </div>
-
-          <div class="section-title feature-subtitle">
-            <span>Background Effects</span>
-            <small>Pilih efek dan atur intensitasnya.</small>
-          </div>
-          <label for="backgroundEffect">Effect</label>
-          <select id="backgroundEffect">
-            <option value="none">None</option>
-            <option value="particles">Particles</option>
-            <option value="glow">Glow</option>
-            <option value="smoke">Smoke</option>
-            <option value="rays">Light Rays</option>
-            <option value="geometric">Geometric Pattern</option>
-            <option value="ring">Energy Ring</option>
-          </select>
-          <label for="effectIntensity">Intensity</label>
-          <input id="effectIntensity" type="range" min="0" max="100" value="55">
-
-          <label for="roleBadge">Role Badge</label>
-          <select id="roleBadge">
-            <option value="auto">Auto from Hero</option>
-            <option value="Assassin">ASSASSIN</option>
-            <option value="Mage">MAGE</option>
-            <option value="Fighter">FIGHTER</option>
-            <option value="Marksman">MARKSMAN</option>
-            <option value="Jungler">JUNGLER</option>
-            <option value="Support">SUPPORT</option>
-            <option value="Tanker">TANK</option>
-          </select>
-
-          <label for="playerTitle">Player Title</label>
-          <input id="playerTitle" placeholder="GUSION SPECIALIST">
 
           <label for="activeLayer">Active Layer</label>
           <select id="activeLayer">
@@ -304,6 +240,33 @@
           </div>
 
           <button id="resetLayout" class="full ghost">Reset Positions</button>
+        </section>
+
+        <section id="engine" class="tabpage">
+          <div class="section-title"><span>Engine Lab</span><small>DNA, accent, rarity, aura, smart layout, flex score & export.</small></div>
+          <div class="engine-score"><strong id="flexScoreOut">0</strong><span>FLEX SCORE / 100</span></div>
+          <div class="engine-grid">
+            <div class="engine-card"><small>CARD RARITY</small><b id="cardRarityPanel">STANDARD</b></div>
+            <div class="engine-card"><small>SKIN DNA</small><b id="skinDnaOut">---</b></div>
+          </div>
+          <p id="skinTraitsOut" class="engine-traits">—</p>
+          <div class="two-col"><button id="autoColorBtn" class="ghost">🎨 Auto Skin Color</button><button id="autoAccentBtn" class="ghost">🧬 Dynamic Accent</button></div>
+          <div class="two-col"><button id="smartLayoutBtn" class="ghost">🧠 Smart Layout</button><button id="holoBtn" class="ghost">✨ Holographic OFF</button></div>
+          <div class="two-col"><select id="fontMode"><option value="serif">Luxury Serif</option><option value="modern">Modern Sans</option><option value="mono">Tech Mono</option></select><input id="fontScale" type="range" min="80" max="125" value="100" aria-label="Font scale"></div>
+          <div class="two-col"><select id="holoStrength"><option value="soft">Soft Holo</option><option value="strong">Strong Holo</option></select><label class="toggle-inline"><input id="transparentExport" type="checkbox"> Transparent PNG</label></div>
+          <label>Animated Export</label>
+          <div class="two-col"><button id="pngUltraBtn" class="primary">PNG Ultra 2×</button><button id="webpBtn" class="ghost">Export WebP</button></div>
+          <button id="webmBtn" class="full ghost">Export WebM</button>
+          <button id="gifBtn" class="full ghost">Export GIF</button>
+          <div class="two-col"><input id="animDuration" type="number" min="1" max="8" value="4" aria-label="Duration seconds"><input id="animFps" type="number" min="8" max="30" value="20" aria-label="FPS"></div>
+          <label>Share Profile</label>
+          <div class="two-col"><button id="shareBtn" class="ghost">Copy Share Link</button><button id="qrBtn" class="ghost">Generate QR</button></div>
+          <p id="shareStatus" class="engine-status">Share link belum dibuat.</p><p id="qrStatus" class="engine-status"></p><img id="qrImage" class="qr-image hidden" alt="Profile QR">
+          <label>Preset Marketplace</label>
+          <div class="two-col"><button id="savePresetBtn" class="ghost">Save Preset</button><button id="exportPresetBtn" class="ghost">Export JSON</button></div>
+          <label class="file-button">Import Preset JSON<input id="importPresetInput" type="file" accept="application/json,.json"></label>
+          <div id="marketplaceList" class="marketplace-list"></div><button id="clearPresetsBtn" class="full ghost">Clear Local Presets</button>
+          <p id="presetStatus" class="engine-status">Preset tersimpan lokal di browser ini.</p>
         </section>
 
         <section id="stats" class="tabpage">
@@ -346,6 +309,19 @@
           </div>
         </section>
 
+        <div class="hint-box">
+          Engine ini asset-agnostic. Hero/skin resmi tidak dibundel.
+          Tambahkan artwork yang kamu punya izin pakai lewat <code>manifest.json</code> atau folder <code>assets/</code>.
+        </div>
+
+        <div class="api-panel">
+          <div class="section-title">
+            <span>API Layer</span>
+            <small>Primary remote + local fallback biar editor tetap nyala.</small>
+          </div>
+          <p id="apiStatusText" class="api-status-copy">Sedang cek koneksi API...</p>
+          <p id="apiSourceText" class="api-source-copy">Source: -</p>
+        </div>
       </aside>
 
       <main class="stage">
@@ -360,15 +336,16 @@
           </div>
         </div>
 
-        <div id="stageScroll" class="stage-scroll">
+        <div class="stage-scroll">
           <div id="card" class="profile-card ratio-story">
             <div class="card-noise"></div>
+            <div class="holo-overlay" aria-hidden="true"></div>
             <div id="backgroundLayer" class="background-layer"></div>
             <div id="effectGlow" class="effect-glow"></div>
             <div id="particlesLayer" class="particles-layer"></div>
             <div id="scanLayer" class="scan-layer"></div>
-            <div id="backgroundEffectLayer" class="background-effect-layer"></div>
-            <div id="roleBadgeOut" class="role-badge-out">ASSASSIN</div>
+
+            <div class="engine-overlay"><span id="cardRarityOut">STANDARD</span><b id="flexScoreStage">FLEX 0</b></div>
 
             <div class="top-rank-panel">
               <img id="rankIconOut" class="top-rank-icon" alt="Rank icon">
@@ -465,10 +442,10 @@
     </div>
   </div>
 
-  <div id="modal" class="modal hidden">
-    <div class="modal-panel">
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="presetModalTitle">
+    <div class="modal-panel" tabindex="-1">
       <p class="eyebrow">QUICK START</p>
-      <h2>Choose a flex preset</h2>
+      <h2 id="presetModalTitle">Choose a flex preset</h2>
       <div class="preset-grid">
         <button data-preset="mythic">Mythic</button>
         <button data-preset="collector">Collector</button>
@@ -480,8 +457,8 @@
   </div>
 
 
-  <div id="cropModal" class="modal hidden">
-    <div class="modal-panel crop-panel">
+  <div id="cropModal" class="modal hidden" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="cropTitle">
+    <div class="modal-panel crop-panel" tabindex="-1">
       <p class="eyebrow">IMAGE CROP</p>
       <h2 id="cropTitle">Crop image</h2>
       <div id="cropViewport" class="crop-viewport">
@@ -504,5 +481,6 @@
   <script src="api.js"></script>
   <script src="catalog-local.js"></script>
   <script src="script.js"></script>
+  <script src="feature-engine.js"></script>
 </body>
 </html>

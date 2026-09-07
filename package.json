@@ -1,10 +1,11 @@
 {
   "name": "mlbb-flex-profile-studio",
-  "version": "3.2.0",
+  "version": "4.0.1",
   "private": true,
   "description": "MLBB Flex Profile Studio with local-first data architecture.",
   "scripts": {
     "dev": "node server.mjs",
-    "start": "node server.mjs"
+    "start": "node server.mjs",
+    "test": "node --test tests/*.test.mjs"
   }
 }

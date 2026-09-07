@@ -196,10 +196,10 @@ const fallbackManifest = {
 };
 
 const presets = {
-  mythic: { rank: "MYTHICAL GLORY", title: "Mythic Grinder", wr: 87, matches: 2431, mvp: 318, savage: 27, legendary: 501, effect: "glow", cardLayout: "classic", backgroundEffect: "none", effectIntensity: 55, roleBadge: "auto", playerTitle: "", background: "starlight", frame: "royal", badge: "mvp", emblem: "burst" },
+  mythic: { rank: "MYTHICAL GLORY", title: "Mythic Grinder", wr: 87, matches: 2431, mvp: 318, savage: 27, legendary: 501, effect: "glow", background: "starlight", frame: "royal", badge: "mvp", emblem: "burst" },
   collector: { rank: "MYTHICAL IMMORTAL", title: "Collector Hunter", wr: 92, matches: 1732, mvp: 402, savage: 33, legendary: 622, effect: "particles", background: "neon", frame: "void", badge: "legend", emblem: "assassin" },
   og: { rank: "LEGENDS", title: "OG", wr: 74, matches: 5210, mvp: 260, savage: 14, legendary: 844, effect: "scan", background: "jade", frame: "frost", badge: "og", emblem: "marksman" },
-  whale: { rank: "MYTHICAL IMMORTAL", title: "Whale Energy", wr: 96, matches: 3611, mvp: 701, savage: 49, legendary: 1182, effect: "glow", cardLayout: "classic", backgroundEffect: "none", effectIntensity: 55, roleBadge: "auto", playerTitle: "", background: "ember", frame: "royal", badge: "goat", emblem: "mage" }
+  whale: { rank: "MYTHICAL IMMORTAL", title: "Whale Energy", wr: 96, matches: 3611, mvp: 701, savage: 49, legendary: 1182, effect: "glow", background: "ember", frame: "royal", badge: "goat", emblem: "mage" }
 };
 
 const state = {
@@ -220,11 +220,6 @@ const state = {
     region: "ID",
     mode: "story",
     backgroundMode: "artwork",
-    cardLayout: "classic",
-    backgroundEffect: "none",
-    effectIntensity: 55,
-    roleBadge: "auto",
-    playerTitle: "",
     avatarBorder: AVATAR_BORDER_ASSETS[0] || ""
   },
   layers: {
@@ -254,7 +249,10 @@ const CATALOG_VERSION = 10;
 function readStorage(key, fallback = null) {
   try {
     const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
+    if (!raw || raw.length > 9000000) return fallback;
+    const value = JSON.parse(raw);
+    if (value && typeof value === "object" && !Array.isArray(value)) return value;
+    return fallback;
   } catch (_error) {
     return fallback;
   }
@@ -262,9 +260,12 @@ function readStorage(key, fallback = null) {
 
 function writeStorage(key, value) {
   try {
-    localStorage.setItem(key, JSON.stringify(value));
+    const serialized = JSON.stringify(value);
+    if (serialized.length > 9000000) return false;
+    localStorage.setItem(key, serialized);
+    return true;
   } catch (_error) {
-    // Ignore quota/private-mode failures; the app still works without cache.
+    return false;
   }
 }
 
@@ -298,8 +299,9 @@ function saveUserState() {
     activeLayer: state.activeLayer,
     customBackground: state.customBackground,
     customFrame: state.customFrame,
-    avatarDataUrl: state.avatarDataUrl,
-    artworkDataUrl: state.artworkDataUrl
+    // Media can exceed browser storage quotas. Keep legacy values only when small.
+    avatarDataUrl: typeof state.avatarDataUrl === "string" && state.avatarDataUrl.length < 1500000 ? state.avatarDataUrl : "",
+    artworkDataUrl: typeof state.artworkDataUrl === "string" && state.artworkDataUrl.length < 1500000 ? state.artworkDataUrl : ""
   });
 }
 
@@ -311,12 +313,20 @@ function restoreUserState() {
   if (legacyRankNames[state.selections.rank]) state.selections.rank = legacyRankNames[state.selections.rank];
   if (cached.backgroundMode) state.selections.backgroundMode = cached.backgroundMode;
   else if (typeof cached.customBackground === "boolean") state.selections.backgroundMode = cached.customBackground ? "custom" : "artwork";
-  state.layers = { ...state.layers, ...(cached.layers || {}) };
-  state.activeLayer = cached.activeLayer || state.activeLayer;
+  const safeNum = (value, fallback, min, max) => {
+    const n = Number(value);
+    return Number.isFinite(n) ? Math.max(min, Math.min(max, n)) : fallback;
+  };
+  const cachedLayers = cached.layers || {};
+  state.layers = {
+    avatar: { x: safeNum(cachedLayers.avatar?.x, 0, -1000, 1000), y: safeNum(cachedLayers.avatar?.y, 0, -1000, 1000), scale: safeNum(cachedLayers.avatar?.scale, 100, 40, 220), rotate: safeNum(cachedLayers.avatar?.rotate, 0, -45, 45) },
+    hero: { x: safeNum(cachedLayers.hero?.x, 0, -1000, 1000), y: safeNum(cachedLayers.hero?.y, 0, -1000, 1000), scale: safeNum(cachedLayers.hero?.scale, 100, 40, 220), rotate: safeNum(cachedLayers.hero?.rotate, 0, -45, 45) }
+  };
+  state.activeLayer = cached.activeLayer === "hero" ? "hero" : "avatar";
   state.customBackground = Boolean(cached.customBackground);
   state.customFrame = Boolean(cached.customFrame);
-  state.avatarDataUrl = cached.avatarDataUrl || "";
-  state.artworkDataUrl = cached.artworkDataUrl || "";
+  state.avatarDataUrl = typeof cached.avatarDataUrl === "string" && cached.avatarDataUrl.length < 1500000 && /^(data:image\/)/i.test(cached.avatarDataUrl) ? cached.avatarDataUrl : "";
+  state.artworkDataUrl = typeof cached.artworkDataUrl === "string" && cached.artworkDataUrl.length < 1500000 && /^(data:image\/)/i.test(cached.artworkDataUrl) ? cached.artworkDataUrl : "";
 }
 
 
@@ -352,14 +362,45 @@ function cacheRefs() {
   [
     "ign", "pid", "server", "bio", "title", "rank", "gender", "region", "rankPoints", "photo", "artwork", "role", "hero", "skin", "rarity", "backgrounds",
     "frames", "avatarBorder", "emblems", "badges", "skinColor1", "skinColor2", "rarityColor", "backgroundColor1", "backgroundColor2", "backgroundColor3",
-    "frameMode", "frameColor1", "frameColor2", "badgeColor1", "badgeColor2", "backgroundMode", "cardLayout", "heroX", "heroY", "heroScale", "heroRotate", "backgroundEffect", "effectIntensity", "roleBadge", "playerTitle", "activeLayer", "layerScale", "layerRotate", "accent", "mode",
-    "wr", "matches", "mvp", "savage", "legendary", "emblemLevel", "resetLayout", "exportBtn", "closeModal", "modal", "cropModal", "cropTitle", "cropViewport", "cropImage", "cropZoom", "cropX", "cropY", "cropCancel", "cropApply", "card", "stageScroll", "backgroundLayer", "backgroundEffectLayer", "heroArt", "avatarImg",
-    "frameOut", "badgeOut", "roleBadgeOut", "ignOut", "pidOut", "serverOut", "bioOut", "titleOut", "rankOut", "heroOut",
+    "frameMode", "frameColor1", "frameColor2", "backgroundMode", "activeLayer", "layerScale", "layerRotate", "accent", "mode",
+    "wr", "matches", "mvp", "savage", "legendary", "emblemLevel", "resetLayout", "presetBtn", "randomBtn",
+    "copyBtn", "exportBtn", "closeModal", "modal", "cropModal", "cropTitle", "cropViewport", "cropImage", "cropZoom", "cropX", "cropY", "cropCancel", "cropApply", "card", "backgroundLayer", "heroArt", "avatarImg",
+    "frameOut", "badgeOut", "ignOut", "pidOut", "serverOut", "bioOut", "titleOut", "rankOut", "heroOut",
     "skinOut", "rarityOut", "emblemOut", "rankIconOut", "rankPointsOut", "artworkRankIconOut", "artworkRankPointsOut", "globalHeroOut", "genderOut", "regionOut", "wrOut", "matchesOut", "mvpOut", "savageOut", "legendaryOut",
-    "emblemLevelOut", "modeOut", "dragHint", "heroLayer", "regionFlagOut", "avatarLayer"
+    "emblemLevelOut", "modeOut", "dragHint", "heroLayer", "regionFlagOut", "avatarLayer", "apiBadge", "apiStatusText",
+    "apiSourceText", "refreshApiBtn"
   ].forEach((id) => {
     refs[id] = $(id);
   });
+}
+
+function safeGradientStyle(value, fallback = "") {
+  const raw = String(value || "");
+  if (!raw || raw.length > 1200 || /url\s*\(|expression\s*\(|javascript:|@import|[<>]/i.test(raw)) return fallback;
+  if (!/^(?:\s*(?:linear-gradient|radial-gradient)\([^;]+\)\s*,?)+$/i.test(raw.replace(/\s+/g," "))) return fallback;
+  return raw;
+}
+
+function sanitizeCatalog(manifest) {
+  const m = cloneData(manifest || {});
+  ["titles","ranks"].forEach(k => { m[k] = Array.isArray(m[k]) ? m[k].filter(v => typeof v === "string").map(v => v.slice(0,80)).slice(0,100) : []; });
+  ["backgrounds","frames","emblems","badges"].forEach(k => {
+    m[k] = Array.isArray(m[k]) ? m[k].filter(x => x && typeof x === "object").slice(0,100).map(x => ({...x, id:String(x.id||"").slice(0,80), name:String(x.name||x.id||"").slice(0,100), style:safeGradientStyle(x.style,""), color:/^#[0-9a-f]{6}$/i.test(String(x.color||""))?x.color:"", altColor:/^#[0-9a-f]{6}$/i.test(String(x.altColor||""))?x.altColor:"", asset:safeAssetUrl(x.asset||"")})) : [];
+  });
+  m.heroes = Array.isArray(m.heroes) ? m.heroes.filter(x=>x&&typeof x==='object').slice(0,250).map(h=>({...h,id:String(h.id||"").slice(0,80),name:String(h.name||h.id||"").slice(0,100),asset:safeAssetUrl(h.asset||""),style:safeGradientStyle(h.style,""),skins:Array.isArray(h.skins)?h.skins.slice(0,1000).map(sk=>({...sk,id:String(sk.id||"").slice(0,100),name:String(sk.name||sk.id||"").slice(0,120),rarity:String(sk.rarity||"Rare").slice(0,30),asset:safeAssetUrl(sk.asset||""),style:safeGradientStyle(sk.style,"")})):[]})) : [];
+  return m;
+}
+
+function safeAssetUrl(value) {
+  if (!value) return "";
+  const raw = String(value).trim();
+  if (/^(data|blob):/i.test(raw)) return raw;
+  try {
+    const url = new URL(raw, document.baseURI);
+    if (url.protocol !== "https:" && url.origin !== location.origin) return "";
+    const allowed = url.origin === location.origin || url.hostname === "raw.githubusercontent.com";
+    return allowed ? url.href : "";
+  } catch (_error) { return ""; }
 }
 
 function slugify(value) {
@@ -583,11 +624,6 @@ function paintControls() {
 
   refs.title.value = state.selections.title;
   refs.rank.value = state.selections.rank;
-  if (refs.cardLayout) refs.cardLayout.value = state.selections.cardLayout || "classic";
-  if (refs.backgroundEffect) refs.backgroundEffect.value = state.selections.backgroundEffect || "none";
-  if (refs.effectIntensity) refs.effectIntensity.value = state.selections.effectIntensity ?? 55;
-  if (refs.roleBadge) refs.roleBadge.value = state.selections.roleBadge || "auto";
-  if (refs.playerTitle) refs.playerTitle.value = state.selections.playerTitle || "";
   refs.gender.value = state.selections.gender || "male";
   if (refs.avatarBorder) refs.avatarBorder.value = state.selections.avatarBorder || AVATAR_BORDER_ASSETS[0] || "";
   refs.region.value = state.selections.region || "ID";
@@ -686,13 +722,10 @@ function updateApiStatus(status) {
     disabled: "api-disabled"
   }[status?.mode] || "api-idle";
 
-  if (!refs.apiBadge && !refs.apiStatusText && !refs.apiSourceText) return;
-  if (refs.apiBadge) {
-    refs.apiBadge.className = `api-pill ${badgeClass}`;
-    refs.apiBadge.textContent = `API: ${String(status?.mode || "idle").toUpperCase()}`;
-  }
-  if (refs.apiStatusText) refs.apiStatusText.textContent = status?.message || "Status API belum tersedia.";
-  if (refs.apiSourceText) refs.apiSourceText.textContent = `Source: ${status?.provider || "-"} | Heroes ${status?.heroCount || 0} | Skins ${status?.skinCount || 0} | Emblems ${status?.emblemCount || 0}`;
+  refs.apiBadge.className = `api-pill ${badgeClass}`;
+  refs.apiBadge.textContent = `API: ${String(status?.mode || "idle").toUpperCase()}`;
+  refs.apiStatusText.textContent = status?.message || "Status API belum tersedia.";
+  refs.apiSourceText.textContent = `Source: ${status?.provider || "-"} | Heroes ${status?.heroCount || 0} | Skins ${status?.skinCount || 0} | Emblems ${status?.emblemCount || 0}`;
 }
 
 
@@ -722,35 +755,6 @@ function fitHeroTitleToCard() {
   }
 
   el.style.fontSize = `${Math.max(20, Math.min(68, best))}px`;
-}
-
-function fitIgnToCard() {
-  const el = refs.ignOut;
-  const box = el?.parentElement;
-  if (!el || !box) return;
-
-  el.style.whiteSpace = "nowrap";
-  el.style.overflow = "visible";
-  el.style.textOverflow = "clip";
-  el.style.fontSize = "48px";
-
-  const available = Math.max(1, box.clientWidth);
-  let lo = 18;
-  let hi = 48;
-  let best = 18;
-
-  for (let i = 0; i < 14; i += 1) {
-    const mid = (lo + hi) / 2;
-    el.style.fontSize = `${mid}px`;
-    if (el.scrollWidth <= available + 1) {
-      best = mid;
-      lo = mid;
-    } else {
-      hi = mid;
-    }
-  }
-
-  el.style.fontSize = `${Math.max(18, Math.min(48, best))}px`;
 }
 
 function renderBioLine(value) {
@@ -788,30 +792,11 @@ function fitBioToCard() {
   el.style.fontSize = `${Math.max(8, Math.min(12, best))}px`;
 }
 
-function getSkinAccentColor(skin) {
-  const text = String(skin?.style || "");
-  const match = text.match(/(?:rgba?|hsla?)\([^)]*\)|#[0-9a-fA-F]{3,8}/);
-  return match?.[0] || refs.accent?.value || "#f3c969";
-}
-
-function updateStageAccent(accent) {
-  if (!refs.stageScroll) return;
-  refs.stageScroll.style.setProperty("--stage-accent", accent);
-}
-
-function updateHeroArtworkControls() {
-  const layer = state.layers.hero;
-  if (!refs.heroX) return;
-  refs.heroX.value = layer.x; refs.heroY.value = layer.y; refs.heroScale.value = layer.scale; refs.heroRotate.value = layer.rotate;
-}
-
 function render() {
   const background = getItem("backgrounds", state.selections.backgroundId);
   const frame = getItem("frames", state.selections.frameId);
   const hero = getHero();
   const skin = getSkin();
-  const skinAccent = getSkinAccentColor(skin);
-  updateStageAccent(skinAccent);
   const skinStyle = `radial-gradient(circle at 58% 42%,${refs.skinColor1.value},transparent 34%),linear-gradient(125deg,transparent 18%,${refs.skinColor2.value}66 43%,transparent 56%)`;
   const customBackground = `radial-gradient(circle at 72% 18%,${refs.backgroundColor3.value}88,transparent 20%),linear-gradient(145deg,${refs.backgroundColor1.value} 0%,${refs.backgroundColor2.value} 54%,${refs.backgroundColor3.value} 100%)`;
   const presetFrameFill = frame.style || frame.color;
@@ -823,7 +808,7 @@ function render() {
   const frameColor = state.customFrame ? refs.frameColor1.value : frame.color;
   const frameAltColor = state.customFrame ? refs.frameColor2.value : presetFrameSecondary;
   const backgroundMode = state.selections.backgroundMode || (state.customBackground ? "custom" : "artwork");
-  const heroBackgroundAsset = state.artworkDataUrl || skin.asset || hero.asset || "";
+  const heroBackgroundAsset = state.artworkDataUrl || safeAssetUrl(skin.asset) || safeAssetUrl(hero.asset) || "";
   refs.backgroundLayer.classList.toggle("artwork-auto", backgroundMode === "artwork" && Boolean(heroBackgroundAsset));
   refs.backgroundLayer.style.removeProperty("--art-bg");
   refs.backgroundLayer.style.background = "";
@@ -835,43 +820,16 @@ function render() {
   } else {
     refs.backgroundLayer.style.background = background.style;
   }
-  // The first color in a skin style is the skin accent. Do not use the
-  // generic editor accent as the card border color; the border must follow
-  // the currently selected skin every time the skin changes.
   refs.card.style.setProperty("--accent", refs.accent.value);
-  refs.card.style.setProperty("--skin-accent", skinAccent);
-  const customBorderColor1 = refs.frameColor1?.value || refs.accent.value;
-  const customBorderColor2 = refs.frameColor2?.value || refs.accent.value;
-  const cardBorder = refs.frameMode?.value === "gradient"
-    ? `linear-gradient(135deg,${skinAccent},${customBorderColor2})`
-    : skinAccent;
-  refs.card.style.setProperty("--card-border", cardBorder);
-  refs.card.style.border = `1px solid ${skinAccent}`;
-  if (refs.frameMode?.value === "gradient") {
-    refs.card.style.borderImage = `${cardBorder} 1`;
-  } else {
-    refs.card.style.borderImage = "none";
-  }
   refs.card.style.setProperty("--frame", frameColor);
   refs.card.style.setProperty("--frame-alt", frameAltColor);
   refs.card.style.setProperty("--frame-fill", frameFill);
   refs.card.style.setProperty("--glow-primary", frameColor);
   refs.card.style.setProperty("--glow-secondary", frameAltColor);
   refs.card.style.setProperty("--rarity", refs.rarityColor.value);
-  refs.card.className = `profile-card ratio-${state.selections.mode} layout-${state.selections.cardLayout || "classic"} effect-${state.selections.effect}${refs.card.classList.contains("is-hovering") ? " is-hovering" : ""}`;
-  const bgEffect = state.selections.backgroundEffect || "none";
-  const intensity = Math.max(0, Math.min(100, Number(state.selections.effectIntensity ?? 55)));
-  if (refs.backgroundEffectLayer) {
-    refs.backgroundEffectLayer.className = `background-effect-layer bgfx-${bgEffect}`;
-    refs.backgroundEffectLayer.style.setProperty("--effect-intensity", String(intensity / 100));
-    refs.backgroundEffectLayer.style.setProperty("--effect-accent", skinAccent);
-  }
-  const selectedRole = state.selections.roleBadge === "auto" ? (hero.roles?.[0] || roleForHero(hero.name)[0] || "Assassin") : state.selections.roleBadge;
-  if (refs.roleBadgeOut) refs.roleBadgeOut.textContent = String(selectedRole).toUpperCase();
-  const playerTitle = refs.playerTitle?.value?.trim() || state.selections.playerTitle || refs.title.value;
-  if (refs.titleOut) refs.titleOut.textContent = playerTitle;
-  updateHeroArtworkControls();
-  const heroAsset = state.artworkDataUrl || skin.asset || hero.asset || "";
+  const featureClasses = ["holo-on","holo-strong","font-modern","font-mono","font-scale"].filter(cls => refs.card.classList.contains(cls));
+  refs.card.className = `profile-card ratio-${state.selections.mode} effect-${state.selections.effect}${refs.card.classList.contains("is-hovering") ? " is-hovering" : ""} ${featureClasses.join(" ")}`;
+  const heroAsset = state.artworkDataUrl || safeAssetUrl(skin.asset) || safeAssetUrl(hero.asset) || "";
   const artLayers = [
     heroAsset ? `url("${heroAsset}") center/cover no-repeat` : "",
     skinStyle,
@@ -886,17 +844,15 @@ function render() {
   refs.frameOut.style.boxShadow = "none";
 
   refs.badgeOut.textContent = refs.badges.value;
-  refs.badgeOut.style.setProperty("--badge-accent", skinAccent);
-  refs.badgeOut.style.setProperty("--badge-color2", refs.badgeColor2?.value || "#ff8d5c");
-  refs.badgeOut.style.background = buildSmoothGradient(skinAccent, refs.badgeColor2?.value || "#ff8d5c", 140);
+  refs.badgeOut.style.background = buildSmoothGradient(frameColor, refs.accent.value, 140);
   refs.emblemOut.textContent = refs.emblems.value;
 
   refs.ignOut.textContent = refs.ign.value || "PLAYER";
-  fitIgnToCard();
   refs.pidOut.textContent = refs.pid.value || "00000000";
   refs.serverOut.textContent = refs.server.value || "0000";
   refs.bioOut.textContent = renderBioLine(refs.bio.value);
   fitBioToCard();
+  refs.titleOut.textContent = refs.title.value;
   const rankVisual = rankVisuals[refs.rank.value] || rankVisuals["MYTHICAL GLORY"];
   refs.rankOut.textContent = refs.rank.value;
   refs.rankOut.className = `rank-label ${rankVisual.className}`;
@@ -916,7 +872,8 @@ function render() {
   refs.regionOut.firstChild.nodeValue = region[0];
   refs.regionOut.title = region[1];
   if (refs.regionFlagOut) {
-    refs.regionFlagOut.src = `https://flagcdn.com/w40/${region[0].toLowerCase()}.png`;
+    const emoji = region[2] || "🌐";
+    refs.regionFlagOut.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="40" height="28" viewBox="0 0 40 28"><rect width="40" height="28" rx="6" fill="#101827"/><text x="20" y="21" text-anchor="middle" font-size="19">${emoji}</text></svg>`)}`;
     refs.regionFlagOut.alt = `${region[1]} flag`;
     refs.regionFlagOut.title = region[1];
   }
@@ -941,18 +898,35 @@ function render() {
   applyLayerTransform("avatar");
   applyLayerTransform("hero");
   saveUserState();
+  window.dispatchEvent(new Event("mlbb:render"));
 }
 
 
+const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+const MAX_IMAGE_DIMENSION = 12000;
 const cropState = { fileKind: "avatar", source: null, image: null, baseScale: 1, zoom: 1, x: 0, y: 0, dragging: false, startX: 0, startY: 0, startCropX: 0, startCropY: 0 };
 
 function openCrop(file, kind) {
+  if (!file || !String(file.type || "").toLowerCase().startsWith("image/")) {
+    alert("File harus berupa gambar.");
+    return;
+  }
+  if (file.size > MAX_UPLOAD_BYTES) {
+    alert(`Ukuran gambar terlalu besar. Maksimal ${MAX_UPLOAD_BYTES / 1024 / 1024} MB.`);
+    return;
+  }
   const reader = new FileReader();
   reader.onload = () => {
     cropState.fileKind = kind;
     cropState.source = reader.result;
     cropState.image = new Image();
     cropState.image.onload = () => {
+      if (cropState.image.naturalWidth > MAX_IMAGE_DIMENSION || cropState.image.naturalHeight > MAX_IMAGE_DIMENSION) {
+        cropState.source = null;
+        cropState.image = null;
+        alert(`Resolusi gambar terlalu besar. Maksimal ${MAX_IMAGE_DIMENSION}px pada sisi terpanjang.`);
+        return;
+      }
       refs.cropTitle.textContent = kind === "avatar" ? "Crop Profile Photo" : "Crop Hero Artwork";
       refs.cropViewport.classList.toggle("artwork", kind === "artwork");
       refs.cropZoom.value = 100;
@@ -960,7 +934,7 @@ function openCrop(file, kind) {
       refs.cropY.value = 0;
       cropState.zoom = 1; cropState.x = 0; cropState.y = 0;
       refs.cropImage.src = cropState.source;
-      refs.cropModal.classList.remove("hidden");
+      refs.cropModal._open?.(kind === "avatar" ? refs.photo : refs.artwork);
       requestAnimationFrame(updateCropPreview);
     };
     cropState.image.src = cropState.source;
@@ -1024,7 +998,7 @@ function applyCrop() {
     state.artworkDataUrl = dataUrl;
     state.layers.hero = { x: 0, y: 0, scale: 100, rotate: 0 };
   }
-  refs.cropModal.classList.add("hidden");
+  refs.cropModal._close?.();
   syncLayerControls();
   render();
 }
@@ -1034,8 +1008,7 @@ function wireCropEvents() {
   refs.cropX.addEventListener("input", () => { cropState.x = Number(refs.cropX.value) * 2; updateCropPreview(); });
   refs.cropY.addEventListener("input", () => { cropState.y = Number(refs.cropY.value) * 2; updateCropPreview(); });
   refs.cropApply.addEventListener("click", applyCrop);
-  refs.cropCancel.addEventListener("click", () => refs.cropModal.classList.add("hidden"));
-  refs.cropModal.addEventListener("click", (event) => { if (event.target === refs.cropModal) refs.cropModal.classList.add("hidden"); });
+  refs.cropCancel.addEventListener("click", () => refs.cropModal._close?.());
   refs.cropViewport.addEventListener("pointerdown", (event) => {
     cropState.dragging = true; cropState.startX = event.clientX; cropState.startY = event.clientY; cropState.startCropX = cropState.x; cropState.startCropY = cropState.y; refs.cropViewport.classList.add("dragging"); refs.cropViewport.setPointerCapture(event.pointerId);
   });
@@ -1087,6 +1060,9 @@ function wireEvents() {
   refs.hero.addEventListener("change", () => {
     state.selections.heroId = refs.hero.value;
     ensureSelectionsValid();
+    // Custom artwork belongs to the previous hero/skin selection.
+    state.artworkDataUrl = "";
+    state.layers.hero = { x: 0, y: 0, scale: 100, rotate: 0 };
     paintSkinSelect();
     // Selecting a new hero switches the background layer back to artwork-auto,
     // so the selected hero/skin artwork controls the blurred background.
@@ -1169,18 +1145,6 @@ function wireEvents() {
     });
   });
 
-  refs.cardLayout.addEventListener("change", () => { state.selections.cardLayout = refs.cardLayout.value; render(); saveUserState(); });
-  [refs.heroX, refs.heroY, refs.heroScale, refs.heroRotate].forEach((el) => el.addEventListener("input", () => {
-    state.layers.hero.x = Number(refs.heroX.value); state.layers.hero.y = Number(refs.heroY.value);
-    state.layers.hero.scale = Number(refs.heroScale.value); state.layers.hero.rotate = Number(refs.heroRotate.value);
-    applyLayerTransform("hero"); render();
-  }));
-  refs.backgroundEffect.addEventListener("change", () => { state.selections.backgroundEffect = refs.backgroundEffect.value; render(); saveUserState(); });
-  refs.effectIntensity.addEventListener("input", () => { state.selections.effectIntensity = Number(refs.effectIntensity.value); render(); });
-  refs.roleBadge.addEventListener("change", () => { state.selections.roleBadge = refs.roleBadge.value; render(); saveUserState(); });
-  refs.playerTitle.addEventListener("input", () => { state.selections.playerTitle = refs.playerTitle.value; render(); });
-  [refs.badgeColor1, refs.badgeColor2].filter(Boolean).forEach((input) => input.addEventListener("input", () => render()));
-
   refs.activeLayer.addEventListener("change", () => {
     state.activeLayer = refs.activeLayer.value;
     syncLayerControls();
@@ -1222,21 +1186,53 @@ function wireEvents() {
     event.target.value = "";
   });
 
-  refs.closeModal.addEventListener("click", () => refs.modal.classList.add("hidden"));
-  refs.modal.addEventListener("click", (event) => {
-    if (event.target === refs.modal) {
-      refs.modal.classList.add("hidden");
-    }
-  });
+  function setupModalAccessibility(modal, initialTarget, closeButton) {
+    if (!modal) return;
+    let restoreFocus = null;
+    const close = () => {
+      modal.classList.add("hidden");
+      modal.setAttribute("aria-hidden", "true");
+      restoreFocus?.focus?.();
+      restoreFocus = null;
+    };
+    const open = (trigger) => {
+      restoreFocus = trigger || document.activeElement;
+      modal.classList.remove("hidden");
+      modal.setAttribute("aria-hidden", "false");
+      requestAnimationFrame(() => initialTarget?.focus?.());
+    };
+    modal._open = open;
+    modal._close = close;
+    modal.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") { event.preventDefault(); close(); return; }
+      if (event.key !== "Tab") return;
+      const focusables = [...modal.querySelectorAll('button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [href], [tabindex]:not([tabindex="-1"])')]
+        .filter(el => !el.hidden && getComputedStyle(el).display !== "none");
+      if (!focusables.length) { event.preventDefault(); return; }
+      const first = focusables[0], last = focusables[focusables.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    });
+    modal.addEventListener("click", (event) => { if (event.target === modal) close(); });
+    closeButton?.addEventListener("click", close);
+    modal.setAttribute("aria-hidden", "true");
+  }
+
+  setupModalAccessibility(refs.modal, document.querySelector('[data-preset]'), refs.closeModal);
+  setupModalAccessibility(refs.cropModal, refs.cropZoom, refs.cropCancel);
+  refs.presetBtn.addEventListener("click", () => refs.modal._open(refs.presetBtn));
 
   document.querySelectorAll("[data-preset]").forEach((button) => {
     button.addEventListener("click", () => {
       applyPreset(button.dataset.preset);
-      refs.modal.classList.add("hidden");
+      refs.modal._close?.();
     });
   });
 
+  refs.randomBtn.addEventListener("click", randomizeProfile);
+  refs.copyBtn.addEventListener("click", copyConfig);
   refs.exportBtn.addEventListener("click", exportPNG);
+  refs.refreshApiBtn.addEventListener("click", refreshApiData);
 
   enableDragging(refs.avatarLayer, "avatar");
   enableDragging(refs.heroLayer, "hero");
@@ -1269,6 +1265,10 @@ function applyPreset(name) {
   if (!preset) {
     return;
   }
+  // Built-in presets switch the complete visual profile, so stale uploaded
+  // hero artwork must not survive the preset change.
+  state.artworkDataUrl = "";
+  state.layers.hero = { x: 0, y: 0, scale: 100, rotate: 0 };
   refs.rank.value = preset.rank;
   refs.title.value = preset.title;
   refs.wr.value = preset.wr;
@@ -1300,6 +1300,8 @@ function randomItem(items) {
 
 function randomizeProfile() {
   const hero = randomItem(state.manifest.heroes);
+  state.artworkDataUrl = "";
+  state.layers.hero = { x: 0, y: 0, scale: 100, rotate: 0 };
   state.selections.heroId = hero.id;
   state.selections.role = hero.roles?.[0] || "Assassin";
   state.selections.skinId = randomItem(hero.skins).id;
@@ -1313,11 +1315,6 @@ function randomizeProfile() {
 
   refs.title.value = state.selections.title;
   refs.rank.value = state.selections.rank;
-  if (refs.cardLayout) refs.cardLayout.value = state.selections.cardLayout || "classic";
-  if (refs.backgroundEffect) refs.backgroundEffect.value = state.selections.backgroundEffect || "none";
-  if (refs.effectIntensity) refs.effectIntensity.value = state.selections.effectIntensity ?? 55;
-  if (refs.roleBadge) refs.roleBadge.value = state.selections.roleBadge || "auto";
-  if (refs.playerTitle) refs.playerTitle.value = state.selections.playerTitle || "";
   refs.wr.value = Math.floor(Math.random() * 35) + 60;
   refs.matches.value = Math.floor(Math.random() * 4500) + 500;
   refs.mvp.value = Math.floor(Math.random() * 700) + 80;
@@ -1445,7 +1442,7 @@ async function exportPNG() {
   }
 }
 
-async function elementToPng(element, mode) {
+async function elementToPng(element, mode, multiplier = 1) {
   // Make sure the same web fonts used by the live preview are ready before
   // measuring/serializing. This prevents export-only font fallback and text wrapping.
   if (document.fonts && document.fonts.ready) {
@@ -1457,6 +1454,8 @@ async function elementToPng(element, mode) {
     feed: { width: 1080, height: 1350 },
     card: { width: 900, height: 1200 }
   }[mode] || { width: 1080, height: 1920 };
+  outputSize.width *= Math.max(1, Number(multiplier) || 1);
+  outputSize.height *= Math.max(1, Number(multiplier) || 1);
 
   // Export from the exact live-preview geometry, then rasterize directly
   // at the final PNG resolution. Never export a screenshot-sized bitmap.
@@ -1495,6 +1494,13 @@ async function elementToPng(element, mode) {
   clone.style.overflow = "hidden";
   clone.style.boxSizing = "border-box";
   clone.style.borderRadius = getComputedStyle(element).borderRadius || "34px";
+
+  if (document.getElementById("transparentExport")?.checked) {
+    const bg = clone.querySelector(".background-layer");
+    if (bg) bg.style.display = "none";
+    clone.querySelectorAll(".card-noise").forEach(n => n.style.display = "none");
+    clone.style.background = "transparent";
+  }
 
   // Keep exported stats truly transparent. The live preview uses a pseudo-element
   // for the gradient border, but pseudo-elements are not serialized reliably by
@@ -1576,23 +1582,9 @@ async function elementToPng(element, mode) {
     exportedGlobalHero.style.whiteSpace = "nowrap";
     exportedGlobalHero.style.overflow = "visible";
     exportedGlobalHero.style.fontSize = "17px";
-    exportedGlobalHero.style.marginTop = "0px";
+    // Give the No. 1 hero line the same breathing room as the live preview.
+    exportedGlobalHero.style.marginTop = "10px";
   }
-
-  // Keep the selected skin accent on the outer card in PNG export too.
-  // Resolve the CSS variable to an actual color before SVG serialization.
-  // foreignObject renderers are inconsistent with CSS custom properties.
-  const exportedSkinAccent = getComputedStyle(element).getPropertyValue("--skin-accent").trim() || refs.accent.value;
-  clone.style.setProperty("--skin-accent", exportedSkinAccent);
-  const exportedBorderImage = getComputedStyle(element).borderImageSource;
-  if (exportedBorderImage && exportedBorderImage !== "none") {
-    clone.style.border = getComputedStyle(element).border;
-    clone.style.borderImage = exportedBorderImage;
-  } else {
-    clone.style.border = `1px solid ${exportedSkinAccent}`;
-    clone.style.borderImage = "none";
-  }
-  clone.style.boxShadow = `var(--shadow),0 0 18px ${exportedSkinAccent}`;
 
   const exportedHeroLine = clone.querySelector(".hero-copy-line");
   if (exportedHeroLine) {
@@ -1762,7 +1754,7 @@ async function loadLocalData() {
   const cachedCatalog = readStorage(STORAGE_KEYS.catalog) || seeded;
 
   if (cachedCatalog?.heroes?.length) {
-    state.manifest = cloneData(cachedCatalog);
+    state.manifest = sanitizeCatalog(cachedCatalog);
   } else {
     // First-run fallback: fetch the same files used by the original working build.
     const [manifestFromFile, skinCatalogFromFile] = await Promise.all([
@@ -1780,8 +1772,8 @@ async function loadLocalData() {
       ranks: manifestFromFile?.ranks?.length ? manifestFromFile.ranks : fallbackManifest.ranks,
       heroes: manifestFromFile?.heroes?.length ? manifestFromFile.heroes : []
     }, skinCatalogFromFile));
-    state.manifest = merged;
-    writeStorage(STORAGE_KEYS.catalog, merged);
+    state.manifest = sanitizeCatalog(merged);
+    writeStorage(STORAGE_KEYS.catalog, state.manifest);
     writeStorage(STORAGE_KEYS.heroes, merged.heroes.map(({ id, name, roles }) => ({ id, name, roles })));
     writeStorage(STORAGE_KEYS.skinsByHero, Object.fromEntries(merged.heroes.map((hero) => [hero.id, hero.skins || []])));
     writeStorage(STORAGE_KEYS.manifest, merged);
@@ -1805,10 +1797,8 @@ async function loadLocalData() {
 }
 
 async function refreshApiData({ background = true } = {}) {
-  if (refs.refreshApiBtn) {
-    refs.refreshApiBtn.disabled = true;
-    refs.refreshApiBtn.textContent = "Refreshing...";
-  }
+  refs.refreshApiBtn.disabled = true;
+  refs.refreshApiBtn.textContent = "Refreshing...";
 
   const runRemote = async () => {
     updateApiStatus({
@@ -1835,9 +1825,13 @@ async function refreshApiData({ background = true } = {}) {
       };
     }
 
+    if (apiResult?.manifest && window.MLBBFlexEngine?.mergeRemoteManifest) {
+      // Merge only safe metadata into the authoritative local catalog.
+      // Local artwork/assets remain the source of truth.
+      window.MLBBFlexEngine.mergeRemoteManifest(apiResult.manifest);
+    }
+
     if (apiResult?.status) {
-      // Remote API is enrichment/status only. Never replace the working local
-      // Hero/Skin catalog with an incomplete remote response.
       updateApiStatus({
         ...apiResult.status,
         provider: `${apiResult.status.provider || "Remote API"} + LocalStorage`,
@@ -1846,10 +1840,8 @@ async function refreshApiData({ background = true } = {}) {
       });
     }
 
-    if (refs.refreshApiBtn) {
-      refs.refreshApiBtn.disabled = false;
-      refs.refreshApiBtn.textContent = "Refresh API";
-    }
+    refs.refreshApiBtn.disabled = false;
+    refs.refreshApiBtn.textContent = "Refresh API";
   };
 
   if (background) {
@@ -1867,7 +1859,7 @@ async function init() {
   seedEmbeddedCatalogToStorage();
   const cachedCatalog = readStorage(STORAGE_KEYS.catalog);
   if (cachedCatalog?.heroes?.length) {
-    state.manifest = cloneData(cachedCatalog);
+    state.manifest = sanitizeCatalog(cachedCatalog);
   }
 
   restoreUserState();

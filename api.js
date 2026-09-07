@@ -88,6 +88,17 @@
     return `${palettes[index % palettes.length]},linear-gradient(125deg,transparent 18%,rgba(255,255,255,.34) 43%,transparent 56%)`;
   }
 
+  function safeAsset(asset, fallback) {
+    const raw = String(asset || "").trim();
+    if (!raw) return fallback;
+    if (/^(data|blob):/i.test(raw)) return raw;
+    try {
+      const u = new URL(raw, location.href);
+      const allowed = u.origin === location.origin || u.hostname === "raw.githubusercontent.com";
+      return (u.protocol === "https:" && allowed) ? u.href : fallback;
+    } catch { return fallback; }
+  }
+
   function normalizeSkin(skin, index, heroName) {
     if (typeof skin === "string") {
       return {
@@ -120,7 +131,7 @@
       id: slugify(hero.id || hero.hero_id || hero.key || name),
       name,
       style: hero.style || localHero?.style || fallbackHeroStyle(index),
-      asset: hero.asset || hero.image || hero.portrait || localHero?.asset || `assets/heroes/${slugify(name)}/base.webp`,
+      asset: safeAsset(hero.asset || hero.image || hero.portrait || localHero?.asset, `assets/heroes/${slugify(name)}/base.webp`),
       skins
     };
   }

@@ -125,8 +125,8 @@ input:disabled{opacity:.7}
 .stage-scroll{
   flex:1;padding:28px;overflow:auto;display:grid;place-items:center;
   background:
-    radial-gradient(circle at center,color-mix(in srgb,var(--stage-accent,#8ac7ff) 22%,transparent),transparent 30%),
-    linear-gradient(180deg,color-mix(in srgb,var(--stage-accent,#8ac7ff) 16%,#07111d),#04070d)
+    radial-gradient(circle at center,rgba(138,199,255,.1),transparent 26%),
+    linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,0))
 }
 
 .profile-card{
@@ -136,7 +136,6 @@ input:disabled{opacity:.7}
   --glow-primary:var(--frame);
   --glow-secondary:var(--frame-alt);
   --rarity:#f3c969;
-  --skin-accent:var(--accent);
   --cursor-x:65%;
   --cursor-y:32%;
   --loop-x:24%;
@@ -146,7 +145,7 @@ input:disabled{opacity:.7}
   --tilt-z:0deg;
   --look-y:0deg;
   position:relative;width:min(500px,90vw);overflow:hidden;border-radius:34px;background:#09111d;
-  border:1px solid var(--skin-accent);box-shadow:var(--shadow),0 0 18px color-mix(in srgb,var(--skin-accent) 28%,transparent);isolation:isolate;
+  border:1px solid rgba(255,255,255,.08);box-shadow:var(--shadow);isolation:isolate;
   transform:perspective(1400px) rotateX(var(--tilt-x)) rotateY(calc(var(--tilt-y) + var(--look-y))) rotateZ(var(--tilt-z));
   transform-style:preserve-3d;transition:transform .18s ease, box-shadow .18s ease;animation:cardLook 7s ease-in-out infinite
 }
@@ -348,17 +347,6 @@ select option{background:#0c1522;color:#edf3ff}
 
 /* v8: diagonal Glow beam, same visual language as Scan */
 @property --glow-progress{syntax:"<percentage>";inherits:false;initial-value:-18%}
-.effect-glow .effect-glow{
-  background:linear-gradient(135deg,
-    transparent 0%,
-    transparent calc(var(--glow-progress) - 12%),
-    color-mix(in srgb,var(--glow-primary) 35%,transparent) calc(var(--glow-progress) - 5%),
-    rgba(255,255,255,.72) var(--glow-progress),
-    color-mix(in srgb,var(--glow-secondary) 38%,transparent) calc(var(--glow-progress) + 7%),
-    transparent calc(var(--glow-progress) + 18%),
-    transparent 100%);
-  mix-blend-mode:screen;opacity:.48;animation:glowDiagonal 4.2s linear infinite;
-}
 @keyframes glowDiagonal{from{--glow-progress:-18%}to{--glow-progress:118%}}
 
 
@@ -399,7 +387,7 @@ select option{background:#0c1522;color:#edf3ff}
   border-radius:inherit;
   pointer-events:none;
   z-index:6;
-  border:1px solid color-mix(in srgb,var(--skin-accent) 72%,transparent);
+  border:1px solid rgba(255,255,255,.12);
   background:
     linear-gradient(105deg,transparent 0 38%,rgba(255,255,255,.10) 46%,rgba(255,255,255,.34) 50%,rgba(255,255,255,.08) 54%,transparent 62%);
   background-size:220% 100%;
@@ -597,7 +585,7 @@ select option{background:#0c1522;color:#edf3ff}
   color:#cfd9eb;
 }
 .artwork-global-hero{
-  margin-top:0px;
+  margin-top:6px;
   font-size:17px;
   font-weight:800;
   color:#fff;
@@ -797,14 +785,11 @@ select option{background:#0c1522;color:#edf3ff}
 }
 .stats-grid .stat-icon{
   display:block;
-  width:30px;
-  height:30px;
+  width:22px;
+  height:22px;
   object-fit:contain;
   margin:0 auto 3px;
-  flex:0 0 30px;
-}
-.stats-grid b{
-  font-size:16px !important;
+  flex:0 0 22px;
 }
 
 /* v32 requested-only: rank icon slightly larger with a softer shadow. */
@@ -819,41 +804,114 @@ select option{background:#0c1522;color:#edf3ff}
   font-size:6px !important;
 }
 
-/* v35 requested features: multiple card layouts, artwork controls, background effects, role badge, player title */
-.feature-subtitle{margin-top:20px;margin-bottom:10px}
-#heroX,#heroY,#heroScale,#heroRotate,#effectIntensity{width:100%}
-.role-badge-out{position:absolute;left:26px;top:28%;z-index:8;padding:2px 4px;border:1px solid var(--skin-accent);border-radius:999px;background:rgba(5,10,18,.68);color:var(--skin-accent);font-size:7px;font-weight:900;letter-spacing:1.7px;text-transform:uppercase;box-shadow:0 0 18px color-mix(in srgb,var(--skin-accent) 30%,transparent);backdrop-filter:blur(8px)}
-.background-effect-layer{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:var(--effect-intensity,.55);mix-blend-mode:screen;color:var(--effect-accent,var(--skin-accent))}
-.bgfx-none{display:none}
-.bgfx-particles{background-image:radial-gradient(circle,var(--effect-accent) 0 1px,transparent 1.8px);background-size:34px 34px;animation:particleDrift 14s linear infinite}
-.bgfx-glow{background:radial-gradient(circle at 50% 45%,color-mix(in srgb,var(--effect-accent) 75%,transparent),transparent 36%),radial-gradient(circle at 80% 20%,color-mix(in srgb,var(--effect-accent) 42%,transparent),transparent 28%)}
-.bgfx-smoke{background:radial-gradient(ellipse at 20% 70%,color-mix(in srgb,var(--effect-accent) 28%,transparent),transparent 42%),radial-gradient(ellipse at 75% 55%,rgba(255,255,255,.14),transparent 38%);filter:blur(20px);animation:smokeDrift 10s ease-in-out infinite alternate}
-.bgfx-rays{background:repeating-conic-gradient(from 210deg at 50% 42%,transparent 0deg 13deg,color-mix(in srgb,var(--effect-accent) 20%,transparent) 14deg 16deg,transparent 17deg 30deg);filter:blur(2px)}
-.bgfx-geometric{background-image:linear-gradient(135deg,color-mix(in srgb,var(--effect-accent) 20%,transparent) 1px,transparent 1px),linear-gradient(45deg,color-mix(in srgb,var(--effect-accent) 14%,transparent) 1px,transparent 1px);background-size:46px 46px}
-.bgfx-ring{inset:12% 10%;border:2px solid color-mix(in srgb,var(--effect-accent) 45%,transparent);border-radius:50%;box-shadow:0 0 35px color-mix(in srgb,var(--effect-accent) 55%,transparent),inset 0 0 35px color-mix(in srgb,var(--effect-accent) 25%,transparent);animation:energyPulse 3s ease-in-out infinite}
-@keyframes particleDrift{to{background-position:120px 180px}}
-@keyframes smokeDrift{to{transform:translate(3%, -2%) scale(1.08)}}
-@keyframes energyPulse{0%,100%{transform:scale(.92) rotate(0deg);opacity:.5}50%{transform:scale(1.04) rotate(8deg);opacity:1}}
+/* V4 Engine Lab */
+.tabs{grid-template-columns:repeat(5,1fr)}
+.engine-score{display:grid;place-items:center;padding:18px;border-radius:20px;background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--accent) 18%,transparent),transparent 58%),rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);margin-bottom:12px}
+.engine-score strong{font:900 54px/.9 Georgia,"Times New Roman",serif;color:var(--accent);text-shadow:0 0 24px color-mix(in srgb,var(--accent) 45%,transparent)}
+.engine-score span,.engine-card small{font-size:9px;letter-spacing:1.8px;color:var(--muted);text-transform:uppercase}
+.engine-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.engine-card{padding:12px;border-radius:15px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08)}
+.engine-card small{display:block}.engine-card b{display:block;margin-top:5px;font-size:12px;color:var(--card-rarity,var(--accent))}
+.engine-traits,.engine-status{font-size:11px;color:var(--muted);line-height:1.5;margin:9px 0}
+.file-button{position:relative;overflow:hidden;text-align:center;padding:11px 15px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.04);cursor:pointer}
+.file-button input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.marketplace-list{display:grid;gap:8px;margin:10px 0}.market-item{display:flex;gap:8px}.market-item .ghost:first-child{flex:1;text-align:left}.market-empty{padding:12px;border:1px dashed rgba(255,255,255,.14);border-radius:14px;color:var(--muted);font-size:11px}
+.qr-image{display:block;width:180px;height:180px;object-fit:contain;background:#fff;padding:8px;border-radius:12px;margin:10px auto}.hidden{display:none!important}
+.engine-overlay{position:absolute;right:18px;bottom:29%;z-index:7;display:flex;flex-direction:column;align-items:flex-end;gap:5px;pointer-events:none}
+.engine-overlay span{padding:4px 8px;border:1px solid var(--card-rarity,#fff);border-radius:999px;color:var(--card-rarity,#fff);background:rgba(5,10,18,.35);font-size:8px;font-weight:900;letter-spacing:1.5px}
+.engine-overlay b{font-size:10px;letter-spacing:1.5px;color:#fff;text-shadow:0 0 10px var(--accent)}
+.holo-overlay{position:absolute;inset:-20%;z-index:6;pointer-events:none;opacity:.0;mix-blend-mode:screen;background:conic-gradient(from 90deg at 50% 50%,#ff5ec4,#ffd36b,#73f5ff,#8b7dff,#ff5ec4);filter:saturate(1.2) blur(8px);transform:translateX(var(--anim-shift,0px)) rotate(8deg);transition:opacity .2s}
+.profile-card.holo-on .holo-overlay{opacity:.16}
+.profile-card.holo-strong .holo-overlay{opacity:.28}
+.profile-card.holo-on::before{opacity:.18}
+@media(max-width:720px){.tabs{grid-template-columns:repeat(2,1fr)}.engine-grid{grid-template-columns:1fr}.engine-overlay{right:14px}}
 
-.layout-minimal{border-radius:20px}.layout-minimal .card-noise{opacity:.05}.layout-minimal .effect-glow,.layout-minimal .particles-layer{opacity:.06}.layout-minimal .role-badge-out{background:transparent;box-shadow:none}
-.layout-cyber{border-radius:10px}.layout-cyber .role-badge-out{border-radius:4px}.layout-cyber .stats-grid article{border-radius:6px}.layout-cyber::before{clip-path:polygon(0 0,100% 0,100% 3px,3px 3px,3px 100%,0 100%)}
-.layout-esports .identity-block{left:34px;right:34px}.layout-esports .hero-copy{left:34px}.layout-esports .stats-grid{gap:6px}.layout-esports .stats-grid article{border-radius:8px}
-.layout-mythic{border-radius:30px}.layout-mythic .role-badge-out{font-size:11px;box-shadow:0 0 28px color-mix(in srgb,var(--skin-accent) 50%,transparent)}.layout-mythic .stats-grid article{box-shadow:0 0 16px color-mix(in srgb,var(--skin-accent) 12%,transparent)}
-.layout-showcase .hero-layer{width:100%;height:55%;right:-10%;top:8%}.layout-showcase .identity-block{top:42%}.layout-showcase .hero-copy{bottom:20%}.layout-showcase .role-badge-out{top:31%}
-.stage-scroll{background:radial-gradient(circle at center,var(--stage-accent,#8ac7ff) 0%,color-mix(in srgb,var(--stage-accent,#8ac7ff) 38%,#07111d) 16%,#07111d 48%),linear-gradient(180deg,color-mix(in srgb,var(--stage-accent,#8ac7ff) 20%,#07111d),#04070d)}
+.toggle-inline{display:flex;align-items:center;gap:8px;margin:0;padding:10px 12px;border:1px solid var(--line);border-radius:14px;color:var(--muted);font-size:10px;letter-spacing:1px}.toggle-inline input{width:auto}
+.profile-card.font-modern{font-family:"Segoe UI",Arial,sans-serif}.profile-card.font-modern h2,.profile-card.font-modern h3,.profile-card.font-modern .top-rank-title{font-family:"Segoe UI",Arial,sans-serif}.profile-card.font-mono{font-family:Consolas,monospace}.profile-card.font-mono h2,.profile-card.font-mono h3,.profile-card.font-mono .top-rank-title{font-family:Consolas,monospace}.profile-card.font-scale .identity-copy h2{font-size:calc(clamp(30px,5.4vw,48px) * var(--font-scale,1))}.profile-card.font-scale .hero-copy h3{font-size:calc(clamp(38px,8vw,68px) * var(--font-scale,1))}
 
+.rank-aura{background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--rank-aura-color,#fff0a6) 42%,transparent),transparent 30%),radial-gradient(circle at 30% 70%,color-mix(in srgb,var(--rank-aura-color,#73e7ff) 34%,transparent),transparent 40%),radial-gradient(circle at 78% 62%,color-mix(in srgb,var(--rank-aura-color,#d7a4ff) 30%,transparent),transparent 42%);opacity:var(--rank-aura-power,.8);}
 
-/* v36 requested-only: compact badge chip. */
-.badge-chip{
+/* V4.0.1 UI/UX hardening */
+.effect-glow::after{
+  content:"";
   position:absolute;
-  right:-2px;
-  bottom:9px;
-  padding:3px 5px;
-  border-radius:999px;
-  background:linear-gradient(135deg,var(--badge-accent,var(--skin-accent)),var(--badge-color2,#ff8d5c));
-  color:#1e0f00;
-  font-size:7px;
-  font-weight:900;
-  letter-spacing:1.3px;
-  text-transform:uppercase
+  inset:-20%;
+  pointer-events:none;
+  background:linear-gradient(135deg,
+    transparent 0%,
+    transparent calc(var(--glow-progress) - 12%),
+    color-mix(in srgb,var(--glow-primary) 35%,transparent) calc(var(--glow-progress) - 5%),
+    rgba(255,255,255,.72) var(--glow-progress),
+    color-mix(in srgb,var(--glow-secondary) 38%,transparent) calc(var(--glow-progress) + 7%),
+    transparent calc(var(--glow-progress) + 18%),
+    transparent 100%);
+  mix-blend-mode:screen;
+  opacity:.48;
+  animation:glowDiagonal 4.2s linear infinite;
+}
+.effect-glow > *{position:relative;z-index:1}
+
+button:disabled,
+input:disabled,
+select:disabled{
+  cursor:not-allowed !important;
+  opacity:.55;
+  transform:none !important;
+  box-shadow:none !important;
+}
+button[aria-busy="true"]::after{
+  content:" · processing";
+  font-size:.8em;
+  opacity:.8;
+}
+
+@media (max-width:980px) and (min-width:721px){
+  .topbar{align-items:flex-start;flex-wrap:wrap}
+  .topbar-actions{width:100%;justify-content:flex-start;flex-wrap:wrap}
+}
+
+@media (max-width:640px){
+  .identity-block{
+    left:16px;
+    right:16px;
+    top:36%;
+    gap:10px;
+    align-items:flex-start;
+    padding-right:144px;
+  }
+  .avatar-cluster{flex-basis:92px;width:92px;height:92px}
+  .avatar-image{inset:8px}
+  .badge-chip{right:-8px;bottom:4px;padding:6px 8px;font-size:9px}
+  .identity-copy{min-width:0;max-width:100%}
+  .identity-copy h2{
+    max-width:100%;
+    font-size:clamp(22px,7vw,28px);
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .identity-meta{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+  .identity-bio{max-width:100%;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+}
+
+@media (max-width:460px){
+  .identity-block{padding-right:128px}
+  .avatar-cluster{flex-basis:82px;width:82px;height:82px}
+  .identity-extra{gap:8px;margin-top:5px}
+  .gender-mark,.region-mark{width:22px;height:24px;font-size:15px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .profile-card,
+  .profile-card::before,
+  .profile-card::after,
+  .profile-card .effect-glow,
+  .profile-card .effect-glow::after,
+  .profile-card .scan-layer,
+  .profile-card .holo-overlay,
+  .profile-card .particles-layer,
+  .profile-card [class*="shine"],
+  .profile-card [class*="sweep"]{
+    animation:none !important;
+  }
+  .profile-card .effect-glow::after{opacity:0}
 }
